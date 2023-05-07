@@ -2,7 +2,7 @@ import axios from 'axios'
 
 axios.defaults.baseURL = '/api'
 
-axios.defaults.baseURL = 'https://api.zaminbar.ir/'
+axios.defaults.baseURL = 'https://api.havabaar.com/'
 
 // axios.defaults.baseURL = 'http://193.141.127.108:8001/'
 
