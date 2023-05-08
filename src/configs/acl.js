@@ -10,7 +10,7 @@ export const AppAbility = Ability
 const defineRulesFor = (role, hub) => {
   const {can, rules} = new AbilityBuilder(AppAbility)
   if (!role) {
-    if (hub === 0) can('read', 'admin')
+    if (hub===0) can('read', 'admin')
     else can('read', 'every-page')
   } else {
     can('read', 'acl-page')

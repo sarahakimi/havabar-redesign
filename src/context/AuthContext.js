@@ -23,44 +23,49 @@ function AuthProvider({children}) {
   const [loading, setLoading] = useState(defaultProvider.loading)
   const [isInitialized, setIsInitialized] = useState(defaultProvider.isInitialized)
 
-
   const router = useRouter()
   useEffect(() => {
-    const initAuth = async () => {
-      setIsInitialized(true)
-      const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
-      if (storedToken) {
-        setLoading(true)
-        await http
-          .get(
-            authConfig.meEndpoint,
-            {},
-            {
-              Authorization: `Bearer ${storedToken}`
-            }
-          )
-          .then(async response => {
-            setLoading(false)
-            setUser({...response.data})
-            const {returnUrl} = router.query
-            const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-            router.replace(redirectURL)
-          })
-          .catch(() => {
-            localStorage.removeItem('userData')
-            localStorage.removeItem('refreshToken')
-            localStorage.removeItem('accessToken')
-            setUser(null)
-            setLoading(false)
-            setIsInitialized(false)
-            router.replace("/login")
-          })
+    if (!isInitialized) {
+      if (window.localStorage.getItem(authConfig.storageTokenKeyName)) {
+        setIsInitialized(true)
+        setUser(JSON.parse(window.localStorage.getItem("userData")))
       } else {
+        localStorage.removeItem('userData')
+        localStorage.removeItem(authConfig.storageTokenKeyName)
+        setUser(null)
+        setLoading(false)
+        setIsInitialized(false)
+        router.replace("/login")
         setLoading(false)
       }
+    }if(isInitialized && user){
+      http
+        .get('hub/', {}, {
+          Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+        }).then(() => {
+        const {returnUrl} = router.query
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+        router.replace(redirectURL)
+        setLoading(false)
+      }).catch(async err=>{
+        if (err?.response?.data?.messageCode === 401) {
+          await localStorage.removeItem('userData')
+          toast.error(err?.response?.data?.message)
+          await localStorage.removeItem(authConfig.storageTokenKeyName)
+          setUser(null)
+          setLoading(false)
+          setIsInitialized(false)
+          router.replace("/login")
+          setLoading(false)
+        }else{
+          const {returnUrl} = router.query
+          const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+          router.replace(redirectURL)
+          setLoading(false)
+        }
+      })
     }
-    initAuth()
-  }, [])
+  }, [user])
 
   const handleLogin = (params, errorCallback, toastid) => {
     http
@@ -68,37 +73,18 @@ function AuthProvider({children}) {
       .then(async res => {
         window.localStorage.removeItem('userData')
         window.localStorage.removeItem(authConfig.storageTokenKeyName)
-        window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.access_token)
-      })
-      .then(() => {
+        window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
         toast.dismiss(toastid)
-        http
-          .get(
-            authConfig.meEndpoint,
-            {},
-            {
-              Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
-            }
-          )
-          .then(async response => {
-            http
-              .get(
-                urls.roles,
-                {},
-                {
-                  Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
-                }
-              ).then(async (resp) => {
-              const adminId = resp.data.filter(el => el.value === 1)
-              const {returnUrl} = router.query
-              setUser({...response.data, isSuperAdmin: response.data.roles.includes(adminId[0].id)})
-              await window.localStorage.setItem('userData', JSON.stringify({...response.data, isSuperAdmin: response.data.roles.includes(adminId[0].id)}))
-              const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-              router.replace(redirectURL)
-            })
+        const adminId = res.role === "super-admin"
 
-
-          })
+        const {returnUrl} = router.query
+        setUser({...res.data, isSuperAdmin: adminId})
+        await window.localStorage.setItem('userData', JSON.stringify({
+          ...res.data,
+          isSuperAdmin: adminId
+        }))
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+        router.replace(redirectURL)
       })
       .catch(err => {
         if (errorCallback) errorCallback(err)
@@ -106,7 +92,7 @@ function AuthProvider({children}) {
   }
 
   const handleLogout = () => http.post(urls.logout, {}, {
-    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+    Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
   }).then(() => {
     setUser(null)
     setIsInitialized(false)
@@ -114,6 +100,7 @@ function AuthProvider({children}) {
     window.localStorage.removeItem(authConfig.storageTokenKeyName)
     router.push('/login')
   })
+
 
   const values = {
     user,

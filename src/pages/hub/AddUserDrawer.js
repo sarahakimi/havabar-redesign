@@ -14,9 +14,7 @@ import Close from 'mdi-material-ui/Close'
 import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material'
 import DialogContentText from "@mui/material/DialogContentText";
 import {ostan, shahr} from "iran-cities-json";
-import * as tus from "tus-js-client";
 import toast from "react-hot-toast";
-import Avatar from "@core/components/mui/avatar";
 import {editUser, registerUser} from "./requests";
 
 
@@ -29,26 +27,25 @@ const Header = styled(Box)(({theme}) => ({
 }))
 
 const schema = yup.object().shape({
-  image: yup.mixed(),
   name: yup
     .string()
     .required('نام الزامی است'),
   fax: yup
     .string()
     .required('فگس الزامی است').matches(/^[0-9]*$/, ' باید عدد باشد'),
-  provence: yup
+  state: yup
     .string()
     .required('استان الزامی است'),
   city: yup
     .string()
     .required('شهر الزامی است'),
-  telephone: yup
+  tel_phone: yup
     .string()
     .required('تلفن الزامی است').matches(/^[0-9]*$/, ' باید عدد باشد'),
-  address: yup.string().required("الزامی است").typeError("به درستی وارد نمایید").min(5,"به درستی وازد نمایید"),
   economic_code: yup.string().required("الزامی است").typeError("به درستی وارد نمایید").min(2,"به درستی وازد نمایید"),
-
-
+  management_name:yup.string().required("الزامی است").typeError("به درستی وارد نمایید").min(5,"به درستی وازد نمایید"),
+  registration_number:yup.string().typeError("به درستی وارد نمایید"),
+  workshop_number:yup.string().typeError("به درستی وارد نمایید")
 })
 
 function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
@@ -62,15 +59,19 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
   }
 
   const emptyForm = {
-    image: null,
     name: '',
     fax: '',
-    telephone: '',
-    provence: '',
+    tel_phone: '',
+    state: '',
     city: '',
     address:'',
     economic_code:'',
+    management_name:"",
+    registration_number:"",
+    workshop_number:""
+
   }
+
   const defaultValues = user || emptyForm
 
   const {
@@ -90,39 +91,9 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
     reset(emptyForm)
   }
 
-
-  const handleSetUpload = (event) => {
-    const uploadFile = event.target.files[0]
-    if (!uploadFile) {
-      return;
-    }
-    const toastId = toast.loading("در حال بارگذاری لوگو")
-
-    const upload = new tus.Upload(uploadFile, {
-      endpoint: "https://api.zaminbar.ir/files/",
-      retryDelays: [0],
-      metadata: {
-        filename: uploadFile.name,
-        filetype: uploadFile.type
-      },
-      onError() {
-        setError("hub_id", {type: 'custom', message: "مشکل در بارگذای عکس. مجدد تلاش کنید"});
-        toast.dismiss(toastId)
-        toast.error("خطا در بارگذاری لوگو")
-      },
-      onSuccess() {
-        setImageUrl(upload.url)
-        toast.dismiss(toastId)
-        toast.success("با موفقیت بارگذاری شد")
-      }
-    })
-    upload.start()
-  }
-
-
   const onSubmit = async (data) => {
     if (edit) {
-      toast.promise(editUser(user.id, {...data, image: imageUrl})
+      toast.promise(editUser(user.id, data)
           .then(() => {
             setChange(true)
             handleClose()
@@ -134,7 +105,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
         })
 
     } else {
-      toast.promise(registerUser({...data, image: imageUrl})
+      toast.promise(registerUser(data)
           .then(() => {
             setChange(true)
             handleClose()
@@ -180,43 +151,6 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='imagee'
-              control={control}
-              rules={{required: true}}
-              render={({field: {value, onBlur}}) => (
-                <Box sx={{display: "flex", alignItems: "center", gap: 2}}>
-                  <TextField
-                    inputProps={{
-                      accept: "image/*"
-                    }}
-                    disabled={showUser}
-                    style={{display: 'none'}}
-                    id="raised-button-file"
-                    multiple
-                    type="file"
-                    onChange={handleSetUpload}
-                    value={value}
-                    onBlur={onBlur}
-                    error={Boolean(errors.name)}
-                    sx={{display: 'inline'}}
-                  />
-                  <Avatar src={imageUrl} sx={{width: 56, height: 56}}/>
-                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                  {!showUser && <label htmlFor="raised-button-file">
-                    <Button
-                      variant="text"
-                      component="span"
-                    >
-                      افزودن لوگو
-                    </Button>
-                  </label>}
-                </Box>
-              )}
-            />
-            {errors.image && <FormHelperText sx={{color: 'error.main'}}>{errors.image.message}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth sx={{mb: 4}}>
-            <Controller
               name='name'
               control={control}
               rules={{required: true}}
@@ -236,7 +170,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='telephone'
+              name='tel_phone'
               control={control}
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
@@ -246,7 +180,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.telephone)}
+                  error={Boolean(errors.tel_phone)}
                   inputProps={{maxLength: 11}}
                   placeholder='021*******'
                   dir='ltr'
@@ -254,7 +188,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
                 />
               )}
             />
-            {errors.telephone && <FormHelperText sx={{color: 'error.main'}}>{errors.telephone.message}</FormHelperText>}
+            {errors.tel_phone && <FormHelperText sx={{color: 'error.main'}}>{errors.tel_phone.message}</FormHelperText>}
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
@@ -280,7 +214,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
               fullWidth
-              name='provence'
+              name='state'
               control={control}
               rules={{required: true}}
               render={({field: {onChange, value, onBlur}}) => (
@@ -299,15 +233,15 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
                       label='استان'
                       variant='outlined'
                       onChange={onChange}
-                      error={Boolean(errors.provence)}
+                      error={Boolean(errors.state)}
                       disabled={showUser}
                     />
                   )}
                 />
               )}
             />
-            {errors.provence && (
-              <FormHelperText sx={{color: 'error.main'}}>{errors.provence.message}</FormHelperText>
+            {errors.state && (
+              <FormHelperText sx={{color: 'error.main'}}>{errors.state.message}</FormHelperText>
             )}
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
@@ -346,26 +280,6 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='address'
-              control={control}
-              rules={{required: true}}
-              render={({field: {value, onChange, onBlur}}) => (
-                <TextField
-                  label='آدرس'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.address)}
-                  disabled={showUser}
-                  multiline
-                  rows={2}
-                />
-              )}
-            />
-            {errors.address && <FormHelperText sx={{color: 'error.main'}}>{errors.address.message}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth sx={{mb: 4}}>
-            <Controller
               name='economic_code'
               control={control}
               rules={{required: true}}
@@ -381,6 +295,60 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
               )}
             />
             {errors.economic_code && <FormHelperText sx={{color: 'error.main'}}>{errors.economic_code.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{mb: 4}}>
+            <Controller
+              name='management_name'
+              control={control}
+              rules={{required: true}}
+              render={({field: {value, onChange, onBlur}}) => (
+                <TextField
+                  label='نام مدیر عامل'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.management_name)}
+                  disabled={showUser}
+                />
+              )}
+            />
+            {errors.management_name && <FormHelperText sx={{color: 'error.main'}}>{errors.management_name.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{mb: 4}}>
+            <Controller
+              name='registration_number'
+              control={control}
+              rules={{required: true}}
+              render={({field: {value, onChange, onBlur}}) => (
+                <TextField
+                  label='شماره ثبت'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.registration_number)}
+                  disabled={showUser}
+                />
+              )}
+            />
+            {errors.registration_number && <FormHelperText sx={{color: 'error.main'}}>{errors.registration_number.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{mb: 4}}>
+            <Controller
+              name='workshop_number'
+              control={control}
+              rules={{required: true}}
+              render={({field: {value, onChange, onBlur}}) => (
+                <TextField
+                  label='کد کارگاه'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.workshop_number)}
+                  disabled={showUser}
+                />
+              )}
+            />
+            {errors.workshop_number && <FormHelperText sx={{color: 'error.main'}}>{errors.workshop_number.message}</FormHelperText>}
           </FormControl>
 
           {!showUser && <Button size='large' type='submit' variant='contained' sx={{mr: 3}} fullWidth>

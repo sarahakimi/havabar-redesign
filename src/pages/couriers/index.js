@@ -30,7 +30,7 @@ const userStatusObj = {
 function ACLPage() {
 
   const [pageSize, setPageSize] = useState(10)
-  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: 'id desc'})
+  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: '1 asc'})
   const [data, setData] = useState([])
   const [change, setChange] = useState(true)
 
@@ -41,8 +41,25 @@ function ACLPage() {
   const columns = [
     {
       flex: 0.1,
+      minWidth: 110,
+      field: '1',
+      headerName: 'وضعیت',
+      filterable: false,
+      hideable: false,
+      renderCell: ({row}) => (
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <Box sx={{display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}>
+            <Typography noWrap component='a' variant='subtitle2' sx={{color: 'text.primary', textDecoration: 'none'}}>
+              {row.id}
+            </Typography>
+          </Box>
+        </Box>
+      )
+    },
+    {
+      flex: 0.1,
       minWidth: 230,
-      field: 'name',
+      field: '2',
       headerName: 'نام کوریر',
       filterOperators,
       hideable: false,
@@ -56,35 +73,27 @@ function ACLPage() {
         </Box>
       )
     },
-    {
-      flex: 0.1,
-      minWidth: 110,
-      field: 'active',
-      headerName: 'وضعیت',
-      filterable: false,
-      hideable: false,
-      renderCell: ({row}) => (
-        <CustomChip
-          skin='light'
-          size='small'
-          label={row.active ? 'فعال' : 'غیرفعال'}
-          color={userStatusObj[row.active]}
-          sx={{textTransform: 'capitalize', '& .MuiChip-label': {lineHeight: '18px'}}}
-        />
-      )
-    },
+
   ]
+
+  const keys={
+    asc:1,
+    desc:0
+  }
+
 
   useEffect(() => {
     const toastId = toast.loading("در حال دریافت اطلاعات")
+    const sortBy=sortModel.sort_by.split(" ")
+    sortBy[1]= keys[sortBy[1]]
     http
-      .get('company/all', sortModel, {
+      .post(`companies/${sortModel.page}/${Number(sortBy.join(''))}/`, {},{
         Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
       })
       .then(async response => {
-        if (response.data === null) {
+        if (response.data.courier === null) {
           setData([])
-        } else setData(response.data)
+        } else setData(response.data.courier )
         setChange(false)
         toast.dismiss(toastId)
         toast.success("انجام شد")
@@ -137,7 +146,8 @@ function ACLPage() {
               columns={columns}
               pageSize={pageSize}
               disableSelectionOnClick
-              rowsPerPageOptions={[10, 25, 50]}
+              rowsPerPageOptions={[10]}
+              disableColumnFilter
               sx={{'& .MuiDataGrid-columnHeaders': {borderRadius: 0}}}
               paginationMode='server'
               onPageSizeChange={handlePageSizeChange}

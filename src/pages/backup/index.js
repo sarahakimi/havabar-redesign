@@ -29,7 +29,7 @@ export const GridContainer = styled(Paper)({
 })
 
 function ACLPage() {
-  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: 'id desc', serach: ''})
+  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: '1 asc', serach: ''})
   const [data, setData] = useState([])
   const [change, setChange] = useState(false)
   const [downloadData, setDownloadData] = useState([])
@@ -84,9 +84,9 @@ function ACLPage() {
   const columns = [
     {
       flex: 1,
-      field: 'id',
+      field: '1',
       minWidth: 200,
-      headerName: 'شماره',
+      headerName: 'شناسه',
       filterable: false,
       hideable: false,
       renderCell: ({row}) => (
@@ -149,9 +149,9 @@ function ACLPage() {
   useEffect(() => {
     setDownloadData([])
     fetchData(sortModel).then(response => {
-      if (response.data === null) {
+      if (response.data.backup === null) {
         setData([])
-      } else setData(response.data)
+      } else setData(response.data.backup)
       if (change) setChange(false)
     }).catch((err) => {
       const errorMessage = err?.response?.data?.message ? err.response.data.message : "خطایی رخ داده است"

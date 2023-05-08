@@ -50,11 +50,10 @@ const schema = yup.object().shape({
   roles: yup.array().required(' الزامی است').min(1, 'حداقل 1 دسترسی انتخاب کنید')
 })
 
-function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
+function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles}) {
   const [showPassword, setShowPassword] = useState(false)
   // eslint-disable-next-line camelcase
   const [hub_ids, sethub_ids] = useState([])
-  const [roles, setRoles] = useState([])
 
   const emptyForm = {
     natural_code: '', name: '', phone: '', hub_id: 0, username: '', password: '', roles: []
@@ -64,6 +63,17 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
     user.roles = [user.roles]
   }
 
+  // const allRolesObj =()=> roles.reduce(
+  //   (obj, item) => Object.assign(obj, {[item.value]: false}), {});
+
+
+  //   const sameKeys=()=>  Object.fromEntries(Object.entries(allRolesObj).flatMap(entry => {
+  //     console.log(entry[0])
+  //     if (user[entry[0]]===true) return {value: entry[0], persianName: entry[1]}
+  //   }))
+  // console.log(sameKeys())
+
+
   const defaultValues = user ? {
     natural_code: user.natural_code,
     name: user.name,
@@ -71,7 +81,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
     hub_id: user.hub_id,
     username: user.username,
     password: '******',
-    roles: user.roles
+    roles
   } : emptyForm
 
   const {
@@ -81,12 +91,12 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
   })
   useEffect(() => {
     http
-      .get('hub/company/all', {}, {
+      .get('hubs/', {}, {
         Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
       })
       .then(async response => {
-        if (response.data != null) {
-          sethub_ids(response.data)
+        if (response.data.hubs != null) {
+          sethub_ids(response.data.hubs)
         } else sethub_ids([])
       })
       .catch(err => {
@@ -94,20 +104,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
         toast.error(errorMessage)
         setError('hub_id', {type: 'custom', message: errorMessage})
       })
-    http
-      .get('user/roles', {}, {
-        Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-      })
-      .then(async response => {
-        if (response.data != null) {
-          setRoles(response.data.filter(role => role.value !== 1))
-        } else setRoles([])
-      })
-      .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : "خطایی رخ داده است"
-        toast.error(errorMessage)
-        setError('roles', {type: 'custom', message: errorMessage})
-      })
+
   }, [])
 
 
@@ -122,6 +119,22 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
 
       return
     }
+
+    const selectedRoles = data.roles.reduce(
+      (obj, item) => Object.assign(obj, {[item.value]: true}), {});
+
+    const allRoles = roles.reduce(
+      (obj, item) => Object.assign(obj, {[item.value]: false}), {});
+
+    const apiData = {
+      ...data,
+      ...allRoles,
+      ...selectedRoles,
+      'role': 'admin'
+    }
+
+    console.log(data)
+
     if (edit) {
       // eslint-disable-next-line no-param-reassign
       delete data.password
@@ -138,7 +151,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
         })
     } else {
       toast.promise(
-        registerUser(data)
+        registerUser(apiData)
           .then(() => {
             setChange(true)
             handleClose()
@@ -329,14 +342,14 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser}) {
 
                   <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                     {selected.map((value) => (
-                      <Chip key={value} label={roles[value - 1]?.name}/>
+                      <Chip key={value} label={value.persianName}/>
                     ))}
                   </Box>
                 )}
               >
                 {roles.map(role => (
-                  <MenuItem key={role.id} value={role.id} disabled={showUser}>
-                    {role.name}
+                  <MenuItem key={role.value} value={role} disabled={showUser}>
+                    {role.persianName}
                   </MenuItem>))}
               </Select>
             </>)}

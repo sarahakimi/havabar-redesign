@@ -24,7 +24,6 @@ import {useSettings} from '@core/hooks/useSettings'
 import {useState} from 'react'
 import themeConfig from 'configs/themeConfig'
 import BlankLayout from '@core/layouts/BlankLayout'
-import FooterIllustrationsV2 from 'views/pages/auth/FooterIllustrationsV2'
 import {Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
 import toast from "react-hot-toast";
 
@@ -33,12 +32,12 @@ const LoginIllustrationWrapper = styled(Box)(({theme}) => ({
   padding: theme.spacing(20),
   paddingRight: '0 !important',
   [theme.breakpoints.down('lg')]: {
-    padding: theme.spacing(10)
+    padding: theme.spacing(5)
   }
 }))
 
 const LoginIllustration = styled('img')(({theme}) => ({
-  maxWidth: '48rem',
+  maxWidth: '100rem',
   [theme.breakpoints.down('xl')]: {
     maxWidth: '38rem'
   },
@@ -145,7 +144,6 @@ function LoginPage() {
         hub_id: companies[data.hub_id].hub.hubId,
 
         // hub_id: 1,
-        user_type: 1,
       }, err => {
         toast.dismiss(toastid)
         toast.error(err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داد")
@@ -157,7 +155,7 @@ function LoginPage() {
     } else {
       const {username, password} = data
       setPrevForm(data)
-      auth.login({username, password, user_type: 1}, err => {
+      auth.login({username, password}, err => {
         toast.dismiss(toastid)
         toast.error(err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داد")
         setError('username', {
@@ -180,7 +178,7 @@ function LoginPage() {
           <LoginIllustrationWrapper>
             <LoginIllustration alt='login-illustration' src='/images/pages/login-illus.png'/>
           </LoginIllustrationWrapper>
-          <FooterIllustrationsV2/>
+
         </Box>
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? {borderLeft: `1px solid ${theme.palette.divider}`} : {}}>

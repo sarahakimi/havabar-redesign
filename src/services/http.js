@@ -9,9 +9,11 @@ axios.defaults.baseURL = 'https://api.havabaar.com/'
 const headers = {
   headers: {
     'content-type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
-    'Access-Control-Allow-Methods': '*'
+
+    // 'Access-Control-Allow-Origin': '*',
+
+    // 'Access-Control-Allow-Credentials': true,
+    // 'Access-Control-Allow-Methods': '*'
   }
 }
 

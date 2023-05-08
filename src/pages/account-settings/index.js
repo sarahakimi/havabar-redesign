@@ -9,7 +9,7 @@ import MuiTab from '@mui/material/Tab'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from "mdi-material-ui/LockOpenOutline"
 import TabSecurity from "./TabSecurity"
-import TabAccount from './TabAccount'
+
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
@@ -33,7 +33,7 @@ const TabName = styled('span')(({theme}) => ({
 
 function AccountSettings() {
   // ** State
-  const [value, setValue] = useState('account')
+  const [value, setValue] = useState('security')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -48,15 +48,6 @@ function AccountSettings() {
           sx={{borderBottom: theme => `1px solid ${theme.palette.divider}`}}
         >
           <Tab
-            value='account'
-            label={
-              <Box sx={{display: 'flex', alignItems: 'center'}}>
-                <AccountOutline sx={{fontSize: '1.125rem'}}/>
-                <TabName>پروفایل کاربری</TabName>
-              </Box>
-            }
-          />
-          <Tab
             value='security'
             label={
               <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -68,9 +59,7 @@ function AccountSettings() {
 
         </TabList>
 
-        <TabPanel sx={{p: 0}} value='account'>
-          <TabAccount/>
-        </TabPanel>
+
         <TabPanel sx={{p: 0}} value='security'>
           <TabSecurity/>
         </TabPanel>

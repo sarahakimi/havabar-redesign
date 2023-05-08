@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
@@ -12,7 +12,9 @@ import Table from "@core/components/table/table";
 
 import TableHeader from "@core/components/table-header/TableHeader";
 
-import {fetchData} from "./requests";
+import Button from "@mui/material/Button";
+import {downloadDataFromServer, fetchData} from "./requests";
+import AddFilter from "./addFilter";
 
 export const GridContainer = styled(Paper)({
   flexGrow: 1,
@@ -25,25 +27,26 @@ export const GridContainer = styled(Paper)({
 })
 
 function ACLPage() {
-  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: 'id desc', serach: ''})
+  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: '1 asc', serach: ''})
   const [data, setData] = useState([])
   const [change, setChange] = useState(false)
   const [downloadData, setDownloadData] = useState([])
+  const [filter, setFilter] = useState({})
+  const [addFilterOpen, setAddFilterOpen] = useState(false)
 
   const headers = [
     {key: "id", label: "شناسه"},
-    {key: "created_at", label: "تاریخ و ساعت"},
+    {key: "time", label: "تاریخ و ساعت"},
     {key: "name", label: "تام کاربر"},
     {key: "username", label: "تام کاربری"},
-    {key: "traffic_type", label: "عملیات"},
+    {key: "state", label: "عملیات"},
   ];
 
   const downloadApi = () => toast.promise(
-    fetchData({sort_by: sortModel.sort_by, serach: sortModel.serach}).then(response => {
-
+    downloadDataFromServer().then(response => {
       setDownloadData(response.data.map((element) => ({
         ...element,
-        created_at: moment(element.created_at, 'YYYY/MM/DD HH:mm:ss').locale('fa').format('YYYY/MM/DD HH:mm:ss')
+        time: moment(element.time, 'YYYY/MM/DD HH:mm:ss').locale('fa').format('YYYY/MM/DD HH:mm:ss')
       })))
 
     }), {
@@ -61,7 +64,7 @@ function ACLPage() {
   const columns = [
     {
       flex: 0.25,
-      field: 'created_at',
+      field: '1',
       minWidth: 200,
       headerName: 'تاریخ و ساعت',
       filterable: false,
@@ -69,7 +72,7 @@ function ACLPage() {
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
-            {moment(row.created_at, 'YYYY/MM/DD HH:mm:ss').locale('fa').format('YYYY/MM/DD HH:mm:ss')}
+            {moment(row.time, 'YYYY/MM/DD HH:mm:ss').locale('fa').format('YYYY/MM/DD HH:mm:ss')}
 
           </Typography>
         </Box>
@@ -78,7 +81,7 @@ function ACLPage() {
     {
       flex: 0.25,
       minWidth: 230,
-      field: 'username',
+      field: '2',
       headerName: 'نام کاربری',
       filterOperators,
       hideable: false,
@@ -95,7 +98,7 @@ function ACLPage() {
     {
       flex: 0.25,
       minWidth: 230,
-      field: 'name',
+      field: '3',
       headerName: 'نام و نام خانوادگی',
       hideable: false,
       filterOperators,
@@ -112,7 +115,7 @@ function ACLPage() {
 
     {
       flex: 0.25,
-      field: 'traffic_type',
+      field: '4',
       minWidth: 150,
       headerName: 'عملیات',
       filterOperators,
@@ -120,7 +123,7 @@ function ACLPage() {
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
-            {row.traffic_type}
+            {row.state}
           </Typography>
         </Box>
       )
@@ -130,31 +133,46 @@ function ACLPage() {
 
   useEffect(() => {
     setDownloadData([])
-    fetchData(sortModel).then(response => {
-      if (response.data === null) {
+    fetchData(sortModel, filter).then(response => {
+      if (response.data.loginReports === null) {
         setData([])
-      } else setData(response.data)
+      } else setData(response.data.loginReports)
       if (change) setChange(false)
     }).catch((err) => {
-      const errorMessage = err.response.data.message ? err.response.data.message : "خطایی رخ داده است"
+      const errorMessage = err?.response?.data?.message ? err.response.data.message : "خطایی رخ داده است"
       toast.error(errorMessage)
     })
 
   }, [sortModel, setDownloadData, change])
+  const toggleAddUserDrawer = () => setAddFilterOpen(!addFilterOpen)
+  const hasFilter = Object.keys(filter).length !== 0
 
+  const handleRemoveFilter=()=>{
+    setFilter({})
+    setChange(true)
+  }
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
           <TableHeader data={downloadData}
-                       api={downloadApi} headers={headers} name="گزارش ورود و خروج" noAdd/>
+                       api={downloadApi} headers={headers} name="گزارش ورود و خروج" noAdd>
+            <Button sx={{mb: 2}} onClick={toggleAddUserDrawer} variant='contained'>
+              فیلتر
+            </Button>
+            {hasFilter && <Button sx={{mb: 2}} onClick={handleRemoveFilter} variant='contained' color="warning">
+              حذف فیلتر
+            </Button>}
+
+          </TableHeader>
           <GridContainer sx={{p: 4, m: 1}}>
-            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel}/>
+            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} noFilter/>
           </GridContainer>
         </Card>
       </Grid>
-
+      {addFilterOpen && <AddFilter setFilter={setFilter} filter={filter} open={addFilterOpen} toggle={toggleAddUserDrawer}
+                 setChange={setChange}/>}
 
     </Grid>
   )

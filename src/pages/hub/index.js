@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper'
 import {Avatar} from '@mui/material'
 import toast from "react-hot-toast";
 import AddUserDrawer from './AddUserDrawer'
-import {deleteUser, fetchData} from "./requests";
+import {deleteUser, downloadDataFromServer, fetchData} from "./requests";
 import Table from "../../@core/components/table/table";
 import TableHeader from "../../@core/components/table-header/TableHeader";
 import RowOptions from "../../@core/components/row-options/row-options";
@@ -30,7 +30,7 @@ function ACLPage() {
   const [showUser, setShowUser] = useState(false)
   const [downloadData, setDownloadData] = useState([])
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: 'id desc'})
+  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: '1 asc'})
   const [data, setData] = useState([])
   const [change, setChange] = useState(false)
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
@@ -38,12 +38,14 @@ function ACLPage() {
   const toggleShowUserDrawer = () => setShowUser(!showUser)
 
   const headers = [{key: "id", label: "شناسه"}, {key: "name", label: "تام هاب"}, {
-    key: "telephone",
+    key: "tel_phone",
     label: "شماره تلفن"
-  }, {key: "fax", label: "فکس"}, {key: "provence", label: "استان"}, {key: "city", label: "شهر"}];
+  }, {key: "fax", label: "فکس"}, {key: "state", label: "استان"}, {key: "city", label: "شهر"},
+  {key: "economic_code", label: "کد اقتصادی"}, {key: "management_name", label: "نام مدیرعامل"}, {key: "registration_number", label: "شماره ثبت"}
+    , {key: "workshop_number", label: "کد کارگاه"}];
 
   const downloadApi = () => {
-    toast.promise(fetchData({sort_by: sortModel.sort_by, serach: sortModel.serach}).then(response => {
+    toast.promise(downloadDataFromServer().then(response => {
         setDownloadData(response.data)
       })
       , {
@@ -55,7 +57,7 @@ function ACLPage() {
 
   const deleteFunction = hub => {
     toast.promise(deleteUser(hub.id).then(setChange(true)), {
-        loading: 'در حال حذف مشتری',
+        loading: 'در حال حذف هاب',
         success: 'با موفقیت حذف شد',
         error: (err) => err.response.data.message ? err.response.data.message : "خطایی رخ داده است",
       }
@@ -68,24 +70,28 @@ function ACLPage() {
   );
 
   const columns = [
+
     {
-      flex: 0.15,
-      field: 'image',
-      minWidth: 150,
-      headerName: 'عکس',
-      filterable: false,
+      flex: 0.2,
+      minWidth: 230,
+      field: '1',
+      headerName: 'شناسه',
+      filterOperators,
       hideable: false,
-      sortable: false,
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
-          <Avatar alt={row.name} src={row.image}/>
+          <Box sx={{display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}>
+            <Typography noWrap component='a' variant='subtitle2' sx={{color: 'text.primary', textDecoration: 'none'}}>
+              {row.id}
+            </Typography>
+          </Box>
         </Box>
       )
     },
     {
       flex: 0.2,
       minWidth: 230,
-      field: 'name',
+      field: '2',
       headerName: 'نام هاب',
       filterOperators,
       hideable: false,
@@ -121,11 +127,12 @@ function ACLPage() {
       minWidth: 150,
       filterOperators,
       headerName: 'شماره تلفن',
+      sortable: false,
       hideable: false,
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
-            {row.telephone}
+            {row.tel_phone}
           </Typography>
         </Box>
       )
@@ -135,19 +142,20 @@ function ACLPage() {
       field: 'provence',
       minWidth: 150,
       headerName: 'استان',
+      sortable: false,
       filterOperators,
       hideable: false,
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
-            {row.provence}
+            {row.state}
           </Typography>
         </Box>
       )
     },
     {
       flex: 0.15,
-      field: 'city',
+      field: '3',
       minWidth: 150,
       headerName: 'شهر',
       filterOperators,
@@ -179,12 +187,12 @@ function ACLPage() {
   useEffect(() => {
     setDownloadData([])
     fetchData(sortModel).then(response => {
-      if (response.data === null) {
+      if (response.data.hubs === null) {
         setData([])
-      } else setData(response.data)
+      } else setData(response.data.hubs)
       if (change) setChange(false)
     }).catch((err) => {
-      const errorMessage = err.response.data.message ? err.response.data.message : "خطایی رخ داده است"
+      const errorMessage = err?.response?.data?.message ? err.response.data.message : "خطایی رخ داده است"
       toast.error(errorMessage)
     })
 
@@ -198,7 +206,7 @@ function ACLPage() {
           <TableHeader toggle={toggleAddUserDrawer} data={downloadData}
                        api={downloadApi} headers={headers} name="هاب"/>
           <GridContainer sx={{p: 4, m: 1}}>
-            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel}/>
+            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} noFilter/>
           </GridContainer>
         </Card>
       </Grid>

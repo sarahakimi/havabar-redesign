@@ -26,11 +26,12 @@ function AclGuard({aclAbilities, children, guestGuard}) {
 
   // If guestGuard is true and user is not logged in or its an error page, render the page without checking access
   if (guestGuard || router.route === '/404' || router.route === '/500' || router.route === '/') {
+
     return children
   }
 
   // User is logged in, build ability for the user based on his role
-  if (auth.user && auth.user.roles && !ability) {
+  if (auth.user && !ability) {
     setAbility(buildAbilityFor(auth.user.isSuperAdmin, auth.user.hub_id, aclAbilities.subject))
   }
 

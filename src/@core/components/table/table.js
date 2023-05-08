@@ -40,7 +40,7 @@ function Table({data, columns, sortModel, setSortModel, selfFilter, noFilter}) {
       columns={columns}
       pageSize={pageSize}
       disableSelectionOnClick
-      rowsPerPageOptions={[10, 25, 50]}
+      rowsPerPageOptions={[10]}
       sx={{'& .MuiDataGrid-columnHeaders': {borderRadius: 0}}}
       paginationMode={!selfFilter && 'server'}
       onPageSizeChange={handlePageSizeChange}
