@@ -80,6 +80,7 @@ function UserDropdown(props) {
       color: 'text.secondary'
     }
   }
+  const auth=useAuth()
 
   return (
     <>
@@ -138,7 +139,7 @@ function UserDropdown(props) {
           </Box>
         </Box>
         <Divider sx={{mt: 0, mb: 1}}/>
-        <MenuItem sx={{p: 0}} onClick={() => {
+        {!auth.user.isSuperAdmin &&<><MenuItem sx={{p: 0}} onClick={() => {
           handleDropdownClose()
           router.push('/account-settings')
         }}>
@@ -158,7 +159,7 @@ function UserDropdown(props) {
             تنظیمات
           </Box>
         </MenuItem>
-        <Divider/>
+        <Divider/></>}
         <MenuItem sx={{py: 2}} onClick={handleLogout}>
           <LogoutVariant
             sx={{

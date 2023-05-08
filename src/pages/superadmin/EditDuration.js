@@ -17,7 +17,7 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import toast from "react-hot-toast";
-import {editCompany} from "./requests";
+import {changeExpire} from "./requests";
 
 const Header = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -28,8 +28,8 @@ const Header = styled(Box)(({theme}) => ({
 }))
 
 const schema = yup.object().shape({
-  duration_of_activity: yup.number().required(' الزامی است').min(1, 'حداقل 1 روز').typeError('باید عدد باشد'),
-  active: yup.boolean().required('الزامی است').typeError('فیلد را انتخاب کنید'),
+  duration_of_activity: yup.number().typeError('باید عدد باشد'),
+  active: yup.string().required('الزامی است').typeError('فیلد را انتخاب کنید'),
   name: yup.string()
 })
 
@@ -39,7 +39,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
   const defaultValues = {
     duration_of_activity: company.duration_of_activity,
     name: company.name,
-    active: company.active
+    active: "date"
   }
 
   const {
@@ -71,8 +71,14 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
   }
 
   const onSubmit = data => {
+    let filter=null
+    let duration={}
+    if(data.active==="date")duration={
+      'duration': data.duration_of_activity
+    }
+    else filter=data.active
     toast.promise(
-      editCompany(company.id, data)
+      changeExpire(company.id, filter, duration)
         .then(() => {
           handleClose()
           setChange(true)
@@ -129,48 +135,49 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
+              name='active'
+              control={control}
+              render={({field: {onChange, onBlur}}) => (
+                <>
+                  <InputLabel id='demo-multiple-name-label'> نوع تغییر</InputLabel>
+                  <Select
+                    onBlur={onBlur}
+                    labelId='demo-multiple-name-label'
+                    id='demo-multiple-name'
+                    onChange={onChange}
+                    error={Boolean(errors.active)}
+                    input={<OutlinedInput label='Name'/>}
+                  >
+                    <MenuItem value="date">تمدید زمانی به تعداد روز</MenuItem>
+                    <MenuItem value="unlimited">تمدید زمانی بی نهایت</MenuItem>
+                    <MenuItem value="active">فعال کردن شرکت</MenuItem>
+                    <MenuItem value="deactive">غیرفعال کردن شرکت</MenuItem>
+                  </Select>
+                </>
+              )}
+            />
+            {errors.active && <FormHelperText sx={{color: 'error.main'}}>{errors.active.message}</FormHelperText>}
+          </FormControl>
+        <FormControl fullWidth sx={{mb: 4}}>
+            <Controller
               name='duration_of_activity'
               control={control}
               type='number'
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
                 <TextField
-
                   label='اعتبار اکانت (روز)'
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.duration_of_activity)}
+                  helperText="فقط در صورتی اعمال می شود که گزینه (تمدید زمانی به تعداد روز) را انتخاب کرده باشید"
                 />
               )}
             />
             {errors.duration_of_activity && (
               <FormHelperText sx={{color: 'error.main'}}>{errors.duration_of_activity.message}</FormHelperText>
             )}
-          </FormControl>
-          <FormControl fullWidth sx={{mb: 4}}>
-            <Controller
-              name='active'
-              control={control}
-              render={({field: {onChange, onBlur}}) => (
-                <>
-                  <InputLabel id='demo-multiple-name-label'>وضعیت</InputLabel>
-                  <Select
-                    onBlur={onBlur}
-                    labelId='demo-multiple-name-label'
-                    id='demo-multiple-name'
-                    onChange={onChange}
-                    defaultValue={company.active}
-                    error={Boolean(errors.active)}
-                    input={<OutlinedInput label='Name'/>}
-                  >
-                    <MenuItem value>فعال</MenuItem>
-                    <MenuItem value={false}>غیرفعال</MenuItem>
-                  </Select>
-                </>
-              )}
-            />
-            {errors.active && <FormHelperText sx={{color: 'error.main'}}>{errors.active.message}</FormHelperText>}
           </FormControl>
 
           <Button size='large' type='submit' variant='contained' sx={{mr: 3}} fullWidth>

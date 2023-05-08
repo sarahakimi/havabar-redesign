@@ -38,7 +38,8 @@ function AuthProvider({children}) {
         router.replace("/login")
         setLoading(false)
       }
-    }if(isInitialized && user){
+    }
+    if (isInitialized && user) {
       http
         .get('hub/', {}, {
           Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
@@ -47,7 +48,7 @@ function AuthProvider({children}) {
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
         router.replace(redirectURL)
         setLoading(false)
-      }).catch(async err=>{
+      }).catch(async err => {
         if (err?.response?.data?.messageCode === 401) {
           await localStorage.removeItem('userData')
           toast.error(err?.response?.data?.message)
@@ -57,7 +58,7 @@ function AuthProvider({children}) {
           setIsInitialized(false)
           router.replace("/login")
           setLoading(false)
-        }else{
+        } else {
           const {returnUrl} = router.query
           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
           router.replace(redirectURL)
@@ -75,7 +76,7 @@ function AuthProvider({children}) {
         window.localStorage.removeItem(authConfig.storageTokenKeyName)
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
         toast.dismiss(toastid)
-        const adminId = res.role === "super-admin"
+        const adminId = res.data.role === "super-admin"
 
         const {returnUrl} = router.query
         setUser({...res.data, isSuperAdmin: adminId})
@@ -91,17 +92,32 @@ function AuthProvider({children}) {
       })
   }
 
-  const handleLogout = () => http.post(urls.logout, {}, {
-    Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
-  }).then(() => {
-    setUser(null)
-    setIsInitialized(false)
-    window.localStorage.removeItem('userData')
-    window.localStorage.removeItem(authConfig.storageTokenKeyName)
-    router.push('/login')
-  })
+  const handleLogout = () => {
+    if (user.isSuperAdmin) {
+      setUser(null)
+      setIsInitialized(false)
+      window.localStorage.removeItem('userData')
+      window.localStorage.removeItem(authConfig.storageTokenKeyName)
+      router.push('/login')
+
+      return Promise.resolve()
+    }
+
+    // eslint-disable-next-line consistent-return
+    return http.post(urls.logout, {}, {
+      Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+    }).then(() => {
+      setUser(null)
+      setIsInitialized(false)
+      window.localStorage.removeItem('userData')
+      window.localStorage.removeItem(authConfig.storageTokenKeyName)
+      router.push('/login')
+    })
+
+  }
 
 
+  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const values = {
     user,
     loading,

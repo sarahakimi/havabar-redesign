@@ -27,14 +27,14 @@ export const GridContainer = styled(Paper)({
 })
 
 const userStatusObj = {
-  true: 'success',
-  false: 'secondary'
+  "فعال": 'success',
+  "غیرفعال": 'secondary'
 }
 
 
 function ACLPage() {
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: 'id desc'})
+  const [sortModel, setSortModel] = useState({page: 1, page_size: 10, sort_by: '1 asc'})
   const [data, setData] = useState([])
   const [selectedCompany, setSelectedCompany] = useState({})
   const [openEdit, setOpenEdit] = useState(false)
@@ -44,36 +44,8 @@ function ACLPage() {
   const toggleEditUserDrawer = () => setOpenEdit(!openEdit)
   const toggleEditDurationDrawer = () => setOpenDurationEdit(!openDurationEdit)
   const toggleShowUserDrawer = () => setShowUser(!showUser)
-  const [downloadData, setDownloadData] = useState([])
   const [change, setChange] = useState(false)
 
-  const headers = [
-    {key: "id", label: "شناسه"},
-    {key: "name", label: "تام شرکت"},
-    {key: "duration_of_activity", label: "اشتراک"},
-    {key: "active", label: "وضعیت"},
-    {key: "created_at", label: "تاریخ ایجاد"},
-  ];
-
-  const downloadApi = () => toast.promise(fetchData({
-    sort_by: sortModel.sort_by,
-    search: sortModel.search
-  }).then(response => {
-    setDownloadData(response.data.map((element) => {
-      const isActive = element.active ? "فعال" : "غیرفعال"
-
-      return {
-        ...element,
-        created_at: moment(element.created_at, 'YYYY/MM/DD').locale('fa').format('YYYY/MM/DD'),
-        active: isActive
-      }
-    }))
-
-  }), {
-    loading: 'در حال دانلود',
-    success: 'دانلود انجام شد',
-    error: (err) => err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.",
-  })
 
 
   const filterOperators = getGridStringOperators().filter(({value}) =>
@@ -84,7 +56,7 @@ function ACLPage() {
     {
       flex: 0.1,
       minWidth: 230,
-      field: 'name',
+      field: '2',
       filterOperators,
       headerName: 'نام کوریر',
       hideable: false,
@@ -101,34 +73,16 @@ function ACLPage() {
     {
       flex: 0.1,
       minWidth: 230,
-      field: 'adminName',
+      field: 'first_login',
       filterable: false,
-      headerName: 'نام ادمین',
+      headerName: 'اولین ورود',
       sortable: false,
       hideable: false,
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Box sx={{display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}>
-            <Typography noWrap component='a' variant='subtitle2' sx={{color: 'text.primary', textDecoration: 'none'}}>
-              {row?.admin?.name}
-            </Typography>
-          </Box>
-        </Box>
-      )
-    },
-    {
-      flex: 0.2,
-      minWidth: 230,
-      field: 'adminUsername',
-      headerName: 'نام کاربری ادمین',
-      filterable: false,
-      hideable: false,
-      sortable: false,
-      renderCell: ({row}) => (
-        <Box sx={{display: 'flex', alignItems: 'center'}}>
-          <Box sx={{display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}>
-            <Typography noWrap component='a' variant='subtitle2' sx={{color: 'text.primary', textDecoration: 'none'}}>
-              {row?.admin?.username}
+            <Typography sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
+              {row?.duration_of_activity===0 ?"وارد نشده": row.first_login}
             </Typography>
           </Box>
         </Box>
@@ -136,30 +90,34 @@ function ACLPage() {
     },
     {
       flex: 0.15,
-      field: 'created_at',
+      field: 'expire_time',
       minWidth: 150,
       filterOperators,
-      headerName: 'تاریخ ثبت نام',
+      headerName: 'تاریخ انقضای اکانت',
       hideable: false,
+      sortable: false,
       renderCell: ({row}) => (
         <Box sx={{display: 'flex', alignItems: 'center'}}>
           <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
-            {moment(row.created_at, 'YYYY/MM/DD').locale('fa').format('YYYY/MM/DD')}
+            {row?.duration_of_activity===0 ?"وارد نشده": row.expire_time}
           </Typography>
         </Box>
       )
     },
     {
       flex: 0.15,
-      minWidth: 120,
-      headerName: 'اشتراک',
-      filterOperators,
       field: 'duration_of_activity',
+      minWidth: 150,
+      filterOperators,
+      headerName: 'مهلت اکانت',
       hideable: false,
+      sortable: false,
       renderCell: ({row}) => (
-        <Typography variant='subtitle1' noWrap sx={{textTransform: 'capitalize'}}>
-          {row.duration_of_activity} روز
-        </Typography>
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <Typography noWrap sx={{color: 'text.secondary', textTransform: 'capitalize'}}>
+            {row?.duration_of_activity>= 1000000 ? "بی نهایت": row?.duration_of_activity }
+          </Typography>
+        </Box>
       )
     },
     {
@@ -169,11 +127,12 @@ function ACLPage() {
       filterable: false,
       headerName: 'وضعیت',
       hideable: false,
+      sortable: false,
       renderCell: ({row}) => (
         <CustomChip
           skin='light'
           size='small'
-          label={row.active ? 'فعال' : 'غیرفعال'}
+          label={row.active}
           color={userStatusObj[row.active]}
           sx={{textTransform: 'capitalize', '& .MuiChip-label': {lineHeight: '18px'}}}
         />
@@ -196,7 +155,6 @@ function ACLPage() {
   ]
 
   useEffect(() => {
-    setDownloadData([])
     fetchData(sortModel).then(response => {
       if (response.data === null) {
         setData([])
@@ -207,17 +165,16 @@ function ACLPage() {
       toast.error(errorMessage)
     })
 
-  }, [sortModel, setDownloadData, change])
+  }, [sortModel, change])
 
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
-          <TableHeader toggle={toggleAddUserDrawer} data={downloadData}
-                       api={downloadApi} headers={headers} name="شرکت"/>
+          <TableHeader toggle={toggleAddUserDrawer} name="شرکت" noExport/>
           <GridContainer sx={{p: 4, m: 1}}>
-            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel}/>
+            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} noFilter/>
           </GridContainer>
         </Card>
       </Grid>
@@ -228,15 +185,16 @@ function ACLPage() {
           edit={false}
           company={null}
           setChange={setChange}
+          showUser
         />
       )}
 
       {openEdit && (
-        <EditDuration
+        <AddCourierDrawer
           open={openEdit}
           toggle={toggleEditUserDrawer}
           company={selectedCompany}
-          edit={false}
+          edit
           setChange={setChange}
         />
       )}

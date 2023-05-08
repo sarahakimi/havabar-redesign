@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import Drawer from '@mui/material/Drawer'
 import Button from '@mui/material/Button'
 import {styled} from '@mui/material/styles'
@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import toast from "react-hot-toast";
-import {registerCompany} from "./requests";
+import {editCompany, fetchSingleCompany, registerCompany} from "./requests";
 
 const Header = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -34,42 +34,33 @@ const schema = yup.object().shape({
     .required('کدملی  الزامی است')
     .test('len', 'کدملی باید 10 رقم باشد', val => val.toString().length === 10)
     .matches(/d*/, 'کدملی باید عدد باشد'),
-  adminName: yup.string().required('نام و نام خانوادگی الزامی است').min(5, 'فیلد را به درستی پر کنید'),
-  phone: yup
+  name: yup.string().required('نام و نام خانوادگی الزامی است').min(5, 'فیلد را به درستی پر کنید'),
+  phone_number: yup
     .string()
     .required('موبایل الزامی است')
     .matches(/09d*/, ' موبایل باید عدد باشد و با 09 شروع شود')
     .test('len', 'موبایل باید 11 رقم باشد', val => val.toString().length === 11),
-  name: yup.string().required('نام شرکت الزامی است').min(4, 'حداقل باید ع کاراکتر باشد'),
+  company_name: yup.string().required('نام شرکت الزامی است').min(4, 'حداقل باید ع کاراکتر باشد'),
   username: yup.string().required('نام کاربری الزامی است').min(4, 'حداقل باید ع کاراکتر باشد'),
   password: yup.string().required('رمز عبور الزامی است').min(8, 'حداقل باید 8 کاراکتر باشد'),
-  duration_of_activity: yup.number().required(' الزامی است').min(1, 'حداقل 1 روز').typeError('باید عدد باشد')
+
+  // duration_of_activity: yup.number().required(' الزامی است').min(1, 'حداقل 1 روز').typeError('باید عدد باشد')
 })
 
-function SidebarAddCourier({open, toggle, setChange, company, edit}) {
+function SidebarAddCourier({open, toggle, setChange, company, edit, showUser}) {
   const [showPassword, setShowPassword] = useState(false)
 
 
-  const defaultValues = company
-    ? {
-      natural_code: company?.admin?.natural_code,
-      name: company.name,
-      phone: company?.admin?.phone,
-      duration_of_activity: company.duration_of_activity,
-      username: company?.admin?.username,
-      password: '********',
-      adminName: company?.admin?.name
-    }
-    : {
-      natural_code: '',
-      name: '',
-      phone: '',
-      duration_of_activity: 0,
-      username: '',
-      password: '',
-      adminName: ''
-    }
+  const defaultValues = {
+    natural_code: '',
+    company_name: '',
+    phone_number: '',
 
+    // duration_of_activity: 0,
+    username: '',
+    password:"",
+    name: ''
+  }
 
   const {
     reset,
@@ -83,33 +74,65 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = data => {
-    const config = {
-      name: data.name,
-      duration_of_activity: data.duration_of_activity,
-      active: true,
-      admin: {
-        name: data.adminName,
-        username: data.username,
-        phone: data.phone,
-        natural_code: data.natural_code,
-        password: data.password
-      }
-    }
-    toast.promise(
-      registerCompany(config)
-        .then(() => {
-          reset(defaultValues)
-          setChange(true)
-          toggle()
+  useEffect(() => {
+    if (company) {
+      const toastid=toast.loading("در حال دریافت اطلاعات")
+      fetchSingleCompany(company.id).then(response => {
+        toast.dismiss(toastid)
+        reset({
+          natural_code: response.data?.admin.natural_code,
+          company_name: response.data?.courier.name,
+          phone_number: response.data?.admin.phone,
+          username: response.data?.admin.username,
+          name: response.data?.admin.name,
+          password:'*************',
         })
-        .catch(err => {
-          setError('name', {type: 'custom', message: err.response.data.message})
-        }), {
-        loading: 'در حال ایجاد شرکت',
-        success: 'شرکت ایجاد شد',
-        error: (err) => err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داده است.",
+
+      }).catch((err) => {
+        toast.dismiss(toastid)
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : "خطایی رخ داده است"
+        toast.error(errorMessage)
       })
+    }
+
+  }, [])
+
+
+  const onSubmit = data => {
+    if (edit) {
+      // eslint-disable-next-line no-param-reassign
+      delete data.password
+      toast.promise(
+        editCompany(company.id, data)
+          .then(() => {
+            reset(defaultValues)
+            setChange(true)
+            toggle()
+          })
+          .catch(err => {
+            setError('company_name', {type: 'custom', message: err?.response?.data?.message})
+          }), {
+          loading: 'در حال ویرایش شرکت',
+          success: 'شرکت ویرایش شد',
+          error: (err) => err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داده است.",
+        })
+    } else {
+
+      toast.promise(
+        registerCompany(data)
+          .then(() => {
+            reset(defaultValues)
+            setChange(true)
+            toggle()
+          })
+          .catch(err => {
+            setError('company_name', {type: 'custom', message: err?.response?.data?.message})
+          }), {
+          loading: 'در حال ایجاد شرکت',
+          success: 'شرکت ایجاد شد',
+          error: (err) => err.response?.data?.message ? err.response?.data?.message : "خطایی رخ داده است.",
+        })
+    }
   }
 
   const handleClose = () => {
@@ -141,7 +164,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='name'
+              name='company_name'
               control={control}
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
@@ -152,35 +175,36 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.name)}
-                  disabled={edit}
+                  error={Boolean(errors.company_name)}
+                  disabled={showUser}
                 />
               )}
             />
-            {errors.name && <FormHelperText sx={{color: 'error.main'}}>{errors.name.message}</FormHelperText>}
+            {errors.company_name &&
+              <FormHelperText sx={{color: 'error.main'}}>{errors.company_name.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{mb: 4}}>
-            <Controller
-              name='duration_of_activity'
-              control={control}
-              type='number'
-              rules={{required: true}}
-              render={({field: {value, onChange, onBlur}}) => (
-                <TextField
+          {/* <FormControl fullWidth sx={{mb: 4}}> */}
+          {/*  <Controller */}
+          {/*    name='duration_of_activity' */}
+          {/*    control={control} */}
+          {/*    type='number' */}
+          {/*    rules={{required: true}} */}
+          {/*    render={({field: {value, onChange, onBlur}}) => ( */}
+          {/*      <TextField */}
 
-                  label='اعتبار اکانت (روز)'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.duration_of_activity)}
-                  disabled={edit}
-                />
-              )}
-            />
-            {errors.duration_of_activity && (
-              <FormHelperText sx={{color: 'error.main'}}>{errors.duration_of_activity.message}</FormHelperText>
-            )}
-          </FormControl>
+          {/*        label='اعتبار اکانت (روز)' */}
+          {/*        value={value} */}
+          {/*        onBlur={onBlur} */}
+          {/*        onChange={onChange} */}
+          {/*        error={Boolean(errors.duration_of_activity)} */}
+          {/*        disabled={edit} */}
+          {/*      /> */}
+          {/*    )} */}
+          {/*  /> */}
+          {/*  {errors.duration_of_activity && ( */}
+          {/*    <FormHelperText sx={{color: 'error.main'}}>{errors.duration_of_activity.message}</FormHelperText> */}
+          {/*  )} */}
+          {/* </FormControl> */}
           <Box sx={{mb: 4}}>
             <Typography variant='p' fullwidth>
               ادمین
@@ -202,7 +226,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
                   error={Boolean(errors.natural_code)}
                   inputProps={{maxLength: 10}}
                   dir='ltr'
-                  disabled={edit}
+                  disabled={showUser}
                 />
               )}
             />
@@ -212,7 +236,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='adminName'
+              name='name'
               control={control}
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
@@ -222,18 +246,18 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.adminName)}
-                  disabled={edit}
+                  error={Boolean(errors.name)}
+                  disabled={showUser}
                 />
               )}
             />
-            {errors.adminName && (
-              <FormHelperText sx={{color: 'error.main'}}>{errors.adminName.message}</FormHelperText>
+            {errors.name && (
+              <FormHelperText sx={{color: 'error.main'}}>{errors.name.message}</FormHelperText>
             )}
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
-              name='phone'
+              name='phone_number'
               control={control}
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
@@ -243,15 +267,16 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.phone)}
+                  error={Boolean(errors.phone_number)}
                   inputProps={{maxLength: 11}}
                   placeholder='09*********'
                   dir='ltr'
-                  disabled={edit}
+                  disabled={showUser}
                 />
               )}
             />
-            {errors.phone && <FormHelperText sx={{color: 'error.main'}}>{errors.phone.message}</FormHelperText>}
+            {errors.phone_number &&
+              <FormHelperText sx={{color: 'error.main'}}>{errors.phone_number.message}</FormHelperText>}
           </FormControl>
           <FormControl fullWidth sx={{mb: 4}}>
             <Controller
@@ -267,7 +292,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
                   onChange={onChange}
                   error={Boolean(errors.username)}
                   dir='ltr'
-                  disabled={edit}
+                  disabled={showUser}
                 />
               )}
             />
@@ -283,7 +308,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
               rules={{required: true}}
               render={({field: {value, onChange, onBlur}}) => (
                 <OutlinedInput
-                  disabled={edit}
+                  disabled={showUser}
                   value={value}
                   onBlur={onBlur}
                   label='Password'
@@ -306,7 +331,7 @@ function SidebarAddCourier({open, toggle, setChange, company, edit}) {
               )}
             />
           </FormControl>}
-          {!edit && (
+          {!showUser && (
             <Button size='large' type='submit' variant='contained' sx={{mr: 3}} fullWidth>
               ذخیره
             </Button>

@@ -1,9 +1,9 @@
 export default {
-  getCompaniesFromSuperAdminPageEndpoint: 'company/all/admin',
-  singleCompany: (id) => `company/${id}`,
+  getCompaniesFromSuperAdminPageEndpoint: (page, sort) => `company/${page}/${sort}/`,
+  singleCompany: (id) => `company/${id}/`,
   registerEndpoint: 'login',
   storageTokenKeyName: 'access_token',
-  registerCompany: 'company/register',
+  registerCompany: 'company',
   getusers: (page, sort) => `getadmins/${page}/${sort}/`,
   downloadUser: 'report/admin/',
   singleUser: (id) => `user/admin/${id}`,
@@ -55,6 +55,7 @@ export default {
   packagingById: (id) => `pricing/packaging/${id}`,
   hubReport: "report/hub/",
   logReport: "report/login_report/",
-  operationReport:"report/user_log/"
+  operationReport:"report/user_log/",
+  expireChange:(id,type)=> type ? `company/expire/${id}/${type}/`: `company/expire/${id}/`
 
 }
