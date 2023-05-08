@@ -20,8 +20,10 @@ export default {
   createOrder: 'ordering/admin/register',
   getAdminOrders: "ordering/admin/all",
   singleHub: (id) => `hub/${id}/`,
+  singleLogestic:(id) => `logistic/${id}/`,
   registerHub: 'hub',
   getHubsFromAdmin: (page, sort) => `hubs/${page}/${sort}/`,
+  getLogestics: (page, sort) => `logistics/${page}/${sort}/`,
   myHub: 'hub/',
   getDrivers: 'user/admin/all?type=2',
   registerDriver: 'user/admin/courier/register',
@@ -55,7 +57,9 @@ export default {
   packagingById: (id) => `pricing/packaging/${id}`,
   hubReport: "report/hub/",
   logReport: "report/login_report/",
-  operationReport:"report/user_log/",
-  expireChange:(id,type)=> type ? `company/expire/${id}/${type}/`: `company/expire/${id}/`
+  operationReport: "report/user_log/",
+  expireChange: (id, type) => type ? `company/expire/${id}/${type}/` : `company/expire/${id}/`,
+  logisticReport:"report/logistic/",
+  registerLogistic:"logistic"
 
 }

@@ -21,7 +21,7 @@ import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import toast from "react-hot-toast";
-import Chip from "../../@core/components/mui/chip";
+import Chip from "@mui/material/Chip";
 import {editUser, registerUser} from "./requests";
 
 const Header = styled(Box)(({theme}) => ({
@@ -63,15 +63,6 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
     user.roles = [user.roles]
   }
 
-  // const allRolesObj =()=> roles.reduce(
-  //   (obj, item) => Object.assign(obj, {[item.value]: false}), {});
-
-
-  //   const sameKeys=()=>  Object.fromEntries(Object.entries(allRolesObj).flatMap(entry => {
-  //     console.log(entry[0])
-  //     if (user[entry[0]]===true) return {value: entry[0], persianName: entry[1]}
-  //   }))
-  // console.log(sameKeys())
 
 
   const defaultValues = user ? {
@@ -81,11 +72,13 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
     hub_id: user.hub_id,
     username: user.username,
     password: '******',
-    roles
+    roles: roles.filter(
+      (item) => user[item.value]===true && item)
   } : emptyForm
 
+
   const {
-    reset, control, handleSubmit, setError, formState: {errors}
+    reset, control, handleSubmit, setError, formState: {errors}, setValue
   } = useForm({
     defaultValues, mode: 'onChange', resolver: yupResolver(schema)
   })
@@ -96,14 +89,17 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
       })
       .then(async response => {
         if (response.data.hubs != null) {
-          sethub_ids(response.data.hubs)
-        } else sethub_ids([])
+           sethub_ids([...response.data.hubs, {id:0, name:"بدون هاب(ادمین اصلی شرکت)"}])
+
+        } else sethub_ids([{id:0, name:"بدون هاب(ادمین اصلی شرکت)"}])
       })
       .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : "خطایی رخ داده است"
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : "خطایی رخ داده است"
         toast.error(errorMessage)
         setError('hub_id', {type: 'custom', message: errorMessage})
       })
+    user && setValue("roles", roles.filter(
+      (item) => user[item.value]===true && item))
 
   }, [])
 
@@ -306,13 +302,14 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
                 error={Boolean(errors.hub_id)}
                 disabled={showUser}
                 defaultValue={user ? user.hub_id : 0}
+
               >
                 {/* eslint-disable-next-line camelcase */}
                 {hub_ids.length === 0 ? <MenuItem value={undefined}>
                   هاب موجود نیست
                   {/* eslint-disable-next-line camelcase */}
                 </MenuItem> : hub_ids.map(hub_id => (// eslint-disable-next-line camelcase
-                  <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)}>
+                  <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)} disabled={hub_id.id===0}>
                     {/* eslint-disable-next-line camelcase */}
                     {hub_id.name}
                   </MenuItem>))}
@@ -334,15 +331,16 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
                 labelId='demo-multiple-name-label'
                 id='demo-multiple-name'
                 multiple
-                defaultValue={user ? user.roles : []}
+                defaultValue={user ? roles.filter(
+                  (item) => user[item.value]===true && item) : []}
                 onChange={onChange}
                 error={Boolean(errors.roles)}
                 input={<OutlinedInput label='Name'/>}
                 renderValue={(selected) => (
-
                   <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                    {console.log(selected)}
                     {selected.map((value) => (
-                      <Chip key={value} label={value.persianName}/>
+                      <Chip key={value} label={value?.persianName}/>
                     ))}
                   </Box>
                 )}

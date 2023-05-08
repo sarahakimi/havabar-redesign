@@ -19,6 +19,7 @@ import {
   OfficeBuildingOutline,
   CreditCardFast, FoodTakeoutBoxOutline
 } from "mdi-material-ui";
+import Airplane from "mdi-material-ui/Airplane";
 
 
 const navigation = () => [
@@ -89,6 +90,13 @@ const navigation = () => [
     icon: Taxi,
     title: 'رانندگان',
     path: '/drivers',
+    action: 'read',
+    subject: 'every-page',
+  },
+  {
+    icon: Airplane,
+    title: 'لاجستیک',
+    path: '/logestic',
     action: 'read',
     subject: 'every-page',
   },
