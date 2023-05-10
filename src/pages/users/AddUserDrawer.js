@@ -98,6 +98,7 @@ function SidebarAddCourier({open, toggle, setChange, user, edit, showUser, roles
         toast.error(errorMessage)
         setError('hub_id', {type: 'custom', message: errorMessage})
       })
+    // eslint-disable-next-line no-unused-expressions
     user && setValue("roles", roles.filter(
       (item) => user[item.value]===true && item))
 

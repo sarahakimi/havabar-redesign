@@ -3,8 +3,8 @@ import HomeOutline from 'mdi-material-ui/HomeOutline'
 import PlusOutline from 'mdi-material-ui/PlusOutline'
 import ViewListOutline from 'mdi-material-ui/ViewListOutline'
 import StoreOutline from 'mdi-material-ui/StoreOutline'
-import Account from "mdi-material-ui/Account";
-import Taxi from "mdi-material-ui/Taxi"
+import Account from 'mdi-material-ui/Account'
+import Taxi from 'mdi-material-ui/Taxi'
 import {
   AccountMultipleCheck,
   AccountOutline,
@@ -15,12 +15,13 @@ import {
   CreditCardMultipleOutline,
   DatabaseArrowLeftOutline,
   DatabaseEye,
-  HumanMale, MagnifyScan,
+  HumanMale,
+  MagnifyScan,
   OfficeBuildingOutline,
-  CreditCardFast, FoodTakeoutBoxOutline
-} from "mdi-material-ui";
-import Airplane from "mdi-material-ui/Airplane";
-
+  CreditCardFast,
+  FoodTakeoutBoxOutline
+} from 'mdi-material-ui'
+import Airplane from 'mdi-material-ui/Airplane'
 
 const navigation = () => [
   {
@@ -28,91 +29,91 @@ const navigation = () => [
     title: 'داشبورد',
     path: '/dashboards',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: PlusOutline,
     title: 'سفارش جدید',
     path: '/newOrder',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: ViewListOutline,
     title: 'سفارشات',
     path: '/orders',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: MagnifyScan,
     title: 'رهگیری سفارش',
     path: '/tracking',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: Account,
     title: 'کاربران',
     path: '/users',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: Account,
     title: 'کاربران',
     path: '/admin/users',
     action: 'read',
-    subject: 'admin',
+    subject: 'admin'
   },
   {
     icon: AccountSupervisor,
     title: 'مشتریان',
     path: '/customers',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: AccountMultipleCheck,
     title: 'بازاریابان',
     path: '/marketers',
     action: 'read',
-    subject: 'every-page',
-  },
-  {
-    icon: HumanMale,
-    title: 'نمایندگان',
-    path: '/representatives',
-    action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: Taxi,
     title: 'رانندگان',
     path: '/drivers',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
+  },
+  {
+    icon: Taxi,
+    title: 'رانندگان',
+    path: '/admin/drivers',
+    action: 'read',
+    subject: 'admin'
   },
   {
     icon: Airplane,
     title: 'لاجستیک',
     path: '/logestic',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: StoreOutline,
     title: 'هاب',
     path: '/hub',
     action: 'read',
-    subject: 'every-page',
+    subject: 'every-page'
   },
   {
     icon: StoreOutline,
     title: 'هاب',
     path: '/admin/hub',
     action: 'read',
-    subject: 'admin',
+    subject: 'admin'
   },
   {
     path: '/superadmin',
@@ -133,7 +134,7 @@ const navigation = () => [
     title: 'رهگیری سفارش',
     path: '/admin/tracking',
     action: 'read',
-    subject: 'admin',
+    subject: 'admin'
   },
   {
     path: '/admin/couriers',
@@ -232,8 +233,7 @@ const navigation = () => [
     subject: 'admin',
     title: 'تاریخچه عملیات',
     path: '/admin/operation-history'
-  },
-
+  }
 ]
 
 export default navigation
