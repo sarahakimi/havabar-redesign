@@ -12,7 +12,7 @@ export const fetchData = async () => {
 
 export const editData = async (data) => {
   const response = await http
-    .put(urls.connection_to_finance, data, {
+    .post(urls.connection_to_finance, data, {
       Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
     })
 

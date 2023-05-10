@@ -44,7 +44,7 @@ export default {
   calculatePrice: "ordering/pricing",
   getBackups: (page, sort) => `backup/${page}/${sort}/`,
   getBackupNow: "backup/now",
-  connection_to_finance: "pricing/connection_to_finance",
+  connection_to_finance: "connect_to_finance/",
   customer_percent: "pricing/customer_percent",
   singleFinancialOrder: (id) => `pricing/customer_percent/${id}`,
   createFinancialPrice: "pricing/customer_percent",
