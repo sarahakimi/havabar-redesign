@@ -12,11 +12,10 @@ export default {
   getCustomers: 'customer/admin/3/all',
   singleCustomer: id => `customer/admin/${id}`,
   registerCustomer: 'customer/admin/3/register',
-  getMarketers: 'customer/admin/2/all',
-  singleMarketer: id => `customer/admin/${id}`,
-  registerMarketer: 'customer/admin/2/register',
+  getMarketers: (page, sort) => `marketers/${page}/${sort}/`,
+  singleMarketer: id => `marketer/${id}/`,
+  registerMarketer: 'marketer',
   getRepresentatives: 'customer/admin/1/all',
-  singleRepresentatives: id => `customer/admin/${id}`,
   registerRepresentatives: 'customer/admin/1/register',
   createOrder: 'ordering/admin/register',
   getAdminOrders: 'ordering/admin/all',
@@ -63,5 +62,6 @@ export default {
   logisticReport: 'report/logistic/',
   registerLogistic: 'logistic',
   driverReport: 'report/peyk/',
-  singleDriver: id => `signup_peyk/${id}/`
+  singleDriver: id => `signup_peyk/${id}/`,
+  marketerReport: 'report/marketer/'
 }
