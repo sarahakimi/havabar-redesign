@@ -151,13 +151,6 @@ const navigation = () => [
     title: ' قیمت گذاری'
   },
   {
-    path: '/packaging',
-    action: 'read',
-    subject: 'every-page',
-    icon: FoodTakeoutBoxOutline,
-    title: ' بسنه بندی'
-  },
-  {
     icon: AccountOutline,
     action: 'read',
     subject: 'every-page',

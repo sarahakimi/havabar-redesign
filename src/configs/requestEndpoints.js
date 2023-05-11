@@ -9,9 +9,9 @@ export default {
   singleUser: id => `user/admin/${id}`,
   singleUserDelete: id => `user/${id}/`,
   registerUser: 'signup_admin/',
-  getCustomers: 'customer/admin/3/all',
-  singleCustomer: id => `customer/admin/${id}`,
-  registerCustomer: 'customer/admin/3/register',
+  getCustomers: (page, sort) => `persons/${page}/${sort}/`,
+  singleCustomer: id => `person/${id}/`,
+  registerCustomer: 'person',
   getMarketers: (page, sort) => `marketers/${page}/${sort}/`,
   singleMarketer: id => `marketer/${id}/`,
   registerMarketer: 'marketer',
@@ -63,5 +63,6 @@ export default {
   registerLogistic: 'logistic',
   driverReport: 'report/peyk/',
   singleDriver: id => `signup_peyk/${id}/`,
-  marketerReport: 'report/marketer/'
+  marketerReport: 'report/marketer/',
+  customersReport: 'report/person/'
 }

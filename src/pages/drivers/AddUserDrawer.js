@@ -107,7 +107,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
       .then(async response => {
         if (response.data.hubs != null) {
           sethub_ids([...response.data.hubs, { id: 0, name: 'بدون هاب(ادمین اصلی شرکت)' }])
-        } else sethub_ids([{ id: 0, name: 'بدون هاب(ادمین اصلی شرکت)' }])
+        } else sethub_ids([{ id: 0, name: 'بدون هاب' }])
       })
       .catch(err => {
         const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
@@ -118,6 +118,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
   }, [])
 
   const onSubmit = data => {
+    if (data.hub_id === 0) {
+      setError('hub_id', 'هاب را انتخاب کنید')
+
+      return
+    }
     if (edit) {
       toast.promise(
         editUser(user.natural_code, { ...data, password: '' }).then(() => {
@@ -280,10 +285,13 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                         {/* eslint-disable-next-line camelcase */}
                       </MenuItem>
                     ) : (
+                      // eslint-disable-next-line camelcase
                       hub_ids.map(
                         (
-                          hub_id // eslint-disable-next-line camelcase
+                          // eslint-disable-next-line camelcase
+                          hub_id
                         ) => (
+                          // eslint-disable-next-line camelcase
                           <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)} disabled={hub_id.id === 0}>
                             {/* eslint-disable-next-line camelcase */}
                             {hub_id.name}
