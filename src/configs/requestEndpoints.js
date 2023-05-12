@@ -65,5 +65,16 @@ export default {
   singleDriver: id => `signup_peyk/${id}/`,
   marketerReport: 'report/marketer/',
   customersReport: 'report/person/',
-  getLogo: 'setting/'
+  getLogo: 'setting/',
+  pricing: 'price',
+  singleRegional: id => `regionalPrices/${id}`,
+  deletesingleRegional: id => `regionalPrices/${id}/`,
+  addCollect: 'collect_price/',
+  singleCollectPrice: id => `collect_price/${id}/`,
+  addDistribution: 'distribution_price/',
+  singleDistributionPrice: id => `distribution_price/${id}/`,
+  volumePrice: 'volumePrice',
+  packagingPrice: 'packagingPrice',
+  otherPrice: 'otherPrice',
+  orderNumber: 'orderNumber'
 }

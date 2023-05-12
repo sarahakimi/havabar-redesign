@@ -1,22 +1,22 @@
-import {useState} from "react";
-import IconButton from "@mui/material/IconButton";
-import DotsVertical from "mdi-material-ui/DotsVertical";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import {EyeOutline} from "mdi-material-ui";
-import PencilOutline from "mdi-material-ui/PencilOutline";
-import DeleteOutline from "mdi-material-ui/DeleteOutline";
-import DeleteDialog from "../deleteDialog/delete-dialog";
-
+import { useState } from 'react'
+import IconButton from '@mui/material/IconButton'
+import DotsVertical from 'mdi-material-ui/DotsVertical'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import { EyeOutline } from 'mdi-material-ui'
+import PencilOutline from 'mdi-material-ui/PencilOutline'
+import DeleteOutline from 'mdi-material-ui/DeleteOutline'
+import DeleteDialog from '../deleteDialog/delete-dialog'
 
 export default function RowOptions({
-                                     company,
-                                     setSelectedCompany,
-                                     toggleEditUserDrawer,
-                                     toggleShowUserDrawer,
-                                     selectedCompany,
-                                     deleteFunction
-                                   }) {
+  company,
+  setSelectedCompany,
+  toggleEditUserDrawer,
+  toggleShowUserDrawer,
+  selectedCompany,
+  deleteFunction,
+  noShow
+}) {
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
   const [open, setOpen] = useState(false)
@@ -35,7 +35,6 @@ export default function RowOptions({
     setOpen(true)
   }
 
-
   const handleEdit = selected => {
     setSelectedCompany(selected)
     toggleEditUserDrawer()
@@ -51,7 +50,7 @@ export default function RowOptions({
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
-        <DotsVertical/>
+        <DotsVertical />
       </IconButton>
       <Menu
         keepMounted
@@ -66,22 +65,24 @@ export default function RowOptions({
           vertical: 'top',
           horizontal: 'right'
         }}
-        PaperProps={{style: {minWidth: '8rem'}}}
+        PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        <MenuItem onClick={() => handleShowCompany(company)}>
-          <EyeOutline fontSize='small' sx={{mr: 2}}/>
-          نمایش
-        </MenuItem>
+        {!noShow && (
+          <MenuItem onClick={() => handleShowCompany(company)}>
+            <EyeOutline fontSize='small' sx={{ mr: 2 }} />
+            نمایش
+          </MenuItem>
+        )}
         <MenuItem onClick={() => handleEdit(company)}>
-          <PencilOutline fontSize='small' sx={{mr: 2}}/>
+          <PencilOutline fontSize='small' sx={{ mr: 2 }} />
           ویرایش
         </MenuItem>
         <MenuItem onClick={() => handleDelete(company)}>
-          <DeleteOutline fontSize='small' sx={{mr: 2}}/>
+          <DeleteOutline fontSize='small' sx={{ mr: 2 }} />
           حذف
         </MenuItem>
       </Menu>
-      <DeleteDialog open={open} setOpen={setOpen} company={selectedCompany} closeFunction={deleteFunction}/>
+      <DeleteDialog open={open} setOpen={setOpen} company={selectedCompany} closeFunction={deleteFunction} />
     </>
   )
 }

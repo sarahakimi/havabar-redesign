@@ -238,7 +238,6 @@ function ACLPage() {
   ]
   useEffect(() => {
     setDownloadData([])
-    console.log(sortModel.search)
     fetchData(sortModel)
       .then(response => {
         if (response.data.person === null) {
