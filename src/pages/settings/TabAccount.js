@@ -20,7 +20,7 @@ import * as tus from 'tus-js-client'
 import toast from 'react-hot-toast'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAuth } from '../../hooks/useAuth'
-import { editHub, fetchData } from './requests'
+import { editHub, fetchData, fetchLogo } from './requests'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -52,12 +52,16 @@ const schema = yup.object().shape({
     .string()
     .required('فگس الزامی است')
     .matches(/^[0-9]*$/, ' باید عدد باشد'),
-  state: yup.string().required('استان الزامی است').typeError('یک مورد را انتخاب کنید'),
-  city: yup.string().required('شهر الزامی است').typeError('یک مورد را انتخاب کنید'),
+  state: yup.string().required('استان الزامی است'),
+  city: yup.string().required('شهر الزامی است'),
   tel_phone: yup
     .string()
     .required('تلفن الزامی است')
-    .matches(/^[0-9]*$/, ' باید عدد باشد')
+    .matches(/^[0-9]*$/, ' باید عدد باشد'),
+  economic_code: yup.string().required('الزامی است').typeError('به درستی وارد نمایید').min(2, 'به درستی وازد نمایید'),
+  management_name: yup.string().required('الزامی است').typeError('به درستی وارد نمایید').min(5, 'به درستی وازد نمایید'),
+  registration_number: yup.string().typeError('به درستی وارد نمایید'),
+  workshop_number: yup.string().typeError('به درستی وارد نمایید')
 })
 
 function TabAccount() {
@@ -72,7 +76,12 @@ function TabAccount() {
     fax: '',
     tel_phone: '',
     state: '',
-    city: ''
+    city: '',
+    address: '',
+    economic_code: '',
+    management_name: '',
+    registration_number: '',
+    workshop_number: ''
   })
   const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
 
@@ -104,6 +113,12 @@ function TabAccount() {
   })
 
   useEffect(() => {
+    fetchLogo()
+      .then(response => setImageUrl(response.logo))
+      .catch(err => {
+        const errorMessage = err.response.data.message ? err.response.data.message : 'خطایی رخ داده است'
+        toast.error(errorMessage)
+      })
     fetchData()
       .then(response => {
         if (response.data.hub === null) {
@@ -203,32 +218,10 @@ function TabAccount() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.name)}
-                      InputLabelProps={{ shrink: true }}
                     />
                   )}
                 />
                 {errors.name && <FormHelperText sx={{ color: 'error.main' }}>{errors.name.message}</FormHelperText>}
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <Controller
-                  name='fax'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <TextField
-                      label='فکس'
-                      value={value}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      error={Boolean(errors.fax)}
-                      inputProps={{ maxLength: 12 }}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  )}
-                />
-                {errors.fax && <FormHelperText sx={{ color: 'error.main' }}>{errors.fax.message}</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -247,7 +240,6 @@ function TabAccount() {
                       inputProps={{ maxLength: 11 }}
                       placeholder='021*******'
                       dir='ltr'
-                      InputLabelProps={{ shrink: true }}
                     />
                   )}
                 />
@@ -257,7 +249,27 @@ function TabAccount() {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              {' '}
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='fax'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='فکس'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.fax)}
+                      inputProps={{ maxLength: 12 }}
+                      dir='ltr'
+                    />
+                  )}
+                />
+                {errors.fax && <FormHelperText sx={{ color: 'error.main' }}>{errors.fax.message}</FormHelperText>}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   fullWidth
@@ -271,7 +283,6 @@ function TabAccount() {
                       options={ostan.map(element => element.name)}
                       onChange={(event, values, value) => onChangeSenderOstan(event, onChange, values, value)}
                       value={value}
-                      inputValue={value}
                       disableClearable
                       renderInput={params => (
                         <TextField
@@ -290,7 +301,6 @@ function TabAccount() {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              {' '}
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='city'
@@ -300,13 +310,12 @@ function TabAccount() {
                     <Autocomplete
                       onBlur={onBlur}
                       select
-                      disableClearable
                       options={shahr
                         .filter(element => element.ostan === selectedSenderOstan)
                         .map(element => element.name)}
                       onChange={(event, values) => onChange(values)}
                       value={value}
-                      noOptionsText='چیزی پیدا نشد'
+                      disableClearable
                       renderInput={params => (
                         <TextField
                           /* eslint-disable-next-line react/jsx-props-no-spreading */
@@ -321,6 +330,91 @@ function TabAccount() {
                   )}
                 />
                 {errors.city && <FormHelperText sx={{ color: 'error.main' }}>{errors.city.message}</FormHelperText>}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='economic_code'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='کد اقتصادی'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.economic_code)}
+                    />
+                  )}
+                />
+                {errors.economic_code && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.economic_code.message}</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='management_name'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='نام مدیر عامل'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.management_name)}
+                    />
+                  )}
+                />
+                {errors.management_name && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.management_name.message}</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='registration_number'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='شماره ثبت'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.registration_number)}
+                    />
+                  )}
+                />
+                {errors.registration_number && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.registration_number.message}</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='workshop_number'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='کد کارگاه'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.workshop_number)}
+                    />
+                  )}
+                />
+                {errors.workshop_number && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.workshop_number.message}</FormHelperText>
+                )}
               </FormControl>
             </Grid>
 

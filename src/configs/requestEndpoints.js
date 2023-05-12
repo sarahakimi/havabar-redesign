@@ -64,5 +64,6 @@ export default {
   driverReport: 'report/peyk/',
   singleDriver: id => `signup_peyk/${id}/`,
   marketerReport: 'report/marketer/',
-  customersReport: 'report/person/'
+  customersReport: 'report/person/',
+  getLogo: 'setting/'
 }

@@ -172,13 +172,6 @@ const navigation = () => [
     path: '/settings'
   },
   {
-    icon: CreditCardFast,
-    action: 'read',
-    subject: 'every-page',
-    title: 'امور مالی',
-    path: '/financial-contribution'
-  },
-  {
     icon: CreditCardMultipleOutline,
     action: 'read',
     subject: 'every-page',
