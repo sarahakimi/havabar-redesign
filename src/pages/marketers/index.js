@@ -30,7 +30,7 @@ function ACLPage() {
   const [openEdit, setOpenEdit] = useState(false)
   const [showUser, setShowUser] = useState(false)
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [sortModel, setSortModel] = useState({ page: 1, page_size: 10, sort_by: '1 asc', serach: '' })
+  const [sortModel, setSortModel] = useState({ page: 1, page_size: 10, sort_by: '1 asc', search: '' })
   const [data, setData] = useState([])
   const [change, setChange] = useState(false)
   const [downloadData, setDownloadData] = useState([])

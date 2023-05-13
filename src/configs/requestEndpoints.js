@@ -17,7 +17,7 @@ export default {
   registerMarketer: 'marketer',
   getRepresentatives: 'customer/admin/1/all',
   registerRepresentatives: 'customer/admin/1/register',
-  createOrder: 'ordering/admin/register',
+  createOrder: 'create_order',
   getAdminOrders: 'ordering/admin/all',
   singleHub: id => `hub/${id}/`,
   singleLogestic: id => `logistic/${id}/`,
@@ -41,7 +41,7 @@ export default {
   getAllCompanies: 'company/all',
   getAllHubs: 'hub/all',
   forgotPassword: 'auth/user/forget_password',
-  calculatePrice: 'ordering/pricing',
+  calculatePrice: 'calculate_price_with_person/',
   getBackups: (page, sort) => `backup/${page}/${sort}/`,
   getBackupNow: 'backup/now',
   connection_to_finance: 'connect_to_finance/',
@@ -76,5 +76,7 @@ export default {
   volumePrice: 'volumePrice',
   packagingPrice: 'packagingPrice',
   otherPrice: 'otherPrice',
-  orderNumber: 'orderNumber'
+  orderNumber: 'orderNumber',
+  tasvieEndpoin: 'tasvie_order',
+  foreignBarname: 'barname/foreign'
 }

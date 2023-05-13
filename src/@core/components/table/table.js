@@ -32,7 +32,7 @@ function Table({ data, columns, sortModel, setSortModel, selfFilter, noFilter, p
   )
 
   const handleSortModelChange = Model => {
-    const sortMode = Model.length !== 0 ? `${Model[0]?.field} ${Model[0]?.sort}` : 'id desc'
+    const sortMode = Model.length !== 0 ? `${Model[0]?.field} ${Model[0]?.sort}` : '1 asc'
     setSortModel({ ...sortModel, ...{ sort_by: `${sortMode}` } })
   }
 

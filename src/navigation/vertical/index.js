@@ -15,11 +15,10 @@ import {
   CreditCardMultipleOutline,
   DatabaseArrowLeftOutline,
   DatabaseEye,
-  HumanMale,
   MagnifyScan,
   OfficeBuildingOutline,
   CreditCardFast,
-  FoodTakeoutBoxOutline
+  Plus
 } from 'mdi-material-ui'
 import Airplane from 'mdi-material-ui/Airplane'
 
@@ -35,6 +34,20 @@ const navigation = () => [
     icon: PlusOutline,
     title: 'سفارش جدید',
     path: '/newOrder',
+    action: 'read',
+    subject: 'every-page'
+  },
+  {
+    icon: CreditCardFast,
+    title: 'سفارش تسویه جدید',
+    path: '/newCheckoutOrder',
+    action: 'read',
+    subject: 'every-page'
+  },
+  {
+    icon: Plus,
+    title: 'بارنامه خارجی جدید',
+    path: '/newForeignBill',
     action: 'read',
     subject: 'every-page'
   },
