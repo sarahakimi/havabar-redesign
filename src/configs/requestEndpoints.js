@@ -79,5 +79,6 @@ export default {
   orderNumber: 'orderNumber',
   tasvieEndpoin: 'tasvie_order',
   foreignBarname: 'barname/foreign/',
-  addregional: 'regionalPrices'
+  addregional: 'regionalPrices',
+  dashboard: 'dashboard/'
 }
