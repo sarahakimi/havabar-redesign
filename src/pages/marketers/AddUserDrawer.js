@@ -15,7 +15,6 @@ import { Autocomplete } from '@mui/material'
 import { ostan, shahr } from 'iran-cities-json'
 import toast from 'react-hot-toast'
 import { editUser, registerUser } from './requests'
-import Map from '../newOrder/map'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',

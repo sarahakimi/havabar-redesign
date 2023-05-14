@@ -78,5 +78,6 @@ export default {
   otherPrice: 'otherPrice',
   orderNumber: 'orderNumber',
   tasvieEndpoin: 'tasvie_order',
-  foreignBarname: 'barname/foreign'
+  foreignBarname: 'barname/foreign/',
+  addregional: 'regionalPrices'
 }

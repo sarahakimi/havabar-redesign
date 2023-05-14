@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
@@ -11,9 +10,9 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import Close from 'mdi-material-ui/Close'
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import DialogContentText from '@mui/material/DialogContentText'
-import { ostan, shahr } from 'iran-cities-json'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
+import React from 'react'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -24,43 +23,18 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const schema = yup.object().shape({
-  name: yup.string().required('نام الزامی است'),
-  fax: yup
-    .string()
-    .required('فگس الزامی است')
-    .matches(/^[0-9]*$/, ' باید عدد باشد'),
-  state: yup.string().required('استان الزامی است'),
-  city: yup.string().required('شهر الزامی است'),
-  tel_phone: yup
-    .string()
-    .required('تلفن الزامی است')
-    .matches(/^[0-9]*$/, ' باید عدد باشد'),
-  economic_code: yup.string().required('الزامی است').typeError('به درستی وارد نمایید').min(2, 'به درستی وازد نمایید'),
-  management_name: yup.string().required('الزامی است').typeError('به درستی وارد نمایید').min(5, 'به درستی وازد نمایید'),
-  registration_number: yup.string().typeError('به درستی وارد نمایید'),
-  workshop_number: yup.string().typeError('به درستی وارد نمایید')
+  from_weight: yup.number().typeError('به درستی وارد کمید'),
+  price: yup.number().typeError('به درستی وارد نمایید'),
+  to_weight: yup.number().typeError('به درستی وارد نمایید').moreThan(yup.ref('from_weight'), 'یابد بیشتر از شروع باشد'),
+  type: yup.boolean().typeError('به درستی انتخاب نمایید')
 })
 
-function NewRegionalDrawer({ open, toggle, setChange, user, edit, showUser }) {
-  const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
-  const [success, setSuccess] = useState(false)
-
-  function onChangeSenderOstan(event, onChange, values) {
-    onChange(values)
-    setSelectedSenderOstan(ostan.find(element => element.name === event.target.innerText)?.id)
-  }
-
+function NewRegionalDrawer({ open, toggle, setChange, user, showUser }) {
   const emptyForm = {
-    name: '',
-    fax: '',
-    tel_phone: '',
-    state: '',
-    city: '',
-    address: '',
-    economic_code: '',
-    management_name: '',
-    registration_number: '',
-    workshop_number: ''
+    from_weight: 0,
+    price: 0,
+    to_weight: 0,
+    type: false
   }
 
   const defaultValues = user || emptyForm
@@ -82,37 +56,9 @@ function NewRegionalDrawer({ open, toggle, setChange, user, edit, showUser }) {
   }
 
   const onSubmit = async data => {
-    // if (edit) {
-    //   toast.promise(
-    //     editUser(user.id, data).then(() => {
-    //       setChange(true)
-    //       handleClose()
-    //     }),
-    //     {
-    //       loading: 'در حال ویرایش هاب',
-    //       success: 'هاب ویرایش شد',
-    //       error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
-    //     }
-    //   )
-    // } else {
-    //   toast.promise(
-    //     registerUser(data).then(() => {
-    //       setChange(true)
-    //       handleClose()
-    //     }),
-    //     {
-    //       loading: 'در حال ایجاد هاب',
-    //       success: 'هاب ایجاد شد',
-    //       error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
-    //     }
-    //   )
-    // }
-    console.log(data)
-  }
-
-  const handleDialogClose = () => {
-    setSuccess(false)
-    setChange(true)
+    const type = data.type ? 1 : 0
+    setChange({ ...data, type })
+    toggle()
   }
 
   return (
@@ -122,10 +68,10 @@ function NewRegionalDrawer({ open, toggle, setChange, user, edit, showUser }) {
       variant='temporary'
       onClose={handleClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
+      sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } }, zIndex: 10000000000 }}
     >
       <Header>
-        <Typography variant='h6'>اطلاعات هاب</Typography>
+        <Typography variant='h6'>اطلاعات قیمت</Typography>
         <Close fontSize='small' onClick={handleClose} sx={{ cursor: 'pointer' }} />
       </Header>
       <Box
@@ -142,205 +88,81 @@ function NewRegionalDrawer({ open, toggle, setChange, user, edit, showUser }) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl fullWidth sx={{ mb: 4 }}>
             <Controller
-              name='name'
+              name='from_weight'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextField
-                  label='نام هاب'
+                  label='از وزن(ریال)'
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.name)}
+                  error={Boolean(errors.from_weight)}
                   disabled={showUser}
-                />
-              )}
-            />
-            {errors.name && <FormHelperText sx={{ color: 'error.main' }}>{errors.name.message}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='tel_phone'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField
-                  label='تلفن'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.tel_phone)}
-                  inputProps={{ maxLength: 11 }}
-                  placeholder='021*******'
                   dir='ltr'
-                  disabled={showUser}
                 />
               )}
             />
-            {errors.tel_phone && (
-              <FormHelperText sx={{ color: 'error.main' }}>{errors.tel_phone.message}</FormHelperText>
+            {errors.from_weight && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.from_weight.message}</FormHelperText>
             )}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 4 }}>
             <Controller
-              name='fax'
+              name='to_weight'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextField
-                  label='فکس'
+                  label='تا وزن(ریال)'
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
-                  error={Boolean(errors.fax)}
+                  error={Boolean(errors.to_weight)}
                   disabled={showUser}
-                  inputProps={{ maxLength: 12 }}
                   dir='ltr'
                 />
               )}
             />
-            {errors.fax && <FormHelperText sx={{ color: 'error.main' }}>{errors.fax.message}</FormHelperText>}
+            {errors.to_weight && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.to_weight.message}</FormHelperText>
+            )}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 4 }}>
+            <Controller
+              name='price'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  label='قیمت'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.price)}
+                  disabled={showUser}
+                  dir='ltr'
+                />
+              )}
+            />
+            {errors.price && <FormHelperText sx={{ color: 'error.main' }}>{errors.price.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 4, zIndex: 1111111111 }}>
             <Controller
               fullWidth
-              name='state'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value, onBlur } }) => (
-                <Autocomplete
-                  onBlur={onBlur}
-                  select
-                  options={ostan.map(element => element.name)}
-                  onChange={(event, values, value) => onChangeSenderOstan(event, onChange, values, value)}
-                  value={value}
-                  disabled={showUser}
-                  disableClearable
-                  renderInput={params => (
-                    <TextField
-                      /* eslint-disable-next-line react/jsx-props-no-spreading */
-                      {...params}
-                      label='استان'
-                      variant='outlined'
-                      onChange={onChange}
-                      error={Boolean(errors.state)}
-                      disabled={showUser}
-                    />
-                  )}
-                />
-              )}
-            />
-            {errors.state && <FormHelperText sx={{ color: 'error.main' }}>{errors.state.message}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='city'
+              name='type'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
-                <Autocomplete
-                  onBlur={onBlur}
-                  select
-                  options={shahr.filter(element => element.ostan === selectedSenderOstan).map(element => element.name)}
-                  onChange={(event, values) => onChange(values)}
-                  value={value}
-                  disabled={showUser}
-                  disableClearable
-                  renderInput={params => (
-                    <TextField
-                      /* eslint-disable-next-line react/jsx-props-no-spreading */
-                      {...params}
-                      label='شهر'
-                      variant='outlined'
-                      onChange={onChange}
-                      error={Boolean(errors.city)}
-                      disabled={showUser}
-                    />
-                  )}
+                <FormControlLabel
+                  control={<Switch value={value} checked={value} onChange={onChange} />}
+                  sx={{ p: 0, m: 0 }}
+                  labelPlacement='end'
+                  label={value === false ? 'ثابت' : 'به ازای هر کیلوگرم'}
                 />
               )}
             />
-            {errors.city && <FormHelperText sx={{ color: 'error.main' }}>{errors.city.message}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='economic_code'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField
-                  label='کد اقتصادی'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.economic_code)}
-                  disabled={showUser}
-                />
-              )}
-            />
-            {errors.economic_code && (
-              <FormHelperText sx={{ color: 'error.main' }}>{errors.economic_code.message}</FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='management_name'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField
-                  label='نام مدیر عامل'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.management_name)}
-                  disabled={showUser}
-                />
-              )}
-            />
-            {errors.management_name && (
-              <FormHelperText sx={{ color: 'error.main' }}>{errors.management_name.message}</FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='registration_number'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField
-                  label='شماره ثبت'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.registration_number)}
-                  disabled={showUser}
-                />
-              )}
-            />
-            {errors.registration_number && (
-              <FormHelperText sx={{ color: 'error.main' }}>{errors.registration_number.message}</FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='workshop_number'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField
-                  label='کد کارگاه'
-                  value={value}
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  error={Boolean(errors.workshop_number)}
-                  disabled={showUser}
-                />
-              )}
-            />
-            {errors.workshop_number && (
-              <FormHelperText sx={{ color: 'error.main' }}>{errors.workshop_number.message}</FormHelperText>
-            )}
+            {errors.type && <FormHelperText sx={{ color: 'error.main' }}>{errors.type.message}</FormHelperText>}
           </FormControl>
 
           {!showUser && (
@@ -350,15 +172,6 @@ function NewRegionalDrawer({ open, toggle, setChange, user, edit, showUser }) {
           )}
         </form>
       </Box>
-      <Dialog open={success} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
-        <DialogTitle id='alert-dialog-title'>ایجاد هاب</DialogTitle>
-        <DialogContent>
-          <DialogContentText id='alert-dialog-description'>هاب مورد نظر ایجاد شد</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>متوجه شدم</Button>
-        </DialogActions>
-      </Dialog>
     </Drawer>
   )
 }

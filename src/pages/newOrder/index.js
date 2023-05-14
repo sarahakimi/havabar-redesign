@@ -678,7 +678,6 @@ function ACLPage() {
                       onChange={onChange}
                       error={Boolean(errors.senderPhone)}
                       dir='ltr'
-                      inputProps={{ maxLength: 9 }}
                       disabled
                     />
                   )}
@@ -1115,7 +1114,6 @@ function ACLPage() {
                       onChange={onChange}
                       error={Boolean(errors.recieverPhone)}
                       dir='ltr'
-                      inputProps={{ maxLength: 9 }}
                       disabled
                     />
                   )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { getGridStringOperators } from '@mui/x-data-grid'
 import Box from '@mui/material/Box'
@@ -18,7 +18,7 @@ function RegionalTable({ data, setChange }) {
   const [showUser, setShowUser] = useState(false)
 
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [sortModel, setSortModel] = useState({ page: 1, page_size: 10, sort_by: '1 asc' })
+  const [sortModel, setSortModel] = useState({ page: 1, page_size: 100, sort_by: '1 asc' })
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
   const toggleEditUserDrawer = () => setOpenEdit(!openEdit)
@@ -109,7 +109,6 @@ function RegionalTable({ data, setChange }) {
         </Box>
       )
     },
-
     {
       flex: 0.1,
       minWidth: 90,
@@ -138,7 +137,14 @@ function RegionalTable({ data, setChange }) {
         <Card>
           <TableHeader toggle={toggleAddUserDrawer} name='قیمت منطقه ای' noExport withTitle />
           <GridContainer sx={{ p: 4, m: 1 }}>
-            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} noFilter />
+            <Table
+              columns={columns}
+              data={data}
+              sortModel={sortModel}
+              setSortModel={setSortModel}
+              noFilter
+              pageSizeDefault={100}
+            />
           </GridContainer>
         </Card>
       </Grid>
