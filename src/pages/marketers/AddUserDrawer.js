@@ -58,7 +58,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
   // eslint-disable-next-line camelcase
   const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
   const [hasDiscount, setHasDiscount] = useState(false)
-  const [LatLang, setLatLang] = useState([51.3347, 35.7219])
   useEffect(() => {
     if (edit) {
       setHasDiscount(user.off_percent_status)
@@ -107,18 +106,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         sherkat_name: user.sherkat_name
       }
     : emptyForm
-
-  useEffect(() => {
-    if (user) {
-      if (user.lang !== 0 && user.lat !== 0) {
-        setLatLang([user.lang, user.lat])
-      }
-    } else {
-      navigator.geolocation.getCurrentPosition(pos => {
-        setLatLang([pos.coords.longitude, pos.coords.latitude])
-      })
-    }
-  }, [setLatLang])
 
   const {
     reset,

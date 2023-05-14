@@ -6,7 +6,7 @@ export default {
   registerCompany: 'company',
   getusers: (page, sort) => `getadmins/${page}/${sort}/`,
   downloadUser: 'report/admin/',
-  singleUser: id => `user/admin/${id}`,
+  singleUser: id => `signup_admin/${id}/`,
   singleUserDelete: id => `user/${id}/`,
   registerUser: 'signup_admin/',
   getCustomers: (page, sort) => `persons/${page}/${sort}/`,

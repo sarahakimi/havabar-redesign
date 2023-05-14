@@ -114,7 +114,7 @@ function ACLPage() {
   const toggleShowUserDrawer = () => setShowUser(!showUser)
 
   const deleteFunction = company => {
-    toast.promise(deleteUser(company.id).then(setChange(true)), {
+    toast.promise(deleteUser(company.natural_code).then(setChange(true)), {
       loading: 'در حال حذف کاربر',
       success: 'با موفقیت حذف شد',
       error: err => (err.response.data.message ? err.response.data.message : 'خطایی رخ داده است')

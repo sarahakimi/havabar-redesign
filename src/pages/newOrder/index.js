@@ -287,6 +287,28 @@ function ACLPage() {
   const [collectPrices, setCollectPrices] = useState([])
   const [distributionPrices, setDistributionPrices] = useState([])
 
+  function onChangeHub(event, onChange) {
+    onChange(event)
+    http
+      .post(
+        'distribution_hub_price/',
+        { hub_id: event.target.value },
+        {
+          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+        }
+      )
+      .then(async response => {
+        if (response.data != null) {
+          setDistributionPrices([...response.data])
+        } else setDistributionPrices([])
+      })
+      .catch(err => {
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        toast.error(errorMessage)
+        setError('distribution_price', { type: 'custom', message: errorMessage })
+      })
+  }
+
   useEffect(() => {
     http
       .get(
@@ -323,24 +345,6 @@ function ACLPage() {
         const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
         setError('collect_price', { type: 'custom', message: errorMessage })
-      })
-    http
-      .post(
-        'distribution_hub_price/',
-        {},
-        {
-          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-        }
-      )
-      .then(async response => {
-        if (response.data != null) {
-          setDistributionPrices([...response.data])
-        } else setDistributionPrices([])
-      })
-      .catch(err => {
-        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
-        toast.error(errorMessage)
-        setError('distribution_price', { type: 'custom', message: errorMessage })
       })
   }, [])
 
@@ -1719,7 +1723,7 @@ function ACLPage() {
                         type='number'
                         onBlur={onBlur}
                         id='demo-multiple-name'
-                        onChange={onChange}
+                        onChange={event => onChangeHub(event, onChange)}
                         input={<OutlinedInput label='Name' />}
                         error={Boolean(errors.hub_id)}
                       >
@@ -1804,7 +1808,7 @@ function ACLPage() {
                         error={Boolean(errors.distribution_price)}
                       >
                         {distributionPrices.length === 0 ? (
-                          <MenuItem value={undefined}>هاب موجود نیست</MenuItem>
+                          <MenuItem value={undefined}> موجود نیست</MenuItem>
                         ) : (
                           distributionPrices.map(price => (
                             <MenuItem key={price.id} value={parseInt(price.id, 10)} disabled={price.id === 0}>
@@ -1816,6 +1820,7 @@ function ACLPage() {
                     </>
                   )}
                 />
+                <FormHelperText>این قیمت از قیمت های هاب مقصد برداشته می شود.</FormHelperText>
                 {errors.distribution_price && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.distribution_price.message}</FormHelperText>
                 )}
