@@ -38,7 +38,6 @@ function ACLPage() {
   const headers = [
     { key: 'full_name', label: 'تام کاربر' },
     { key: 'phone_number', label: 'موبایل' },
-    { key: 'area_code', label: 'پیش شماره' },
     { key: 'tel_number', label: 'شماره تلفن' },
     { key: 'postal_code', label: 'کدپستی' },
     { key: 'natural_number', label: 'کدملی' },

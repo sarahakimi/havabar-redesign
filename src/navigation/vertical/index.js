@@ -101,13 +101,6 @@ const navigation = () => [
     subject: 'every-page'
   },
   {
-    icon: Taxi,
-    title: 'رانندگان',
-    path: '/admin/drivers',
-    action: 'read',
-    subject: 'admin'
-  },
-  {
     icon: Airplane,
     title: 'لاجستیک',
     path: '/logestic',

@@ -15,6 +15,7 @@ import RowOptions from '@core/components/row-options/row-options'
 import Button from '@mui/material/Button'
 import AddUserDrawer from './AddUserDrawer'
 import { deleteUser, downloadOrder, fetchData } from './requests'
+import AddPeykDiaolg from './addPeykDiaolg'
 
 export const GridContainer = styled(Paper)({
   flexGrow: 1,
@@ -31,10 +32,11 @@ function ACLPage() {
   const [openEdit, setOpenEdit] = useState(false)
   const [showUser, setShowUser] = useState(false)
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [sortModel, setSortModel] = useState({ page: 1, sort_by: 'id desc', search: '' })
+  const [sortModel, setSortModel] = useState({ page: 1, sort_by: '1 date asc', search: '' })
   const [data, setData] = useState([])
   const [change, setChange] = useState(false)
   const [downloadData, setDownloadData] = useState([])
+  const [addPeykOpen, setAddPeykOpen] = useState(false)
 
   const headers = [
     { key: 'createdAt', label: 'تاریخ ثبت' },
@@ -183,19 +185,24 @@ function ACLPage() {
     )
   }
 
+  const onOpenDialog = row => {
+    setSelectedCompany(row)
+    setAddPeykOpen(true)
+  }
+
   const columns = [
     {
       flex: 0.1,
       minWidth: 50,
-      field: 'id',
+      field: '1 date',
       filterOperators,
-      headerName: 'شماره',
+      headerName: 'تاریخ',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
             <Typography noWrap component='a' variant='subtitle2' sx={{ color: 'text.primary', textDecoration: 'none' }}>
-              {row.order.id}
+              {row.time}
             </Typography>
           </Box>
         </Box>
@@ -203,32 +210,33 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      minWidth: 100,
-      field: 'created_at',
+      minWidth: 50,
+      field: '3 id',
       filterOperators,
-      headerName: 'تاریخ ثبت',
+      headerName: ' شماره سفارش',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
             <Typography noWrap component='a' variant='subtitle2' sx={{ color: 'text.primary', textDecoration: 'none' }}>
-              {moment(row.order.created_at, 'YYYY/MM/DD').locale('fa').format('YYYY/MM/DD')}
+              {row.sub_order.id}
             </Typography>
           </Box>
         </Box>
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'sender_name',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
+      sortable: false,
       headerName: 'فرستنده',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.sender_customer.name}
+            {row.sender.full_name}
           </Typography>
         </Box>
       )
@@ -236,14 +244,15 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'sender_city',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شهر قرستنده',
+      sortable: false,
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.sender_customer.city}
+            {row.sender.shahr}
           </Typography>
         </Box>
       )
@@ -251,14 +260,15 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'reiever_name',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'گیرنده',
+      sortable: false,
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.receiver_customer.name}
+            {row.receiver.full_name}
           </Typography>
         </Box>
       )
@@ -266,48 +276,83 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'reciever_city',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شهر گیرنده',
+      sortable: false,
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.receiver_customer.city}
+            {row.receiver.shahr}
           </Typography>
         </Box>
       )
     },
     {
-      flex: 0.2,
-      field: 'price',
-      minWidth: 100,
+      flex: 0.1,
+      field: '6 price',
+      minWidth: 50,
       filterOperators,
       headerName: 'مبلغ سفارش',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.order.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}ریال
+            {row.sub_order.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}ریال
+          </Typography>
+        </Box>
+      )
+    },
+    {
+      flex: 0.1,
+      field: '4 payment_method',
+      minWidth: 50,
+      filterOperators,
+      headerName: 'نوع تسویه',
+      hideable: false,
+      renderCell: ({ row }) => (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            {row.sub_order.payment_state}
           </Typography>
         </Box>
       )
     },
     {
       flex: 0.2,
-      field: 'state',
-      minWidth: 100,
+      field: '5 state',
+      minWidth: 'min-content',
       filterOperators,
-      headerName: 'مرحله',
+      headerName: 'عملیات',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.order.state}
-          </Typography>
+          {row.sub_order.state_id === 0 && (
+            <Button variant='contained' onClick={() => onOpenDialog(row)}>
+              {row.sub_order.state}
+            </Button>
+          )}
+          {row.sub_order.state_id === 1 && <Typography sx={{ color: 'black' }}>در حال جمع آوری</Typography>}
         </Box>
       )
     },
+
+    // {
+    //   flex: 0.2,
+    //   field: 'state',
+    //   minWidth: 100,
+    //   filterOperators,
+    //   headerName: 'مرحله',
+    //   hideable: false,
+    //   renderCell: ({ row }) => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    //       <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+    //         {row.order.state}
+    //       </Typography>
+    //     </Box>
+    //   )
+    // },
     {
       flex: 0.1,
       minWidth: 50,
@@ -327,35 +372,36 @@ function ACLPage() {
           deleteFunction={deleteFunction}
         />
       )
-    },
-    {
-      flex: 0.2,
-      field: 'download',
-      minWidth: 100,
-      filterOperators,
-      headerName: 'مرحله',
-      hideable: false,
-      renderCell: ({ row }) => (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Button onClick={() => getOrder(row.order.id)}>دانلود</Button>
-        </Box>
-      )
     }
+
+    // {
+    //   flex: 0.2,
+    //   field: 'download',
+    //   minWidth: 100,
+    //   filterOperators,
+    //   headerName: 'مرحله',
+    //   hideable: false,
+    //   renderCell: ({ row }) => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    //       <Button onClick={() => getOrder(row.order.id)}>دانلود</Button>
+    //     </Box>
+    //   )
+    // }
   ]
   useEffect(() => {
     setDownloadData([])
-    fetchData({})
+    fetchData(sortModel)
       .then(response => {
-        if (response.data === null) {
+        if (response.data.subOrderModels === null) {
           setData([])
-        } else setData(response.data.map(element => ({ id: element.order.id, ...element })))
+        } else setData(response.data.subOrderModels.map(element => ({ id: element.sub_order.id, ...element })))
         if (change) setChange(false)
       })
       .catch(err => {
         const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
-  }, [setDownloadData, change])
+  }, [setDownloadData, change, sortModel])
 
   return (
     <Grid container spacing={6}>
@@ -369,7 +415,7 @@ function ACLPage() {
             name='سفارش'
           />
           <GridContainer sx={{ p: 4, m: 1 }}>
-            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} selfFilter />
+            <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} />
           </GridContainer>
         </Card>
       </Grid>
@@ -401,6 +447,14 @@ function ACLPage() {
           edit
           user={selectedCompany}
           showUser
+        />
+      )}
+      {selectedCompany && addPeykOpen && (
+        <AddPeykDiaolg
+          setChange={setChange}
+          open={addPeykOpen}
+          setOpen={setAddPeykOpen}
+          id={selectedCompany?.sub_order?.id}
         />
       )}
     </Grid>

@@ -127,8 +127,8 @@ function ACLPage() {
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '2',
       headerName: 'نام و نام خانوادگی',
       hideable: false,
@@ -144,8 +144,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'hub',
       headerName: 'نام هاب',
       hideable: false,
@@ -162,8 +162,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '3',
       headerName: 'کد هاب',
       hideable: false,
@@ -179,9 +179,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'natural_code',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'کدملی',
       filterOperators,
       sortable: false,
@@ -195,9 +195,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '4',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'شماره تلفن',
       filterOperators,
       hideable: false,
@@ -210,9 +210,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '5',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'کد کاربر',
       filterOperators,
       hideable: false,
@@ -226,7 +226,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      minWidth: 90,
+      minWidth: 50,
       sortable: false,
       hideable: false,
       filterable: false,

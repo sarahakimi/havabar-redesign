@@ -1,55 +1,73 @@
-import http from "../../services/http";
-import urls from "../../configs/requestEndpoints";
+import http from '../../services/http'
+import urls from '../../configs/requestEndpoints'
 
-export const fetchData = async (sortModel) => {
-  const response = await http
-    .get(urls.getAdminOrders, sortModel, {
-      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-    })
+const keys = {
+  asc: 1,
+  desc: 0
+}
 
-  return response;
-};
+export const fetchData = async sortModel => {
+  let sortBy = sortModel.sort_by.split(' ')
+  const searchValue = sortBy[1]
+  sortBy = sortBy.filter(element => element !== searchValue)
+  sortBy[1] = keys[sortBy[1]]
+  const search = sortModel?.search !== '' ? sortModel.search : {}
 
-export const deleteUser = async (id) => {
-  const response = await http
-    .delete(urls.singleOrder(id), {
-      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-    })
+  const response = await http.post(urls.getAdminOrders(sortModel.page, Number(sortBy.join(''))), search, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
 
-  return response;
-};
+  return response
+}
 
-export const registerUser = async (data) => {
-  const response = await http
-    .post(urls.createOrder, data, {
-      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-    })
+export const deleteUser = async id => {
+  const response = await http.delete(urls.singleOrder(id), {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
 
-  return response;
+  return response
+}
 
+export const registerUser = async data => {
+  const response = await http.post(urls.createOrder, data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
+
+  return response
 }
 
 export const editUser = async (id, data) => {
-  const response = await http
-    .put(urls.singleOrder(id), data, {
-      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-    })
+  const response = await http.put(urls.singleOrder(id), data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
 
-  return response;
-};
+  return response
+}
 
-export const downloadOrder = async (id) => {
-  const response = await http
-    .get(urls.downloadPdf(id), {}, {
+export const assignToPeyk = async (id, data) => {
+  const response = await http.post(urls.assign_to_peyk(id), data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
+
+  return response
+}
+
+export const downloadOrder = async id => {
+  const response = await http.get(
+    urls.downloadPdf(id),
+    {},
+    {
       Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`,
 
       // responseType: 'blob',
-      content_type:'application/pdf',
-}, { responseType: 'arraybuffer',})
+      content_type: 'application/pdf'
+    },
+    { responseType: 'arraybuffer' }
+  )
 
-  return response;
-};
+  return response
+}
 
 export default function Home1() {
-  return <div/>;
+  return <div />
 }

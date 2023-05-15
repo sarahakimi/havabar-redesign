@@ -18,7 +18,7 @@ export default {
   getRepresentatives: 'customer/admin/1/all',
   registerRepresentatives: 'customer/admin/1/register',
   createOrder: 'create_order',
-  getAdminOrders: 'ordering/admin/all',
+  getAdminOrders: (page, sort) => `sub_orders/${page}/${sort}/`,
   singleHub: id => `hub/${id}/`,
   singleLogestic: id => `logistic/${id}/`,
   registerHub: 'hub',
@@ -80,5 +80,6 @@ export default {
   tasvieEndpoin: 'tasvie_order',
   foreignBarname: 'barname/foreign/',
   addregional: 'regionalPrices',
-  dashboard: 'dashboard/'
+  dashboard: 'dashboard/',
+  assign_to_peyk: id => `sub_order/${id}/assign_to_peyk/`
 }

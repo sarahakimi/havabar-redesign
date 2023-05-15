@@ -79,8 +79,8 @@ function ACLPage() {
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '2',
       filterOperators,
       headerName: 'نام و نام خانوادگی',
@@ -96,8 +96,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'username',
       filterOperators,
       headerName: 'نام کاربری',
@@ -114,9 +114,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '3',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'هاب',
       hideable: false,
@@ -129,9 +129,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '5',
-      minWidth: 150,
+      minWidth: 50,
       filterable: false,
       headerName: 'شناسه',
       hideable: false,
@@ -144,9 +144,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'natural_code',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدملی',
       sortable: false,
@@ -160,9 +160,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '4',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شماره تلفن',
       hideable: false,
@@ -175,9 +175,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'vehicle',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'وسیله نقلیه',
       filterOperators,
       hideable: false,
@@ -191,7 +191,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      minWidth: 90,
+      minWidth: 50,
       sortable: false,
       hideable: false,
       field: 'گزینه ها',

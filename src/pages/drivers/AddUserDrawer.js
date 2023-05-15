@@ -24,6 +24,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import http from 'services/http'
 import { editUser, registerUser } from './requests'
+import { useAuth } from '../../hooks/useAuth'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -95,25 +96,28 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
     toggle()
     reset(defaultValues)
   }
+  const userHub = useAuth().user.hub_id
   useEffect(() => {
-    http
-      .get(
-        'hubs/',
-        {},
-        {
-          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
-        }
-      )
-      .then(async response => {
-        if (response.data.hubs != null) {
-          sethub_ids([...response.data.hubs, { id: 0, name: 'بدون هاب(ادمین اصلی شرکت)' }])
-        } else sethub_ids([{ id: 0, name: 'بدون هاب' }])
-      })
-      .catch(err => {
-        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
-        toast.error(errorMessage)
-        setError('hub_id', { type: 'custom', message: errorMessage })
-      })
+    if (userHub === 0) {
+      http
+        .get(
+          'hubs/',
+          {},
+          {
+            Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+          }
+        )
+        .then(async response => {
+          if (response.data.hubs != null) {
+            sethub_ids([...response.data.hubs, { id: 0, name: 'بدون هاب(ادمین اصلی شرکت)' }])
+          } else sethub_ids([{ id: 0, name: 'بدون هاب' }])
+        })
+        .catch(err => {
+          const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+          toast.error(errorMessage)
+          setError('hub_id', { type: 'custom', message: errorMessage })
+        })
+    }
     // eslint-disable-next-line no-unused-expressions
   }, [])
 
@@ -260,51 +264,53 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
             />
             {errors.car && <FormHelperText sx={{ color: 'error.main' }}>{errors.car.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 4 }}>
-            <Controller
-              name='hub_id'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, onBlur } }) => (
-                <>
-                  <InputLabel>هاب</InputLabel>
-                  <Select
-                    type='number'
-                    onBlur={onBlur}
-                    id='demo-multiple-name'
-                    onChange={onChange}
-                    input={<OutlinedInput label='Name' />}
-                    error={Boolean(errors.hub_id)}
-                    disabled={showUser}
-                    defaultValue={user ? user.hub_id : 0}
-                  >
-                    {/* eslint-disable-next-line camelcase */}
-                    {hub_ids.length === 0 ? (
-                      <MenuItem value={undefined}>
-                        هاب موجود نیست
-                        {/* eslint-disable-next-line camelcase */}
-                      </MenuItem>
-                    ) : (
-                      // eslint-disable-next-line camelcase
-                      hub_ids.map(
-                        (
-                          // eslint-disable-next-line camelcase
-                          hub_id
-                        ) => (
-                          // eslint-disable-next-line camelcase
-                          <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)} disabled={hub_id.id === 0}>
-                            {/* eslint-disable-next-line camelcase */}
-                            {hub_id.name}
-                          </MenuItem>
+          {userHub === 0 && (
+            <FormControl fullWidth sx={{ mb: 4 }}>
+              <Controller
+                name='hub_id'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur } }) => (
+                  <>
+                    <InputLabel>هاب</InputLabel>
+                    <Select
+                      type='number'
+                      onBlur={onBlur}
+                      id='demo-multiple-name'
+                      onChange={onChange}
+                      input={<OutlinedInput label='Name' />}
+                      error={Boolean(errors.hub_id)}
+                      disabled={showUser}
+                      defaultValue={user ? user.hub_id : 0}
+                    >
+                      {/* eslint-disable-next-line camelcase */}
+                      {hub_ids.length === 0 ? (
+                        <MenuItem value={undefined}>
+                          هاب موجود نیست
+                          {/* eslint-disable-next-line camelcase */}
+                        </MenuItem>
+                      ) : (
+                        // eslint-disable-next-line camelcase
+                        hub_ids.map(
+                          (
+                            // eslint-disable-next-line camelcase
+                            hub_id
+                          ) => (
+                            // eslint-disable-next-line camelcase
+                            <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)} disabled={hub_id.id === 0}>
+                              {/* eslint-disable-next-line camelcase */}
+                              {hub_id.name}
+                            </MenuItem>
+                          )
                         )
-                      )
-                    )}
-                  </Select>
-                </>
-              )}
-            />
-            {errors.hub_id && <FormHelperText sx={{ color: 'error.main' }}>{errors.hub_id.message}</FormHelperText>}
-          </FormControl>
+                      )}
+                    </Select>
+                  </>
+                )}
+              />
+              {errors.hub_id && <FormHelperText sx={{ color: 'error.main' }}>{errors.hub_id.message}</FormHelperText>}
+            </FormControl>
+          )}
 
           <FormControl fullWidth sx={{ mb: 4 }}>
             <Controller
