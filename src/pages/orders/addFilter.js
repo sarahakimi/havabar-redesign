@@ -140,7 +140,7 @@ function SidebarAddCourier({ open, toggle, setChange, filter, showUser, setFilte
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           {Object.entries(dict).map(([objkey, objvalue]) => (
-            <FormControl fullWidth sx={{ mb: 4 }}>
+            <FormControl fullWidth sx={{ mb: 4 }} key={objkey}>
               <Controller
                 name={objkey}
                 control={control}

@@ -256,7 +256,7 @@ function ACLPage() {
         if (change) setChange(false)
       })
       .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
   }, [sortModel, setDownloadData, change])

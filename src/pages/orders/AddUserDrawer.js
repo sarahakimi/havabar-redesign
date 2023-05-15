@@ -794,18 +794,14 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
             <CardHeader
               title='فرستنده'
               subheader={
-                !showUser && (
+                !showUser && hasSender ? (
+                  <Button onClick={emptySender} color='error'>
+                    حذف مشتری انتخاب شده
+                  </Button>
+                ) : (
                   <>
-                    {hasSender ? (
-                      <Button onClick={emptySender} color='error'>
-                        حذف مشتری انتخاب شده
-                      </Button>
-                    ) : (
-                      <>
-                        <Button onClick={handleOpen}>جستجوی مشتری</Button>
-                        <Button onClick={togglenewSenderOpen}>افزودن مشتری</Button>
-                      </>
-                    )}
+                    <Button onClick={handleOpen}>جستجوی مشتری</Button>
+                    <Button onClick={togglenewSenderOpen}>افزودن مشتری</Button>
                   </>
                 )
               }

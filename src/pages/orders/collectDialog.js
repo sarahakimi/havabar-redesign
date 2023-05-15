@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from '@mui/material/Button'
-import { Dialog, DialogTitle, DialogContentText, DialogActions, DialogContent, TextField } from '@mui/material'
+import { Dialog, DialogTitle, DialogContentText, DialogActions, DialogContent } from '@mui/material'
 import toast from 'react-hot-toast'
 import { collectOrder } from './requests'
 

@@ -32,7 +32,7 @@ export default {
   pricingOtherOptions: 'pricing/other_options',
   getPricingSizeOfCar: 'pricing/size_of_car',
   singleOrder: id => `ordering/admin/${id}`,
-  getOrder: id => `ordering/${id}`,
+  getOrder: id => `tracking/${id}`,
   logout: 'logout/',
   loginHistory: (page, sort) => `login_report/${page}/${sort}/`,
   operationHistory: (page, sort) => `user_log/${page}/${sort}/`,
