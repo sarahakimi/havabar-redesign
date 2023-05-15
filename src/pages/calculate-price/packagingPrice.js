@@ -1,7 +1,5 @@
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import * as yup from 'yup'
@@ -32,7 +30,7 @@ const schema = yup.object().shape({
   bag_big: yup.number().typeError('به درستی وارد کمید')
 })
 
-function packagingForm({ setChange, user, addFunc }) {
+function PackagingForm({ setChange, user, addFunc }) {
   const emptyForm = {
     palet_small: 0,
     palet_medium: 0,
@@ -473,4 +471,4 @@ function packagingForm({ setChange, user, addFunc }) {
   )
 }
 
-export default packagingForm
+export default PackagingForm

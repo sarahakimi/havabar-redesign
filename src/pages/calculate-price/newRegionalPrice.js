@@ -159,6 +159,7 @@ function NewRegionalDrawer({ open, toggle, setChange, user, showUser }) {
                   sx={{ p: 0, m: 0 }}
                   labelPlacement='end'
                   label={value === false ? 'ثابت' : 'به ازای هر کیلوگرم'}
+                  onBlur={onBlur}
                 />
               )}
             />

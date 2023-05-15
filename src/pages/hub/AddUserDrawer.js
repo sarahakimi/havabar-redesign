@@ -46,7 +46,8 @@ const schema = yup.object().shape({
 function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
   const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
   const [success, setSuccess] = useState(false)
-  const [imageUrl, setImageUrl] = useState(edit ? user.image : '')
+
+  // const [imageUrl, setImageUrl] = useState(edit ? user.image : '')
 
   function onChangeSenderOstan(event, onChange, values) {
     onChange(values)

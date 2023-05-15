@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { useCallback, useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
@@ -8,7 +7,6 @@ import { DataGrid, faIR, getGridStringOperators, GridToolbarFilterButton } from 
 import { styled } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import http from 'services/http'
-import CustomChip from '@core/components/mui/chip'
 import toast from 'react-hot-toast'
 
 export const GridContainer = styled(Paper)({
@@ -20,11 +18,6 @@ export const GridContainer = styled(Paper)({
     display: 'none'
   }
 })
-
-const userStatusObj = {
-  true: 'success',
-  false: 'secondary'
-}
 
 function ACLPage() {
   const [pageSize, setPageSize] = useState(10)

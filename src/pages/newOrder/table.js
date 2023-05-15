@@ -36,6 +36,7 @@ function Table({ setCustomer }) {
         error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
+    // eslint-disable-next-line no-unsafe-optional-chaining
     setCustomer(...data?.filter(element => element.id === selectionModel[0]))
   }, [sortModel, selectionModel])
 

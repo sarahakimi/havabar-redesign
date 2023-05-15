@@ -23,6 +23,7 @@ function AddPeykDiaolg({ open, setOpen, setChange, id }) {
     explain: '',
     peyk_id: -1
   }
+  const defaultValues = emptyForm
 
   const {
     reset,
@@ -36,7 +37,6 @@ function AddPeykDiaolg({ open, setOpen, setChange, id }) {
     resolver: yupResolver(schema)
   })
 
-  const defaultValues = emptyForm
   const handleClose = () => setOpen(false)
   const [peyks, setPeyks] = useState([])
   useEffect(() => {

@@ -21,7 +21,7 @@ export const fetchData = async sortModel => {
 }
 
 export const deleteUser = async id => {
-  const response = await http.delete(urls.singleOrder(id), {
+  const response = await http.delete(urls.deleteOrder(id), {
     Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
   })
 

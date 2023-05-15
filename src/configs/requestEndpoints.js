@@ -81,5 +81,6 @@ export default {
   foreignBarname: 'barname/foreign/',
   addregional: 'regionalPrices',
   dashboard: 'dashboard/',
-  assign_to_peyk: id => `sub_order/${id}/assign_to_peyk/`
+  assign_to_peyk: id => `sub_order/${id}/assign_to_peyk/`,
+  deleteOrder: id => `sub_order/${id}/delete/`
 }

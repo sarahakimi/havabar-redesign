@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Card, CardContent, CardHeader, colors } from '@mui/material'
+import { Card, CardContent, CardHeader } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Table from '@core/components/table/table'

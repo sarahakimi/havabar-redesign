@@ -9,12 +9,11 @@ import moment from 'jalali-moment'
 import Paper from '@mui/material/Paper'
 import toast from 'react-hot-toast'
 import Table from '@core/components/table/table'
-import download from 'downloadjs'
 import TableHeader from '@core/components/table-header/TableHeader'
 import RowOptions from '@core/components/row-options/row-options'
 import Button from '@mui/material/Button'
 import AddUserDrawer from './AddUserDrawer'
-import { deleteUser, downloadOrder, fetchData } from './requests'
+import { deleteUser, fetchData } from './requests'
 import AddPeykDiaolg from './addPeykDiaolg'
 
 export const GridContainer = styled(Paper)({
@@ -169,21 +168,6 @@ function ACLPage() {
   const filterOperators = getGridStringOperators().filter(({ value }) =>
     ['contains' /* add more over time */].includes(value)
   )
-
-  const getOrder = id => {
-    toast.promise(
-      downloadOrder(id).then(response => {
-        // FileDownload(response.data, 'report.pdf');
-        const content = response.headers['content-type']
-        download(response.data, 'file.pdf', content)
-      }),
-      {
-        loading: 'در حال دانلود سفارش',
-        success: 'دانلود انجام شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
-      }
-    )
-  }
 
   const onOpenDialog = row => {
     setSelectedCompany(row)
