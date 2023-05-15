@@ -156,7 +156,7 @@ function NewCustomwr({ open, toggle, setCustomer, setChange }) {
       {
         loading: 'در حال ایجاد مشتری',
         success: 'مشتری ایجاد شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
   }

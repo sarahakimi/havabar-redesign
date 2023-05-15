@@ -291,7 +291,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         } else setapackaging([{ id: -1, name: 'بدون بسته بندی', price: 0 }, ...response.data])
       })
       .catch(err => {
-        const errorMessage = err.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         setError('packaging', 'خطا در دریافت بسته بندی.مجددا بارگزاری نمایید')
         toast.error(errorMessage)
       })
@@ -387,7 +387,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ثبت سفارش',
           success: 'سفارش ثبت شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     } else if (submitType === 'submit') {

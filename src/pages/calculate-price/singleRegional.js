@@ -232,7 +232,7 @@ function SingleRegional({ setChange, showUser, user, toggle, open }) {
           error: err => {
             setChange(false)
 
-            return err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.'
+            return err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.'
           }
         }
       )
@@ -259,7 +259,7 @@ function SingleRegional({ setChange, showUser, user, toggle, open }) {
       {
         loading: 'در حال ایجاد قیمت',
         success: 'قیمت ایجاد شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
   }

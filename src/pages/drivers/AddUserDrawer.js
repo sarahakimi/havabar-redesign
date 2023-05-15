@@ -136,7 +136,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ویرایش راننده',
           success: 'راننده ویرایش شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     } else {
@@ -148,7 +148,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ایجاد راننده',
           success: 'راننده ایجاد شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     }

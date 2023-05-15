@@ -64,7 +64,7 @@ function AddPrice({ open, toggle, setChange, user, edit, showUser, addFunc, edit
         {
           loading: 'در حال ویرایش قیمت',
           success: 'قیمت ویرایش شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     } else {
@@ -76,7 +76,7 @@ function AddPrice({ open, toggle, setChange, user, edit, showUser, addFunc, edit
         {
           loading: 'در حال ایجاد قیمت',
           success: 'قیمت ایجاد شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     }

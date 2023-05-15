@@ -68,9 +68,9 @@ function ACLPage() {
 
   const columns = [
     {
-      flex: 0.25,
+      flex: 0.1,
       field: '1',
-      minWidth: 200,
+      minWidth: 50,
       headerName: 'تاریخ و ساعت',
       filterable: false,
       hideable: false,
@@ -83,8 +83,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.25,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '2',
       headerName: 'نام کاربری',
       filterOperators,
@@ -100,8 +100,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.25,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '3',
       headerName: 'نام و نام خانوادگی',
       hideable: false,
@@ -118,9 +118,9 @@ function ACLPage() {
     },
 
     {
-      flex: 0.25,
+      flex: 0.1,
       field: '4',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'عملیات',
       filterOperators,
       hideable: false,

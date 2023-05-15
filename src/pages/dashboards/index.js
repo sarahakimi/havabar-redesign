@@ -49,8 +49,8 @@ function ACLPage() {
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'id',
       headerName: 'ردیف',
       hideable: false,
@@ -65,8 +65,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'city',
       headerName: 'شهر',
       hideable: false,
@@ -81,8 +81,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'counter',
       headerName: 'تعداد سفارش',
       hideable: false,
@@ -100,8 +100,8 @@ function ACLPage() {
 
   const personColumns = [
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'id',
       headerName: 'ردیف',
       hideable: false,
@@ -116,8 +116,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'person_name',
       headerName: 'نام مشتری',
       hideable: false,
@@ -132,8 +132,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'counter',
       headerName: 'تعداد سفارش',
       hideable: false,

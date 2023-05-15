@@ -28,7 +28,7 @@ function RegionalTable({ data, setChange }) {
     toast.promise(deleteRegional(hub.id).then(setChange(true)), {
       loading: 'در حال حذف قیمت منطقه ای',
       success: 'با موفقیت حذف شد',
-      error: err => (err.response.data.message ? err.response.data.message : 'خطایی رخ داده است')
+      error: err => (err?.response.data.message ? err.response.data.message : 'خطایی رخ داده است')
     })
   }
 
@@ -38,8 +38,8 @@ function RegionalTable({ data, setChange }) {
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'origin_state',
       headerName: 'استان مبدا',
       filterOperators,
@@ -56,8 +56,8 @@ function RegionalTable({ data, setChange }) {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'origin_city',
       headerName: 'شهر مبدا',
       filterOperators,
@@ -74,8 +74,8 @@ function RegionalTable({ data, setChange }) {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'destination_state',
       headerName: 'استان مقصد',
       filterOperators,
@@ -92,8 +92,8 @@ function RegionalTable({ data, setChange }) {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: 'destination_city',
       headerName: 'شهر مقصد',
       filterOperators,
@@ -111,7 +111,7 @@ function RegionalTable({ data, setChange }) {
     },
     {
       flex: 0.1,
-      minWidth: 90,
+      minWidth: 50,
       sortable: false,
       hideable: false,
       filterable: false,

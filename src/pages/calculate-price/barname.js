@@ -52,7 +52,7 @@ function Barname({ setChange, user, addFunc }) {
       {
         loading: 'در حال ذخیره اطلاعات قیمت',
         success: 'اطلاعات قیمت ذخیره شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
   }

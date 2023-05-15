@@ -67,7 +67,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }
@@ -91,7 +91,7 @@ function ACLPage() {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 50,
       field: 'name',
       filterOperators,
       headerName: 'نام و نام خانوادگی',
@@ -109,7 +109,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'person_numbers',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'تعداد کاربر',
       hideable: false,
@@ -124,7 +124,7 @@ function ACLPage() {
     {
       flex: 0.15,
       field: 'natural_code',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدملی',
       hideable: false,
@@ -139,7 +139,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'phone',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شماره تلفن',
       hideable: false,
@@ -154,7 +154,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'city',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شهر',
       hideable: false,
@@ -198,7 +198,7 @@ function ACLPage() {
         if (change) setChange(false)
       })
       .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
   }, [sortModel, setDownloadData, change])

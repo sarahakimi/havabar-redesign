@@ -65,7 +65,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }
@@ -76,7 +76,7 @@ function ACLPage() {
     toast.promise(deleteUser(hub.id).then(setChange(true)), {
       loading: 'در حال حذف هاب',
       success: 'با موفقیت حذف شد',
-      error: err => (err.response.data.message ? err.response.data.message : 'خطایی رخ داده است')
+      error: err => (err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است')
     })
   }
 
@@ -86,8 +86,8 @@ function ACLPage() {
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '1',
       headerName: 'شناسه',
       filterOperators,
@@ -103,8 +103,8 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.2,
-      minWidth: 230,
+      flex: 0.1,
+      minWidth: 50,
       field: '2',
       headerName: 'نام هاب',
       filterOperators,
@@ -121,9 +121,9 @@ function ACLPage() {
     },
 
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'fax',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'فکس',
       filterOperators,
       hideable: false,
@@ -136,9 +136,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'telephone',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شماره تلفن',
       sortable: false,
@@ -152,9 +152,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: 'provence',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'استان',
       sortable: false,
       filterOperators,
@@ -168,9 +168,9 @@ function ACLPage() {
       )
     },
     {
-      flex: 0.15,
+      flex: 0.1,
       field: '3',
-      minWidth: 150,
+      minWidth: 50,
       headerName: 'شهر',
       filterOperators,
       hideable: false,
@@ -184,7 +184,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      minWidth: 90,
+      minWidth: 50,
       sortable: false,
       hideable: false,
       filterable: false,

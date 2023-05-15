@@ -33,7 +33,7 @@ function Table({ setCustomer }) {
       {
         loading: 'در حال دریافت مشتریان',
         success: 'مشتری را انتخاب کنید',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
     setCustomer(...data?.filter(element => element.id === selectionModel[0]))
@@ -46,7 +46,7 @@ function Table({ setCustomer }) {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 50,
       field: '2 full_name',
       filterOperators,
       headerName: 'نام و نام خانوادگی',
@@ -63,7 +63,7 @@ function Table({ setCustomer }) {
     },
     {
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 50,
       field: '3 sherkat_name',
       filterOperators,
       headerName: 'شرکت',
@@ -81,7 +81,7 @@ function Table({ setCustomer }) {
     {
       flex: 0.1,
       field: '4 natural_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدملی',
       filterable: false,
@@ -97,7 +97,7 @@ function Table({ setCustomer }) {
     {
       flex: 0.1,
       field: '5 tel_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شماره تلفن',
       hideable: false,
@@ -112,7 +112,7 @@ function Table({ setCustomer }) {
     {
       flex: 0.1,
       field: '6 phone_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'موبایل',
       hideable: false,
@@ -127,7 +127,7 @@ function Table({ setCustomer }) {
     {
       flex: 0.1,
       field: 'postal_code',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدپستی',
       sortable: false,
@@ -144,7 +144,7 @@ function Table({ setCustomer }) {
     {
       flex: 0.1,
       field: '7 shahr',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شهر',
       hideable: false,

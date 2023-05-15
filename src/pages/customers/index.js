@@ -79,7 +79,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }
@@ -92,7 +92,7 @@ function ACLPage() {
     toast.promise(deleteUser(company.natural_number).then(setChange(true)), {
       loading: 'در حال حذف مشتری',
       success: 'با موفقیت حذف شد',
-      error: err => (err.response.data.message ? err.response.data.message : 'خطایی رخ داده است')
+      error: err => (err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است')
     })
   }
 
@@ -103,7 +103,7 @@ function ACLPage() {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 50,
       field: '2 full_name',
       filterOperators,
       headerName: 'نام و نام خانوادگی',
@@ -120,7 +120,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 50,
       field: '3 sherkat_name',
       filterOperators,
       headerName: 'شرکت',
@@ -138,7 +138,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: '4 natural_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدملی',
       filterable: false,
@@ -154,7 +154,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: '5 tel_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شماره تلفن',
       hideable: false,
@@ -169,7 +169,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: '6 phone_number',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'موبایل',
       hideable: false,
@@ -184,7 +184,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: 'postal_code',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'کدپستی',
       sortable: false,
@@ -201,7 +201,7 @@ function ACLPage() {
     {
       flex: 0.1,
       field: '7 shahr',
-      minWidth: 150,
+      minWidth: 50,
       filterOperators,
       headerName: 'شهر',
       hideable: false,
@@ -245,7 +245,7 @@ function ACLPage() {
         if (change) setChange(false)
       })
       .catch(err => {
-        const errorMessage = err.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
   }, [sortModel, setDownloadData, change])

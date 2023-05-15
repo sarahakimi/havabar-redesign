@@ -189,7 +189,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ویرایش مشتری',
           success: 'مشتری ویرایش شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
       // eslint-disable-next-line no-param-reassign
@@ -203,7 +203,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ایجاد مشتری',
           success: 'مشتری ایجاد شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     }

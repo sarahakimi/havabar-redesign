@@ -47,8 +47,8 @@ function DistributionAndCollectTable({ data, setChange, deleteFunc, name, addFun
 
   const columns = [
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'title',
       headerName: 'عنوان',
       filterOperators,
@@ -64,8 +64,8 @@ function DistributionAndCollectTable({ data, setChange, deleteFunc, name, addFun
       )
     },
     {
-      flex: 0.2,
-      minWidth: 90,
+      flex: 0.1,
+      minWidth: 50,
       field: 'price',
       headerName: 'مبلغ',
       filterOperators,
@@ -82,7 +82,7 @@ function DistributionAndCollectTable({ data, setChange, deleteFunc, name, addFun
     },
     {
       flex: 0.1,
-      minWidth: 90,
+      minWidth: 50,
       sortable: false,
       hideable: false,
       filterable: false,

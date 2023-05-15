@@ -94,7 +94,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ویرایش هاب',
           success: 'هاب ویرایش شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     } else {
@@ -106,7 +106,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال ایجاد هاب',
           success: 'هاب ایجاد شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     }

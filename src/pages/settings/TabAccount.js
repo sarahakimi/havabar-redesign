@@ -116,7 +116,7 @@ function TabAccount() {
     fetchLogo()
       .then(response => setImageUrl(response.logo))
       .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
     fetchData()
@@ -133,7 +133,7 @@ function TabAccount() {
         }
       })
       .catch(err => {
-        const errorMessage = err.response.data.message ? err.response.data.message : 'خطایی رخ داده است'
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
   }, [setFormData, setSelectedSenderOstan])
@@ -142,7 +142,7 @@ function TabAccount() {
     toast.promise(editHub(hub, data), {
       loading: 'در حال ویرایش هاب',
       success: 'هاب ویرایش شد',
-      error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+      error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
     })
   }
 

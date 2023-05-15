@@ -36,7 +36,7 @@ function ACLPage() {
         error: err => {
           setChange(false)
 
-          return err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.'
+          return err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.'
         }
       }
     )

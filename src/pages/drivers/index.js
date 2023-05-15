@@ -55,7 +55,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }
@@ -65,7 +65,7 @@ function ACLPage() {
     toast.promise(deleteUser(company.natural_code).then(setChange(true)), {
       loading: 'در حال حذف راننده',
       success: 'با موفقیت حذف شد',
-      error: err => (err.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است')
+      error: err => (err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است')
     })
   }
 
