@@ -6,12 +6,17 @@ const keys = {
   desc: 0
 }
 
-export const fetchData = async sortModel => {
+export const fetchData = async (sortModel, filter, hasFilter) => {
   let sortBy = sortModel.sort_by.split(' ')
   const searchValue = sortBy[1]
   sortBy = sortBy.filter(element => element !== searchValue)
   sortBy[1] = keys[sortBy[1]]
-  const search = sortModel?.search !== '' ? sortModel.search : {}
+  let search
+  if (hasFilter) {
+    search = filter
+  } else {
+    search = sortModel?.search !== '' ? sortModel.search : {}
+  }
 
   const response = await http.post(urls.getAdminOrders(sortModel.page, Number(sortBy.join(''))), search, {
     Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
@@ -37,7 +42,7 @@ export const registerUser = async data => {
 }
 
 export const editUser = async (id, data) => {
-  const response = await http.put(urls.singleOrder(id), data, {
+  const response = await http.put(urls.editOrder(id), data, {
     Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
   })
 
@@ -52,17 +57,53 @@ export const assignToPeyk = async (id, data) => {
   return response
 }
 
-export const downloadOrder = async id => {
-  const response = await http.get(
-    urls.downloadPdf(id),
+export const distributeOrder = async (id, data) => {
+  const response = await http.post(urls.distributeOrder(id), data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
+
+  return response
+}
+
+export const assignToLogistic = async (id, data) => {
+  const response = await http.post(urls.delivery_toLogistic(id), data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
+
+  return response
+}
+
+export const collectOrder = async id => {
+  const response = await http.post(
+    urls.collectOrder(id),
     {},
     {
-      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`,
+      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+    }
+  )
 
-      // responseType: 'blob',
-      content_type: 'application/pdf'
-    },
-    { responseType: 'arraybuffer' }
+  return response
+}
+
+export const deliveryFromLogestic = async id => {
+  const response = await http.post(
+    urls.delivery_fromLogistic(id),
+    {},
+    {
+      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+    }
+  )
+
+  return response
+}
+
+export const downloadDataFromServer = async () => {
+  const response = await http.post(
+    urls.suborderReport,
+    {},
+    {
+      Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+    }
   )
 
   return response

@@ -82,5 +82,11 @@ export default {
   addregional: 'regionalPrices',
   dashboard: 'dashboard/',
   assign_to_peyk: id => `sub_order/${id}/assign_to_peyk/`,
-  deleteOrder: id => `sub_order/${id}/delete/`
+  deleteOrder: id => `sub_order/${id}/delete/`,
+  collectOrder: id => `sub_order/${id}/collect/`,
+  delivery_toLogistic: id => `sub_order/${id}/delivery_to_logistic/`,
+  delivery_fromLogistic: id => `sub_order/${id}/delivery_from_logistic/`,
+  distributeOrder: id => `sub_order/${id}/distribute/`,
+  suborderReport: 'report/suborder/',
+  editOrder: id => `sub_order/${id}/`
 }

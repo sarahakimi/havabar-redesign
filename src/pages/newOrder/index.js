@@ -527,7 +527,7 @@ function ACLPage() {
         calculatePrice(config).then(response => {
           toast(t => (
             <Box flex>
-              قیمت محاسبه شده <b>{response.data}</b> ریال می باشد
+              قیمت محاسبه شده <b>{response.data.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</b> ریال می باشد
               <Button onClick={() => toast.dismiss(t.id)}>بستن</Button>
             </Box>
           ))

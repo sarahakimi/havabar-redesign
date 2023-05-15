@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { getGridStringOperators } from '@mui/x-data-grid'
 import { styled } from '@mui/material/styles'
-import moment from 'jalali-moment'
 import Paper from '@mui/material/Paper'
 import toast from 'react-hot-toast'
 import Table from '@core/components/table/table'
@@ -13,8 +12,14 @@ import TableHeader from '@core/components/table-header/TableHeader'
 import RowOptions from '@core/components/row-options/row-options'
 import Button from '@mui/material/Button'
 import AddUserDrawer from './AddUserDrawer'
-import { deleteUser, fetchData } from './requests'
+import { deleteUser, fetchData, downloadDataFromServer } from './requests'
 import AddPeykDiaolg from './addPeykDiaolg'
+import { useAuth } from '../../hooks/useAuth'
+import CollectDialog from './collectDialog'
+import AssighnToLogisticDialog from './assighnToLogisticDialog'
+import DeliveryFromLogestic from './deliveryFromLogestic'
+import DistributeOrder from './distributeOrder'
+import AddFilter from './addFilter'
 
 export const GridContainer = styled(Paper)({
   flexGrow: 1,
@@ -36,111 +41,76 @@ function ACLPage() {
   const [change, setChange] = useState(false)
   const [downloadData, setDownloadData] = useState([])
   const [addPeykOpen, setAddPeykOpen] = useState(false)
+  const [collectOpen, setCollectOpen] = useState(false)
+  const [deliveryToLogisticOpen, setDeliveryToLogesticOpen] = useState(false)
+  const [deliveryFromLogestic, setDeliveryFromLogestic] = useState(false)
+  const [distributeOpen, setDistributeOpen] = useState(false)
+  const [addFilterOpen, setAddFilterOpen] = useState(false)
+  const [filter, setFilter] = useState({})
+
+  const currentHub = useAuth().user.hub_id
 
   const headers = [
-    { key: 'createdAt', label: 'تاریخ ثبت' },
-    { key: 'price', label: 'مبلغ سفارش' },
+    { key: 'id', label: 'شناسه' },
+    { key: 'time', label: 'تاریخ ثبت' },
+    { key: 'total', label: 'مبلغ سفارش' },
     { key: 'state', label: 'وضعیت' },
-    { key: 'senderCodeMelli', label: 'کدملی فرستنده' },
-    { key: 'senderName', label: 'نام فرستنده' },
-    { key: 'senderMobile', label: 'موبایل فرستنده' },
-    { key: 'senderPhone', label: 'تلفن فرستنده' },
-    { key: 'senderPhonePrefix', label: 'پیش شماره تلفن فرستنده' },
-    { key: 'senderCompany', label: 'شرکت فرستنده' },
-    { key: 'senderCounty', label: 'استان فرستنده' },
-    { key: 'senderCity', label: 'شهر فرستنده' },
-    { key: 'senderCodePosti', label: 'کدپستی فرستنده' },
-    { key: 'senderOtherInfo', label: 'سایر اطلاعات فرستنده' },
-    { key: 'senderMainRoard', label: 'خیابان اصلی فرستنده' },
-    { key: 'senderSubRoad', label: 'خیابان فرعی فرستنده' },
-    { key: 'senderAlley', label: 'کوچه فرستنده' },
-    { key: 'senderPlaque', label: 'پلاک فرستنده' },
-    { key: 'senderFloor', label: 'طبقه فرستنده' },
-    { key: 'senderUnit', label: 'واحد فرستنده' },
-    { key: 'recieverCodeMelli', label: 'کدملی گیرنده' },
-    { key: 'recieverName', label: 'نام گیرنده' },
-    { key: 'recieverMobile', label: 'موبایل گیرنده' },
-    { key: 'recieverPhone', label: 'تلفن گیرنده' },
-    { key: 'recieverPhonePrefix', label: 'پیش شماره گیرنده' },
-    { key: 'recieverCompany', label: 'شرکت گیرنده' },
-    { key: 'recieverCounty', label: 'استان گیرنده' },
-    { key: 'recieverCity', label: 'شهر گیرنده' },
-    { key: 'recieverCodePosti', label: 'کدپستی گیرنده' },
-    { key: 'recieverMainRoard', label: 'خیابان اصلی گیرنده' },
-    { key: 'recieverSubRoad', label: 'خیابان فرعی گیرنده' },
-    { key: 'recieverAlley', label: 'کوچه گیرنده' },
-    { key: 'recieverPlaque', label: 'پلاک گیرنده' },
-    { key: 'recieverFloor', label: 'طبقه گیرنده' },
-    { key: 'recieverUnit', label: 'واحد گیرنده' },
-    { key: 'receiverOtherInfo', label: 'سایر اطلاعات گیرنده' },
+    { key: 'sender_phone_number', label: 'موبایل فرستنده' },
+    { key: 'sender_tel_number', label: 'تلفن فرستنده' },
+    { key: 'sender_ostan', label: 'استان فرستنده' },
+    { key: 'sender_shahr', label: 'شهر فرستنده' },
+    { key: 'sender_address', label: 'آدرس فرستنده' },
+    { key: 'receiver_phone_number', label: 'موبایل گیرنده' },
+    { key: 'receiver_tel_number', label: 'تلفن گیرنده' },
+    { key: 'receiver_ostan', label: 'استان گیرنده' },
+    { key: 'receiver_shahr', label: 'شهر گیرنده' },
+    { key: 'receiver_address', label: 'آدرس گیرنده' },
     { key: 'weight', label: 'وزن' },
-    { key: 'length', label: 'طول' },
-    { key: 'width', label: 'عرض' },
-    { key: 'height', label: 'ارتفاع' },
-    { key: 'money', label: 'ارزش بنا به اظهار فرستنده' },
-    { key: 'car', label: 'نوع ماشین حمل کننده' },
-    { key: 'needsSpecialCarry', label: 'نیازمند حمل ویژه' },
-    { key: 'SpecialBox', label: 'بار خاص' },
-    { key: 'paymentMethod', label: 'نحوه پرداخت' },
-    { key: 'needsEvacuate', label: 'نیازمند تخلیه' },
-    { key: 'needsLoading', label: 'نیازمند بارگیری' },
-    { key: 'needsMovement', label: 'نیازمند جابجایی' },
-    { key: 'isSuburb', label: 'برون شهری' }
+    { key: 'size_y', label: 'طول' },
+    { key: 'size_x', label: 'عرض' },
+    { key: 'size_z', label: 'ارتفاع' },
+    { key: 'bar_code_url', label: 'بارکد' },
+    { key: 'pdf_url', label: 'بارنامه' },
+    { key: 'barname_generated_id', label: 'شماره بارنامه' },
+    { key: 'sender_signature_url', label: 'امضا فرستنده' },
+    { key: 'receiver_signature_url', label: 'امضا گیرنده' },
+    { key: 'bar_type', label: 'نوع بار' },
+    { key: 'payment_method', label: 'نحوه پرداخت' },
+    { key: 'payment_state', label: 'نوع پرداخت' },
+    { key: 'requires_packing', label: 'نیازمند بسته بندی' },
+    { key: 'requires_special_shipping', label: 'بار خاص' },
+    { key: 'price', label: 'قیمت کل' },
+    { key: 'hub_origin_id', label: 'شناسه هاب مبدا' },
+    { key: 'hub_destination_id', label: 'شناسه هاب مقصد' },
+    { key: 'logistic_id', label: 'شناسه لاجستیک' },
+    { key: 'explain', label: 'توضیحات' },
+    { key: 'off_percent_status', label: 'تخفیف' },
+    { key: 'off_percent', label: 'مقدار تخفیف' },
+    { key: 'content', label: 'محتویات' },
+    { key: 'rent', label: 'کرایه' },
+    { key: 'stamp', label: 'تمبر' },
+    { key: 'packing', label: 'بسته بندی' },
+    { key: 'collect', label: 'جمع آوری' },
+    { key: 'services', label: 'خدمات' },
+    { key: 'accountant_weight', label: 'وزن محتسب' },
+    { key: 'distribution', label: 'توزیع' },
+    { key: 'taxation', label: 'مالیات' },
+    { key: 'insurance', label: 'بیمه' },
+    { key: 'added_value', label: 'ارزش افزوده' },
+    { key: 'nerkh_be_kg', label: 'نرخ به کیلوگرم' }
   ]
+
+  const getPersianValue = elem => (elem ? 'دارد' : 'ندارد')
 
   const downloadApi = () =>
     toast.promise(
-      fetchData({ sort_by: sortModel.sort_by, search: sortModel.serach }).then(response => {
+      downloadDataFromServer().then(response => {
         setDownloadData(
-          response.data.map(user => ({
-            senderCodeMelli: user.sender_customer.identity_code,
-            senderName: user.sender_customer.name,
-            senderMobile: user.sender_customer.mobile,
-            senderPhone: user.sender_customer.tel,
-            senderPhonePrefix: user.sender_customer.area_code,
-            senderCompany: user.sender_customer.companyName,
-            senderCounty: user.sender_customer.provence,
-            senderCity: user.sender_customer.city,
-            senderCodePosti: user.sender_customer.postal_code,
-            senderOtherInfo: user.sender_customer.other_information,
-            senderMainRoard: user.sender_customer.main_street,
-            senderSubRoad: user.sender_customer.side_street,
-            senderAlley: user.sender_customer.alley,
-            senderPlaque: user.sender_customer.plaque,
-            senderFloor: user.sender_customer.floor,
-            senderUnit: user.sender_customer.home_unit,
-            recieverCodeMelli: user.receiver_customer.identity_code,
-            recieverName: user.receiver_customer.name,
-            recieverMobile: user.receiver_customer.mobile,
-            recieverPhone: user.receiver_customer.tel,
-            recieverPhonePrefix: user.receiver_customer.area_code,
-            recieverCompany: user.receiver_customer.companyName,
-            recieverCounty: user.receiver_customer.provence,
-            recieverCity: user.receiver_customer.city,
-            recieverCodePosti: user.receiver_customer.postal_code,
-            recieverMainRoard: user.receiver_customer.main_street,
-            recieverSubRoad: user.receiver_customer.side_street,
-            recieverAlley: user.receiver_customer.alley,
-            recieverPlaque: user.receiver_customer.plaque,
-            recieverFloor: user.receiver_customer.floor,
-            recieverUnit: user.receiver_customer.home_unit,
-            receiverOtherInfo: user.receiver_customer.other_information,
-            weight: user.product.weight,
-            length: user.product.length,
-            width: user.product.width,
-            height: user.product.height,
-            money: user.product.product_cost,
-            car: user.product.vehicle,
-            needsSpecialCarry: user.product.special_vehicle_required ? 'می باشد' : 'نمی باشد',
-            SpecialBox: user.product.special_product ? 'می باشد' : 'نمی باشد',
-            paymentMethod: user.product.payment_method,
-            needsEvacuate: user.product.product_unloading_required ? 'می باشد' : 'نمی باشد',
-            needsLoading: user.product.product_loading_required ? 'می باشد' : 'نمی باشد',
-            needsMovement: user.product.movement_required ? 'می باشد' : 'نمی باشد',
-            createdAt: moment(user.order.created_at, 'YYYY/MM/DD').locale('fa').format('YYYY/MM/DD'),
-            price: user.order.price,
-            state: user.order.state,
-            isSuburb: user.product.is_suburb ? 'می باشد' : 'نمی باشد'
+          response.data.map(element => ({
+            ...element,
+            off_percent_status: getPersianValue(element.off_percent_status),
+            requires_special_shipping: getPersianValue(element.requires_special_shipping),
+            requires_packing: getPersianValue(element.requires_packing)
           }))
         )
       }),
@@ -148,7 +118,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }
@@ -174,12 +144,32 @@ function ACLPage() {
     setAddPeykOpen(true)
   }
 
+  const onCollectOrder = row => {
+    setSelectedCompany(row)
+    setCollectOpen(true)
+  }
+
+  const onDeliveryToLogistic = row => {
+    setSelectedCompany(row)
+    setDeliveryToLogesticOpen(true)
+  }
+
+  const onDeliveryFromLogestic = row => {
+    setSelectedCompany(row)
+    setDeliveryFromLogestic(true)
+  }
+
+  const OnDistributeOrder = row => {
+    setSelectedCompany(row)
+    setDistributeOpen(true)
+  }
+
   const columns = [
     {
       flex: 0.1,
       minWidth: 50,
       field: '1 date',
-      filterOperators,
+      filterable: false,
       headerName: 'تاریخ',
       hideable: false,
       renderCell: ({ row }) => (
@@ -195,7 +185,7 @@ function ACLPage() {
     {
       flex: 0.1,
       minWidth: 50,
-      field: '3 id',
+      field: '3 sub_order_id',
       filterOperators,
       headerName: ' شماره سفارش',
       hideable: false,
@@ -211,7 +201,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      field: 'sender_name',
+      field: '0 sender_name',
       minWidth: 50,
       filterOperators,
       sortable: false,
@@ -227,10 +217,10 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      field: 'sender_city',
+      field: '0 sender_city',
       minWidth: 50,
       filterOperators,
-      headerName: 'شهر قرستنده',
+      headerName: 'شهر فرستنده',
       sortable: false,
       hideable: false,
       renderCell: ({ row }) => (
@@ -243,7 +233,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      field: 'reiever_name',
+      field: '0 reiever_name',
       minWidth: 50,
       filterOperators,
       headerName: 'گیرنده',
@@ -259,7 +249,7 @@ function ACLPage() {
     },
     {
       flex: 0.1,
-      field: 'reciever_city',
+      field: '0 reciever_city',
       minWidth: 50,
       filterOperators,
       headerName: 'شهر گیرنده',
@@ -277,7 +267,7 @@ function ACLPage() {
       flex: 0.1,
       field: '6 price',
       minWidth: 50,
-      filterOperators,
+      filterable: false,
       headerName: 'مبلغ سفارش',
       hideable: false,
       renderCell: ({ row }) => (
@@ -292,7 +282,7 @@ function ACLPage() {
       flex: 0.1,
       field: '4 payment_method',
       minWidth: 50,
-      filterOperators,
+      filterable: false,
       headerName: 'نوع تسویه',
       hideable: false,
       renderCell: ({ row }) => (
@@ -307,17 +297,74 @@ function ACLPage() {
       flex: 0.2,
       field: '5 state',
       minWidth: 'min-content',
-      filterOperators,
+      filterable: false,
       headerName: 'عملیات',
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {row.sub_order.state_id === 0 && (
-            <Button variant='contained' onClick={() => onOpenDialog(row)}>
-              {row.sub_order.state}
-            </Button>
+          {row.sub_order.hub_origin_id === currentHub ? (
+            <>
+              {row.sub_order.state_id === 0 && (
+                <Button variant='contained' onClick={() => onOpenDialog(row)}>
+                  {row.sub_order.state}
+                </Button>
+              )}
+              {row.sub_order.state_id === 1 && <Typography sx={{ color: 'black' }}>در حال جمع آوری</Typography>}
+              {row.sub_order.state_id === 2 && (
+                <Button variant='contained' onClick={() => onCollectOrder(row)} color='warning'>
+                  تحویل به هاب مبدا
+                </Button>
+              )}
+              {row.sub_order.state_id === 3 && (
+                <Button
+                  variant='contained'
+                  onClick={() => onDeliveryToLogistic(row)}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: 'purple',
+                    '&:hover': {
+                      backgroundColor: 'purple'
+                    }
+                  }}
+                >
+                  تحویل به لاجستیک
+                </Button>
+              )}
+              {row.sub_order.state_id === 4 && <Typography sx={{ color: 'black' }}>در دست لاجستیک</Typography>}
+              {row.sub_order.state_id === 5 && <Typography sx={{ color: 'black' }}>در دست هاب مقصد</Typography>}
+              {row.sub_order.state_id === 6 && <Typography sx={{ color: 'black' }}>در حال توزیع</Typography>}
+              {row.sub_order.state_id === 7 && <Typography sx={{ color: 'green' }}>تکمیل سفارش</Typography>}
+            </>
+          ) : (
+            <>
+              {row.sub_order.state_id === 0 && <Typography sx={{ color: 'black' }}>ثبت سفارش</Typography>}
+              {row.sub_order.state_id === 1 && <Typography sx={{ color: 'black' }}>در حال جمع آوری</Typography>}
+              {row.sub_order.state_id === 2 && <Typography sx={{ color: 'black' }}>اتمام جمع آوری</Typography>}
+              {row.sub_order.state_id === 3 && <Typography sx={{ color: 'black' }}>در دست هاب مبدا</Typography>}
+              {row.sub_order.state_id === 4 && (
+                <Button
+                  variant='contained'
+                  onClick={() => onDeliveryFromLogestic(row)}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: 'pink',
+                    '&:hover': {
+                      backgroundColor: 'pink'
+                    }
+                  }}
+                >
+                  تحویل از لاجستیک
+                </Button>
+              )}
+              {row.sub_order.state_id === 5 && (
+                <Button variant='contained' onClick={() => OnDistributeOrder(row)} color='info'>
+                  {row.sub_order.state}
+                </Button>
+              )}
+              {row.sub_order.state_id === 6 && <Typography sx={{ color: 'black' }}>در حال توزیع</Typography>}
+              {row.sub_order.state_id === 7 && <Typography sx={{ color: 'green' }}>تکمیل سفارش</Typography>}
+            </>
           )}
-          {row.sub_order.state_id === 1 && <Typography sx={{ color: 'black' }}>در حال جمع آوری</Typography>}
         </Box>
       )
     },
@@ -372,9 +419,12 @@ function ACLPage() {
     //   )
     // }
   ]
+
+  const hasFilter = Object.keys(filter).length !== 0
+
   useEffect(() => {
     setDownloadData([])
-    fetchData(sortModel)
+    fetchData(sortModel, filter, hasFilter)
       .then(response => {
         if (response.data.subOrderModels === null) {
           setData([])
@@ -385,7 +435,13 @@ function ACLPage() {
         const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
-  }, [setDownloadData, change, sortModel])
+  }, [setDownloadData, change, sortModel, filter])
+
+  const handleRemoveFilter = () => {
+    setFilter({})
+    setChange(true)
+  }
+  const toggleFilters = () => setAddFilterOpen(!addFilterOpen)
 
   return (
     <Grid container spacing={6}>
@@ -397,7 +453,16 @@ function ACLPage() {
             api={downloadApi}
             headers={headers}
             name='سفارش'
-          />
+          >
+            <Button sx={{ mb: 2 }} onClick={toggleFilters} variant='contained' color='info'>
+              فیلتر
+            </Button>
+            {hasFilter && (
+              <Button sx={{ mb: 2 }} onClick={handleRemoveFilter} variant='contained' color='warning'>
+                حذف فیلتر
+              </Button>
+            )}
+          </TableHeader>
           <GridContainer sx={{ p: 4, m: 1 }}>
             <Table columns={columns} data={data} sortModel={sortModel} setSortModel={setSortModel} />
           </GridContainer>
@@ -441,6 +506,47 @@ function ACLPage() {
           id={selectedCompany?.sub_order?.id}
         />
       )}
+      {selectedCompany && collectOpen && (
+        <CollectDialog
+          setOpen={setCollectOpen}
+          open={collectOpen}
+          id={selectedCompany?.sub_order?.id}
+          setChange={setChange}
+        />
+      )}
+      {selectedCompany && deliveryToLogisticOpen && (
+        <AssighnToLogisticDialog
+          setOpen={setDeliveryToLogesticOpen}
+          open={deliveryToLogisticOpen}
+          id={selectedCompany?.sub_order?.id}
+          setChange={setChange}
+        />
+      )}
+      {selectedCompany && deliveryFromLogestic && (
+        <DeliveryFromLogestic
+          setOpen={setDeliveryFromLogestic}
+          open={deliveryFromLogestic}
+          id={selectedCompany?.sub_order?.id}
+          setChange={setChange}
+        />
+      )}
+      {selectedCompany && distributeOpen && (
+        <DistributeOrder
+          setOpen={setDistributeOpen}
+          open={distributeOpen}
+          id={selectedCompany?.sub_order?.id}
+          setChange={setChange}
+        />
+      )}
+      {addFilterOpen && (
+        <AddFilter
+          setFilter={setFilter}
+          filter={filter}
+          open={addFilterOpen}
+          toggle={toggleFilters}
+          setChange={setChange}
+        />
+      )}
     </Grid>
   )
 }
@@ -449,10 +555,5 @@ ACLPage.acl = {
   action: 'read',
   subject: 'every-page'
 }
-
-// ACLPage.acl = {
-//   action: 'read',
-//   subject: 'acl-page'
-// }
 
 export default ACLPage

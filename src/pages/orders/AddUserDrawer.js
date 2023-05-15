@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
@@ -11,16 +11,21 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import Close from 'mdi-material-ui/Close'
-import { Autocomplete, Card, CardContent, CardHeader, FormLabel, Grid, Modal } from '@mui/material'
+import { Autocomplete, Card, CardContent, CardHeader, Grid, Modal } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { ostan, shahr } from 'iran-cities-json'
 import toast from 'react-hot-toast'
 import OutlinedInput from '@mui/material/OutlinedInput'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 import Table from '../newOrder/table'
 
 import { calculatePrice, createOrder } from '../newOrder/requests'
+
+import http from '../../services/http'
+import NewCustomwr from '../newOrder/newCustomer'
 import { editUser } from './requests'
 
 const Header = styled(Box)(({ theme }) => ({
@@ -61,12 +66,7 @@ const schema = yup.object().shape({
     .required('تلفن فرستنده الزامی است')
     .matches(/d*/, ' تلفن باید عدد باشد')
     .min(3, 'تلفن باید حداقل 3 رقم باشد'),
-  senderPhonePrefix: yup
-    .string()
-    .required('پیش شماره الزامی است')
-    .matches(/d*/, ' پیش شماره باید عدد باشد')
-    .test('len', 'پیش شماره باید 3 رقم باشد', val => val.toString().length === 3),
-  senderCompany: yup.string(),
+  senderCompany: yup.string().typeError('به درستی وارد کنید'),
   senderCounty: yup.string().required('استان الزامی است').typeError('الزامی است'),
   senderCity: yup.string().required('شهر الزامی است'),
   senderCodePosti: yup
@@ -74,7 +74,7 @@ const schema = yup.object().shape({
     .required('کدپستی فرستنده الزامی است')
     .matches(/d*/, 'کدپستی باید عدد باشد')
     .test('len', 'کدپستی باید 10 رقم باشد', val => val.toString().length === 10),
-  senderOtherInfo: yup.string(),
+  senderOtherInfo: yup.string().typeError('به درستی وارد کنید'),
   senderMainRoard: yup.string().required('خیابان اصلی الزامی است'),
   senderSubRoad: yup.string().required('خیابان فرعی الزامی است'),
   senderAlley: yup.string().required('کوچه الزامی است'),
@@ -97,11 +97,6 @@ const schema = yup.object().shape({
     .required('تلفن گیرنده الزامی است')
     .matches(/d*/, ' تلفن باید عدد باشد')
     .min(3, 'تلفن باید حداقل 3 رقم باشد'),
-  recieverPhonePrefix: yup
-    .string()
-    .required('پیش شماره الزامی است')
-    .matches(/d*/, ' پیش شماره باید عدد باشد')
-    .test('len', 'پیش شماره باید 3 رقم باشد', val => val.toString().length === 3),
   recieverCompany: yup.string(),
   recieverCounty: yup.string().required('استان الزامی است').typeError('الزامی است'),
   recieverCity: yup.string().required('شهر الزامی است'),
@@ -116,52 +111,34 @@ const schema = yup.object().shape({
   recieverPlaque: yup.string().required('پلاک الزامی است').matches(/d*/, 'باید عدد باشد'),
   recieverFloor: yup.string().required('طبقه الزامی است').matches(/d*/, 'باید عدد باشد'),
   recieverUnit: yup.string().required('واحد الزامی است').matches(/d*/, 'باید عدد باشد'),
-  receiverOtherInfo: yup.string(),
+  receiverOtherInfo: yup.string().typeError('به درستی وارد کنید'),
   weight: yup.number().required('وزن الزامی است').min(1, 'حداقل باید 1 گرم باشد').typeError('باید عدد باشد'),
   length: yup.number().required('طول الزامی است').min(1, 'حداقل باید 1 سانتی متر باشد').typeError('باید عدد باشد'),
   width: yup.number().required('عرض الزامی است').min(1, 'حداقل باید 1 سانتی متر باشد').typeError('باید عدد باشد'),
   height: yup.number().required('ارتفاع الزامی است').min(1, 'حداقل باید 1 سانتی متر باشد').typeError('باید عدد باشد'),
-  money: yup.number().required('ارزش کالا الزامی است').min(1, 'حداقل باید 1 ریال باشد').typeError('باید عدد باشد'),
-  car: yup.string().required('وسیله حمل کننده الزامی است'),
-  needsSpecialCarry: yup.boolean(),
-  SpecialBox: yup.boolean(),
+  money: yup.number().required('ارزش کالا الزامی است').typeError('باید عدد باشد').min(1, 'حداقل باید 1 ریال باشد'),
+  needsSpecialCarry: yup.boolean().typeError('به درستی انتخاب کنید'),
+  SpecialBox: yup.boolean().typeError('به درستی انتخاب کنید'),
+  maliat: yup.boolean().typeError('به درستی انتخاب کنید'),
+  needsPackaging: yup.boolean().typeError('به درستی انتخاب کنید'),
+  packaging: yup.string().required(' الزامی است'),
+  barType: yup.string().required(' الزامی است'),
+  mohtaviat: yup.string().typeError('به درستی وارد کنید'),
+  hub_id: yup.number().required('هاب الزامی است').min(1, 'هاب را انتخاب کنید'),
+  collect_price: yup.number().required(' الزامی است'),
+  distribution_price: yup.number().required(' الزامی است'),
   paymentMethod: yup.string().required('الزامی است'),
-  needsEvacuate: yup.boolean(),
-  needsLoading: yup.boolean(),
-  needsMovement: yup.boolean(),
-  isSuburb: yup.boolean(),
-  packaging: yup.number().typeError('به درستی انتخاب نمایید')
+  paymentType: yup.string().required('الزامی است'),
+  discount_type: yup.boolean().typeError('به درستی انتخاب کنید'),
+  discount: yup.number().typeError('باید عدد باشد')
 })
-const cars = ['موتور', 'سواری', 'وانت', 'کامیون', 'کامیونت']
-const paymentMethod = ['پیش کرایه', 'پس کرایه']
 
 function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
-  const [openModal, setOpenModal] = useState(false)
-  const handleOpen = () => setOpenModal(true)
-  const handleCloseMODAL = () => setOpenModal(false)
-  const [sender, setSender] = useState({})
-  const [reciever, setReciever] = useState({})
-  const [recieverOpen, setRecieverOpen] = useState(false)
-  const handleRecieverOpen = () => setRecieverOpen(true)
-  const handleRecieverClose = () => setRecieverOpen(false)
-  const [sendertLatLang, setSenderLatLang] = useState([51.3347, 35.7219])
-  const [recieverLatLang, setRecieverLatLang] = useState([51.3347, 35.7219])
-
-  // eslint-disable-next-line camelcase
-  const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
-  const [selectedRecieverOstan, setSelectedRecieverOstan] = useState('')
-  const [hasSender, setHasSender] = useState(false)
-  const [hasReciever, setHasReciever] = useState(false)
-  const [submitType, setSubmitType] = useState('')
-  const [senderId, setSenderId] = useState(0)
-  const [recieverIde, setRecieverId] = useState(0)
-
   const emptyForm = {
     senderCodeMelli: '',
     senderName: '',
     senderMobile: '',
     senderPhone: '',
-    senderPhonePrefix: '',
     senderCompany: '',
     senderCounty: '',
     senderCity: '',
@@ -177,7 +154,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
     recieverName: '',
     recieverMobile: '',
     recieverPhone: '',
-    recieverPhonePrefix: '',
     recieverCompany: '',
     recieverCounty: '',
     recieverCity: '',
@@ -194,16 +170,174 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
     width: 0,
     height: 0,
     money: 0,
-    car: '',
     needsSpecialCarry: false,
-    SpecialBox: false,
+    maliat: false,
+    needsPackaging: false,
+    packaging: '',
+    barType: '',
+    mohtaviat: '',
+    hub_id: 0,
+    collect_price: 0,
+    distribution_price: 0,
     paymentMethod: '',
-    needsEvacuate: false,
-    needsLoading: false,
-    needsMovement: false,
-    isSuburb: false,
-    packaging: -1
+    paymentType: '',
+    discount_type: false,
+    discount: 0
   }
+
+  const defaultValues = user
+    ? {
+        senderCodeMelli: user.sender.natural_number,
+        senderName: user.sender.full_name,
+        senderMobile: user.sender.phone_number,
+        senderPhone: user.sender.tel_number,
+        senderCompany: user.sender.sherkat_name,
+        senderCounty: user.sender.ostan,
+        senderCity: user.sender.shahr,
+        senderCodePosti: user.sender.postal_code,
+        senderOtherInfo: user.sender.other_information,
+        senderMainRoard: user.sender.khiaban_asli,
+        senderSubRoad: user.sender.khiaban_faree,
+        senderAlley: user.sender.kooche,
+        senderPlaque: user.sender.plak,
+        senderFloor: user.sender.tabaghe,
+        senderUnit: user.sender.vahed,
+        recieverCodeMelli: user.receiver.natural_number,
+        recieverName: user.receiver.full_name,
+        recieverMobile: user.receiver.phone_number,
+        recieverPhone: user.receiver.tel_number,
+        recieverCompany: user.receiver.sherkat_name,
+        recieverCounty: user.receiver.ostan,
+        recieverCity: user.receiver.shahr,
+        recieverCodePosti: user.receiver.postal_code,
+        recieverMainRoard: user.receiver.khiaban_asli,
+        recieverSubRoad: user.receiver.khiaban_faree,
+        recieverAlley: user.receiver.kooche,
+        recieverPlaque: user.receiver.plak,
+        recieverFloor: user.receiver.tabaghe,
+        recieverUnit: user.receiver.vahed,
+        receiverOtherInfo: user.receiver.other_information,
+        weight: user.bar.weight,
+        length: user.bar.size_y,
+        width: user.bar.size_x,
+        height: user.bar.size_z,
+        money: user.bar.arzesh,
+        needsSpecialCarry: user.sub_order.requires_special_shipping,
+        maliat: user.sub_order.texes,
+        needsPackaging: user.sub_order.requires_packing,
+        packaging: user.bar.bastebandi_type,
+        barType: user.bar.bar_type,
+        mohtaviat: user.bar.mohtaviat,
+        hub_id: user.sub_order.hub_destination_id,
+        collect_price: 0,
+        distribution_price: 0,
+        paymentMethod: user.sub_order.payment_method,
+        paymentType: user.sub_order.payment_state,
+        discount_type: user.financial_information.off_percent_status,
+        discount: user.financial_information.off
+      }
+    : {
+        senderCodeMelli: '',
+        senderName: '',
+        senderMobile: '',
+        senderPhone: '',
+        senderCompany: '',
+        senderCounty: '',
+        senderCity: '',
+        senderCodePosti: '',
+        senderOtherInfo: '',
+        senderMainRoard: '',
+        senderSubRoad: '',
+        senderAlley: '',
+        senderPlaque: '',
+        senderFloor: '',
+        senderUnit: '',
+        recieverCodeMelli: '',
+        recieverName: '',
+        recieverMobile: '',
+        recieverPhone: '',
+        recieverCompany: '',
+        recieverCounty: '',
+        recieverCity: '',
+        recieverCodePosti: '',
+        recieverMainRoard: '',
+        recieverSubRoad: '',
+        recieverAlley: '',
+        recieverPlaque: '',
+        recieverFloor: '',
+        recieverUnit: '',
+        receiverOtherInfo: '',
+        weight: 0,
+        length: 0,
+        width: 0,
+        height: 0,
+        money: 0,
+        needsSpecialCarry: false,
+        maliat: false,
+        needsPackaging: false,
+        packaging: '',
+        barType: '',
+        mohtaviat: '',
+        hub_id: 0,
+        collect_price: 0,
+        distribution_price: 0,
+        paymentMethod: '',
+        paymentType: '',
+        discount_type: false,
+        discount: 0
+      }
+  console.log(user)
+
+  const paymentMethod = ['پیش کرایه', 'پس کرایه']
+
+  const barType = [
+    'فروش اینترنتی',
+    'لوازم پزشکی',
+    'مواد غذایی',
+    'لوازم تزئینی',
+    'گل و گیاه',
+    'دکوراسیون',
+    'لوازم الکترونیکی',
+    'اواراق'
+  ]
+
+  const packaging = ['پاکت', 'بسته', 'کیسه', 'کارتن', 'پالت']
+
+  const paymentType = ['کارتخوان-خرید', 'کارتخوان-مشتری', 'سرویس پرداخت-کارتخوان', 'نقدی']
+  const [selectedSenderOstan, setSelectedSenderOstan] = useState('')
+  const [selectedRecieverOstan, setSelectedRecieverOstan] = useState('')
+  const [newSenderOpen, setNewSenderOpen] = useState(false)
+  const [newRecieverOpen, setNewRecieverOpen] = useState(false)
+  const [changeorder, setChangeorder] = useState(false)
+
+  const togglenewSenderOpen = () => setNewSenderOpen(!newSenderOpen)
+  const togglenewRecieverOpen = () => setNewRecieverOpen(!newRecieverOpen)
+  const [opensender, setOpensender] = useState(false)
+  const handleOpen = () => setOpensender(true)
+  const handleClose = () => setOpensender(false)
+  const [sender, setSender] = useState(user ? user.sender : {})
+  const [reciever, setReciever] = useState(user ? user.receiver : {})
+  const [recieverOpen, setRecieverOpen] = useState(false)
+  const handleRecieverOpen = () => setRecieverOpen(true)
+  const handleRecieverClose = () => setRecieverOpen(false)
+  const [hasSender, setHasSender] = useState(!!user)
+  const [hasReciever, setHasReciever] = useState(!!user)
+  const [submitType, setSubmitType] = useState('')
+  const [senderDefaultAddress, setSenderDefaultAddress] = useState(true)
+  const [recieverDefaultAddress, setRecieverDefaultAddress] = useState(true)
+
+  const {
+    control,
+    reset,
+    setValue,
+    setError,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schema)
+  })
 
   function onChangeSenderOstan(event, onChange, values) {
     onChange(values)
@@ -215,185 +349,296 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
     setSelectedRecieverOstan(ostan.find(element => element.name === event.target.innerText)?.id)
   }
 
-  const [packaging] = useState([])
+  // eslint-disable-next-line camelcase
+  const [hub_ids, sethub_ids] = useState([])
+  const [collectPrices, setCollectPrices] = useState([])
+  const [distributionPrices, setDistributionPrices] = useState([])
 
-  const pack = user.product?.packagin_price_id ? user.product?.packaging_price_id : -1
-
-  const defaultValues = user
-    ? {
-        senderCodeMelli: user.sender_customer.identity_code,
-        senderName: user.sender_customer.name,
-        senderMobile: user.sender_customer.mobile,
-        senderPhone: user.sender_customer.tel,
-        senderPhonePrefix: user.sender_customer.area_code,
-        senderCompany: user.sender_customer.company_name,
-        senderCounty: user.sender_customer.provence,
-        senderCity: user.sender_customer.city,
-        senderCodePosti: user.sender_customer.postal_code,
-        senderOtherInfo: user.sender_customer.other_information,
-        senderMainRoard: user.sender_customer.main_street,
-        senderSubRoad: user.sender_customer.side_street,
-        senderAlley: user.sender_customer.alley,
-        senderPlaque: user.sender_customer.plaque,
-        senderFloor: user.sender_customer.floor,
-        senderUnit: user.sender_customer.home_unit,
-        recieverCodeMelli: user.receiver_customer.identity_code,
-        recieverName: user.receiver_customer.name,
-        recieverMobile: user.receiver_customer.mobile,
-        recieverPhone: user.receiver_customer.tel,
-        recieverPhonePrefix: user.receiver_customer.area_code,
-        recieverCompany: user.receiver_customer.company_name,
-        recieverCounty: user.receiver_customer.provence,
-        recieverCity: user.receiver_customer.city,
-        recieverCodePosti: user.receiver_customer.postal_code,
-        recieverMainRoard: user.receiver_customer.main_street,
-        recieverSubRoad: user.receiver_customer.side_street,
-        recieverAlley: user.receiver_customer.alley,
-        recieverPlaque: user.receiver_customer.plaque,
-        recieverFloor: user.receiver_customer.floor,
-        recieverUnit: user.receiver_customer.home_unit,
-        receiverOtherInfo: user.receiver_customer.other_information,
-        weight: user.product.weight,
-        length: user.product.length,
-        width: user.product.width,
-        height: user.product.height,
-        money: user.product.product_cost,
-        car: user.product.vehicle,
-        needsSpecialCarry: user.product.special_vehicle_required,
-        SpecialBox: user.product.special_product,
-        paymentMethod: user.product.payment_method,
-        needsEvacuate: user.product.product_unloading_required,
-        needsLoading: user.product.product_loading_required,
-        needsMovement: user.product.movement_required,
-        isSuburb: user.product.is_suburb,
-        packaging: pack
-      }
-    : emptyForm
-
-  const {
-    reset,
-    setValue,
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues,
-    mode: 'onChange',
-    resolver: yupResolver(schema)
-  })
-
-  // useEffect(() => {}, [])
-
-  const handleClose = () => {
-    toggle()
-    reset(emptyForm)
+  function onChangeHub(event, onChange) {
+    onChange(event)
+    http
+      .post(
+        'distribution_hub_price/',
+        { hub_id: event.target.value },
+        {
+          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+        }
+      )
+      .then(async response => {
+        if (response.data != null) {
+          setDistributionPrices([...response.data])
+        } else setDistributionPrices([])
+      })
+      .catch(err => {
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        toast.error(errorMessage)
+        setError('distribution_price', { type: 'custom', message: errorMessage })
+      })
   }
 
-  const onSubmit = data => {
-    const senderCustomerid = hasSender ? { customer_id: senderId } : {}
-    const recieverCustomerId = hasReciever ? { customer_id: recieverIde } : {}
-    const packaging = data.packaging !== -1 ? { packagin_price_id: data.packaging } : {}
+  useEffect(() => {
+    http
+      .get(
+        'hubs/',
+        {},
+        {
+          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+        }
+      )
+      .then(async response => {
+        if (response.data.hubs != null) {
+          sethub_ids([...response.data.hubs])
+          // eslint-disable-next-line no-unused-expressions
+          user && setValue('hub_id', user.sub_order.hub_destination_id)
+        } else sethub_ids([])
+      })
+      .catch(err => {
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        toast.error(errorMessage)
+        setError('hub_id', { type: 'custom', message: errorMessage })
+      })
+    http
+      .get(
+        'collect_price/',
+        {},
+        {
+          Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+        }
+      )
+      .then(async response => {
+        if (response.data != null) {
+          setCollectPrices([...response.data])
+        } else setCollectPrices([])
+      })
+      .catch(err => {
+        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+        toast.error(errorMessage)
+        setError('collect_price', { type: 'custom', message: errorMessage })
+      })
+  }, [])
 
-    const config = {
-      sender_customer: {
-        identity_code: data.senderCodeMelli,
-        name: data.senderName,
-        company_name: data.senderCompany,
-        mobile: data.senderMobile,
-        tel: data.senderPhone,
-        area_code: data.senderPhonePrefix,
-        provence: data.senderCounty,
-        city: data.senderCity,
-        postal_code: data.senderCodePosti,
-        main_street: data.senderMainRoard,
-        side_street: data.senderSubRoad,
-        alley: data.senderAlley,
-        plaque: data.senderPlaque,
-        floor: data.senderFloor,
-        home_unit: data.senderUnit,
-        other_information: data.senderOtherInfo,
-        lat: sendertLatLang[1],
-        lang: sendertLatLang[0],
-        full_address: `${data.senderMainRoard}- خیابان ${data.senderSubRoad} -کوچه ${data.senderAlley} - پلاک ${data.senderPlaque} - طبقه ${data.senderFloor} - واحد ${data.senderUnit}`,
-        ...senderCustomerid
-      },
-      receiver_customer: {
-        identity_code: data.recieverCodeMelli,
-        name: data.recieverName,
-        company_name: data.recieverCompany,
-        mobile: data.recieverMobile,
-        tel: data.recieverPhone,
-        area_code: data.recieverPhonePrefix,
-        provence: data.recieverCounty,
-        city: data.recieverCity,
-        postal_code: data.recieverCodePosti,
-        main_street: data.recieverMainRoard,
-        side_street: data.recieverSubRoad,
-        alley: data.recieverAlley,
-        plaque: data.recieverAlley,
-        floor: data.recieverFloor,
-        home_unit: data.recieverUnit,
-        other_information: data.receiverOtherInfo,
-        lat: recieverLatLang[1],
-        lang: recieverLatLang[0],
-        full_address: `${data.recieverMainRoard}- خیابان ${data.recieverSubRoad} -کوچه ${data.recieverAlley} - پلاک ${data.recieverPlaque} - طبقه ${data.recieverFloor} - واحد ${data.recieverUnit}`,
-        ...recieverCustomerId
-      },
-      product: {
-        weight: data.weight,
-        length: data.length,
-        width: data.width,
-        height: data.height,
-        product_cost: data.money,
-        vehicle: data.car,
-        special_vehicle_required: data.needsSpecialCarry,
-        special_product: data.SpecialBox,
-        movement_required: data.needsMovement,
-        product_loading_required: data.needsLoading,
-        product_unloading_required: data.needsEvacuate,
-        payment_method: data.paymentMethod,
-        isSuburb: data.isSuburb,
-        ...packaging
+  const onsetSenderCustomer = () => {
+    setHasSender(true)
+
+    setValue('senderName', sender.full_name, { shouldValidate: true })
+    setValue('senderCodeMelli', sender.natural_number, { shouldValidate: true })
+    setValue('senderCompany', sender.sherkat_name, { shouldValidate: true })
+    setValue('senderMobile', sender.phone_number, { shouldValidate: true })
+    setValue('senderPhone', sender.tel_number, { shouldValidate: true })
+    setValue('senderCounty', sender.ostan, { shouldValidate: true })
+
+    setSelectedSenderOstan(ostan.find(element => element.name === sender.ostan)?.id)
+    setValue('senderCity', sender.shahr, { shouldValidate: true })
+    setValue('senderCodePosti', sender.postal_code, { shouldValidate: true })
+    setValue('senderMainRoard', sender.khiaban_asli, { shouldValidate: true })
+    setValue('senderSubRoad', sender.khiaban_faree, { shouldValidate: true })
+    setValue('senderAlley', sender.kooche, { shouldValidate: true })
+    setValue('senderPlaque', sender.plak, { shouldValidate: true })
+    setValue('senderFloor', sender.tabaghe, { shouldValidate: true })
+    setValue('senderUnit', sender.vahed, { shouldValidate: true })
+    setValue('senderOtherInfo', sender.other_information, { shouldValidate: true })
+
+    handleClose()
+  }
+
+  const emptySender = () => {
+    setHasSender(false)
+    setValue('senderName', '', { shouldTouch: true })
+    setValue('senderCodeMelli', '', { shouldTouch: true })
+    setValue('senderCompany', '', { shouldTouch: true })
+    setValue('senderMobile', '', { shouldTouch: true })
+    setValue('senderPhone', '', { shouldTouch: true })
+    setValue('senderCounty', '', { shouldTouch: true })
+
+    setSelectedSenderOstan('')
+    setValue('senderCity', '', { shouldTouch: true })
+    setValue('senderCodePosti', '', { shouldTouch: true })
+    setValue('senderMainRoard', '', { shouldTouch: true })
+    setValue('senderSubRoad', '', { shouldTouch: true })
+    setValue('senderAlley', '', { shouldTouch: true })
+    setValue('senderPlaque', '', { shouldTouch: true })
+    setValue('senderFloor', '', { shouldTouch: true })
+    setValue('senderUnit', '', { shouldTouch: true })
+    setValue('senderOtherInfo', '', { shouldTouch: true })
+  }
+
+  const onsetRecieverCustomer = () => {
+    setHasReciever(true)
+
+    setValue('recieverName', reciever.full_name, { shouldValidate: true })
+    setValue('recieverCodeMelli', reciever.natural_number, { shouldValidate: true })
+    setValue('recieverCompany', reciever.sherkat_name, { shouldValidate: true })
+    setValue('recieverMobile', reciever.phone_number, { shouldValidate: true })
+    setValue('recieverPhone', reciever.tel_number, { shouldValidate: true })
+    setValue('recieverCounty', reciever.ostan, { shouldValidate: true })
+
+    setSelectedRecieverOstan(ostan.find(element => element.name === sender.ostan)?.id)
+    setValue('recieverCity', reciever.shahr, { shouldValidate: true })
+    setValue('recieverCodePosti', reciever.postal_code, { shouldValidate: true })
+    setValue('recieverMainRoard', reciever.khiaban_asli, { shouldValidate: true })
+    setValue('recieverSubRoad', reciever.khiaban_faree, { shouldValidate: true })
+    setValue('recieverAlley', reciever.kooche, { shouldValidate: true })
+    setValue('recieverPlaque', reciever.plak, { shouldValidate: true })
+    setValue('recieverFloor', reciever.tabaghe, { shouldValidate: true })
+    setValue('recieverUnit', reciever.vahed, { shouldValidate: true })
+    setValue('recieverOtherInfo', reciever.other_information, { shouldValidate: true })
+
+    handleRecieverClose()
+  }
+
+  const emptyReciever = () => {
+    setHasReciever(false)
+    setValue('recieverName', '', { shouldTouch: true })
+    setValue('recieverCodeMelli', '', { shouldTouch: true })
+    setValue('recieverCompany', '', { shouldTouch: true })
+    setValue('recieverMobile', '', { shouldTouch: true })
+    setValue('recieverPhone', '', { shouldTouch: true })
+    setValue('recieverCounty', '', { shouldTouch: true })
+
+    setSelectedRecieverOstan('')
+    setValue('recieverCity', '', { shouldTouch: true })
+    setValue('recieverCodePosti', '', { shouldTouch: true })
+    setValue('recieverMainRoard', '', { shouldTouch: true })
+    setValue('recieverSubRoad', '', { shouldTouch: true })
+    setValue('recieverAlley', '', { shouldTouch: true })
+    setValue('recieverPlaque', '', { shouldTouch: true })
+    setValue('recieverFloor', '', { shouldTouch: true })
+    setValue('recieverUnit', '', { shouldTouch: true })
+    setValue('recieverOtherInfo', '', { shouldTouch: true })
+  }
+
+  useEffect(() => {
+    if (changeorder) {
+      if (Object?.keys(sender).length !== 0) {
+        onsetSenderCustomer()
       }
+      if (Object?.keys(reciever).length !== 0) {
+        onsetRecieverCustomer()
+      }
+      setChangeorder(false)
     }
-    if (edit) {
-      toast.promise(
-        editUser(user.order.id, config).then(() => {
-          reset(emptyForm)
-          setSenderLatLang([51.3347, 35.7219])
-          setRecieverLatLang([51.3347, 35.7219])
-          setChange(true)
-          toggle()
-        }),
-        {
-          loading: 'در حال ثبت سفارش',
-          success: 'سفارش ثبت شد',
-          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+  }, [changeorder])
+
+  const onSubmit = data => {
+    // eslint-disable-next-line camelcase
+    const discount_type = data.discount_type === true ? 1 : 0
+    const maliat = data.maliat === true ? 1 : 0
+    const needsPackaging = data.needsPackaging === true ? 1 : 0
+    const needsSpecialCarry = data.needsSpecialCarry === true ? 1 : 0
+
+    if (submitType === 'submit') {
+      if (edit) {
+        const config = {
+          sender_natural_number: data.senderCodeMelli,
+          receiver_natural_number: data.recieverCodeMelli,
+          payment_state: data.paymentMethod,
+          payment_method: data.paymentType,
+          sender_address: `${data.senderMainRoard}- خیابان ${data.senderSubRoad} -کوچه ${data.senderAlley} - پلاک ${data.senderPlaque} - طبقه ${data.senderFloor} - واحد ${data.senderUnit}`,
+          receiver_address: `${data.recieverMainRoard}- خیابان ${data.recieverSubRoad} -کوچه ${data.recieverAlley} - پلاک ${data.recieverPlaque} - طبقه ${data.recieverFloor} - واحد ${data.recieverUnit}`,
+          requires_packing: needsPackaging,
+          requires_special_shipping: needsSpecialCarry,
+          texes: maliat,
+          bar: {
+            weight: data.weight,
+            size_x: data.width,
+            size_y: data.length,
+            size_z: data.height,
+            bar_type: data.barType,
+            bastebandi_type: data.packaging,
+            arzesh: data.money,
+            mohtaviat: data.mohtaviat
+          },
+          off_percent: data.discount,
+          hub_destination_id: data.hub_id
         }
-      )
-    } else if (submitType === 'submit') {
-      toast.promise(
-        createOrder(config).then(() => {
-          reset(emptyForm)
-          setSenderLatLang([51.3347, 35.7219])
-          setRecieverLatLang([51.3347, 35.7219])
-          setHasReciever(false)
-          setHasSender(false)
-          setChange(true)
-          toggle()
-        }),
-        {
-          loading: 'در حال ثبت سفارش',
-          success: 'سفارش ثبت شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        toast.promise(
+          editUser(user.sub_order.id, config).then(() => {
+            reset(emptyForm)
+            setHasReciever(false)
+            setHasSender(false)
+            toggle()
+            setChange(true)
+          }),
+          {
+            loading: 'در حال ثبت سفارش',
+            success: 'سفارش ثبت شد',
+            error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          }
+        )
+      } else {
+        const config = {
+          sender_natural_number: data.senderCodeMelli,
+          receiver_natural_number: data.recieverCodeMelli,
+          payment_state: data.paymentMethod,
+          payment_method: data.paymentType,
+          sender_address: `${data.senderMainRoard}- خیابان ${data.senderSubRoad} -کوچه ${data.senderAlley} - پلاک ${data.senderPlaque} - طبقه ${data.senderFloor} - واحد ${data.senderUnit}`,
+          receiver_address: `${data.recieverMainRoard}- خیابان ${data.recieverSubRoad} -کوچه ${data.recieverAlley} - پلاک ${data.recieverPlaque} - طبقه ${data.recieverFloor} - واحد ${data.recieverUnit}`,
+          requires_packing: needsPackaging,
+          requires_special_shipping: needsSpecialCarry,
+          texes: maliat,
+          bar: {
+            weight: data.weight,
+            size_x: data.width,
+            size_y: data.length,
+            size_z: data.height,
+            bar_type: data.barType,
+            bastebandi_type: data.packaging,
+            arzesh: data.money,
+            mohtaviat: data.mohtaviat
+          },
+          off_percent: data.discount,
+          // eslint-disable-next-line camelcase
+          off_percent_status: discount_type,
+          hub_destination_id: data.hub_id,
+          collect_price_id: data.collect_price,
+          distribution_price_id: data.distribution_price
         }
-      )
+        toast.promise(
+          createOrder(config).then(() => {
+            reset(emptyForm)
+            setHasReciever(false)
+            setHasSender(false)
+            toggle()
+            setChange(true)
+          }),
+          {
+            loading: 'در حال ثبت سفارش',
+            success: 'سفارش ثبت شد',
+            error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          }
+        )
+      }
     } else if (submitType === 'calculate') {
+      const config = {
+        sender_natural_number: data.senderCodeMelli,
+        receiver_natural_number: data.recieverCodeMelli,
+        payment_state: data.paymentMethod,
+        payment_method: data.paymentType,
+        requires_packing: data.needsPackaging,
+        requires_special_shipping: needsSpecialCarry,
+        texes: maliat,
+        bar: {
+          weight: data.weight,
+          size_x: data.width,
+          size_y: data.length,
+          size_z: data.height,
+          bar_type: data.barType,
+          bastebandi_type: data.packaging,
+          arzesh: data.money,
+          mohtaviat: data.mohtaviat
+        },
+        off_percent: data.discount,
+        // eslint-disable-next-line camelcase
+        off_percent_status: data.discount_type,
+        hub_destination_id: data.hub_id,
+        collect_price_id: data.collect_price,
+        distribution_price_id: data.distribution_price
+      }
       toast.promise(
         calculatePrice(config).then(response => {
           toast(t => (
             <Box flex>
-              قیمت محاسبه شده <b>{response.data}</b> ریال می باشد
+              قیمت محاسبه شده <b>{response.data.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</b> ریال می باشد
               <Button onClick={() => toast.dismiss(t.id)}>بستن</Button>
             </Box>
           ))
@@ -407,114 +652,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
     }
   }
 
-  const onsetSenderCustomer = () => {
-    setHasSender(true)
-    setSenderId(sender.id)
-    if (sender.lang !== 0 && sender.lat !== 0) {
-      setSenderLatLang([sender.lang, sender.lat])
-    }
-    setValue('senderName', sender.name, { shouldTouch: true })
-    setValue('senderCodeMelli', sender.natural_code, { shouldTouch: true })
-    setValue('senderCompany', sender.company, { shouldTouch: true })
-    setValue('senderMobile', sender.phone, { shouldTouch: true })
-    setValue('senderPhone', sender.tel_number, { shouldTouch: true })
-    setValue('senderPhonePrefix', sender.area_code, { shouldTouch: true })
-    setValue('senderCounty', sender.provence, { shouldTouch: true })
-
-    setSelectedSenderOstan(ostan.find(element => element.name === sender.provence)?.id)
-    setValue('senderCity', sender.city, { shouldTouch: true })
-    setValue('senderCodePosti', sender.postal_code, { shouldTouch: true })
-    setValue('senderMainRoard', sender.main_street, { shouldTouch: true })
-    setValue('senderSubRoad', sender.side_street, { shouldTouch: true })
-    setValue('senderAlley', sender.alley, { shouldTouch: true })
-    setValue('senderPlaque', sender.plaque, { shouldTouch: true })
-    setValue('senderFloor', sender.floor, { shouldTouch: true })
-    setValue('senderUnit', sender.home_unit, { shouldTouch: true })
-    setValue('senderOtherInfo', sender.other_information, { shouldTouch: true })
-
-    handleCloseMODAL()
-  }
-
-  const emptySender = () => {
-    setHasSender(false)
-    setValue('senderName', '', { shouldTouch: true })
-    setValue('senderCodeMelli', '', { shouldTouch: true })
-    setValue('senderCompany', '', { shouldTouch: true })
-    setValue('senderMobile', '', { shouldTouch: true })
-    setValue('senderPhone', '', { shouldTouch: true })
-    setValue('senderPhonePrefix', '', { shouldTouch: true })
-    setValue('senderCounty', '', { shouldTouch: true })
-
-    setSelectedSenderOstan('')
-    setValue('senderCity', '', { shouldTouch: true })
-    setValue('senderCodePosti', '', { shouldTouch: true })
-    setValue('senderMainRoard', '', { shouldTouch: true })
-    setValue('senderSubRoad', '', { shouldTouch: true })
-    setValue('senderAlley', '', { shouldTouch: true })
-    setValue('senderPlaque', '', { shouldTouch: true })
-    setValue('senderFloor', '', { shouldTouch: true })
-    setValue('senderUnit', '', { shouldTouch: true })
-    setValue('senderOtherInfo', '', { shouldTouch: true })
-    setSenderLatLang([51.3347, 35.7219])
-    navigator.geolocation.getCurrentPosition(pos => {
-      setSenderLatLang([pos.coords.longitude, pos.coords.latitude])
-    })
-  }
-
-  const onsetRecieverCustomer = () => {
-    setHasReciever(true)
-    setRecieverId(reciever.id)
-    if (reciever.lang !== 0 && reciever.lat !== 0) {
-      setRecieverLatLang([reciever.lang, reciever.lat])
-    }
-    setValue('recieverName', reciever.name, { shouldTouch: true })
-    setValue('recieverCodeMelli', reciever.natural_code, { shouldTouch: true })
-    setValue('recieverCompany', reciever.company, { shouldTouch: true })
-    setValue('recieverMobile', reciever.phone, { shouldTouch: true })
-    setValue('recieverPhone', reciever.tel_number, { shouldTouch: true })
-    setValue('recieverPhonePrefix', reciever.area_code, { shouldTouch: true })
-    setValue('recieverCounty', reciever.provence, { shouldTouch: true })
-
-    setSelectedRecieverOstan(ostan.find(element => element.name === sender.provence)?.id)
-    setValue('recieverCity', reciever.city, { shouldTouch: true })
-    setValue('recieverCodePosti', reciever.postal_code, { shouldTouch: true })
-    setValue('recieverMainRoard', reciever.main_street, { shouldTouch: true })
-    setValue('recieverSubRoad', reciever.side_street, { shouldTouch: true })
-    setValue('recieverAlley', reciever.alley, { shouldTouch: true })
-    setValue('recieverPlaque', reciever.plaque, { shouldTouch: true })
-    setValue('recieverFloor', reciever.floor, { shouldTouch: true })
-    setValue('recieverUnit', reciever.home_unit, { shouldTouch: true })
-    setValue('recieverOtherInfo', reciever.other_information, { shouldTouch: true })
-
-    handleRecieverClose()
-  }
-
-  const emptyReciever = () => {
-    setHasReciever(false)
-    setValue('recieverName', '', { shouldTouch: true })
-    setValue('recieverCodeMelli', '', { shouldTouch: true })
-    setValue('recieverCompany', '', { shouldTouch: true })
-    setValue('recieverMobile', '', { shouldTouch: true })
-    setValue('recieverPhone', '', { shouldTouch: true })
-    setValue('recieverPhonePrefix', '', { shouldTouch: true })
-    setValue('recieverCounty', '', { shouldTouch: true })
-
-    setSelectedRecieverOstan('')
-    setValue('recieverCity', '', { shouldTouch: true })
-    setValue('recieverCodePosti', '', { shouldTouch: true })
-    setValue('recieverMainRoard', '', { shouldTouch: true })
-    setValue('recieverSubRoad', '', { shouldTouch: true })
-    setValue('recieverAlley', '', { shouldTouch: true })
-    setValue('recieverPlaque', '', { shouldTouch: true })
-    setValue('recieverFloor', '', { shouldTouch: true })
-    setValue('recieverUnit', '', { shouldTouch: true })
-    setValue('recieverOtherInfo', '', { shouldTouch: true })
-    setRecieverLatLang([51.3347, 35.7219])
-    navigator.geolocation.getCurrentPosition(pos => {
-      setRecieverLatLang([pos.coords.longitude, pos.coords.latitude])
-    })
-  }
-
   const clickedOnSubmit = type => {
     setSubmitType(type)
   }
@@ -524,13 +661,13 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
       open={open}
       anchor='left'
       variant='temporary'
-      onClose={handleClose}
+      onClose={toggle}
       ModalProps={{ keepMounted: true }}
       sx={{ '& .MuiDrawer-paper': { width: { xs: '100%', sm: '100%', lg: '80%', xl: '80%' } } }}
     >
       <Header>
         <Typography variant='h6'>اطلاعات سفارش</Typography>
-        <Close fontSize='small' onClick={handleClose} sx={{ cursor: 'pointer' }} />
+        <Close fontSize='small' onClick={toggle} sx={{ cursor: 'pointer' }} />
       </Header>
       <Box
         sx={{
@@ -543,50 +680,105 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
           }
         }}
       >
-        <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
-          {showUser && (
-            <Card
-              sx={{
-                p: 5,
-                '& .MuiInputBase-input.Mui-disabled': {
-                  WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-                },
-                '& 	.MuiInputLabel-root.Mui-disabled': {
-                  WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-                },
-                mb: 5
-              }}
-            >
+        {showUser && (
+          <>
+            <Card mb={5} p={5} sx={{ mb: 5, p: 5 }}>
               <CardHeader title='اطلاعات سفارش' />
               <CardContent>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='شماره سفارش' value={user.order.id} dir='ltr' disabled fullWidth />
+                    <img src={user.sub_order.bar_code_url} width='200px' height='200px' />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                     <TextField
-                      label='کد رهگیری'
-                      value={user.order.code}
+                      label='لینک بارنامه'
+                      value={user.sub_order.pdf_url}
                       dir='ltr'
                       disabled
-                      fullWidth
                       multiline
                       lines={2}
                     />
+                  </Grid>{' '}
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='مرحله' value={user.sub_order.state} disabled />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='وضعیت' value={user.order.state} disabled fullWidth />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='هزینه' value={user.order.price} disabled fullWidth />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='نام متصدی' value={user.order.operator_name} disabled fullWidth />
+                    <TextField label='سماره سفارش(جهت پیگیری)' value={user.sub_order.id} dir='ltr' disabled />
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
-          )}
+            <Card mb={5} p={5} sx={{ mb: 5, p: 5 }}>
+              <CardHeader title='اطلاعات قیمت' />
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField
+                      label='ارزش افزوده'
+                      value={user.financial_information.arzesh_afzode}
+                      dir='ltr'
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='عوارض' value={user.financial_information.avarez} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='بسته بندی' value={user.financial_information.baste_bandy} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='بیمه' value={user.financial_information.bimeh} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField
+                      label='قیمت منطقه ای'
+                      value={user.financial_information.gheymat_gozary}
+                      dir='ltr'
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='جمع آوری' value={user.financial_information.jam_avary} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='خدمات' value={user.financial_information.khadamat} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='کرایه' value={user.financial_information.kraye} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='مالیات' value={user.financial_information.maliat} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField
+                      label='نرخ هر کیلوگرم'
+                      value={user.financial_information.nerkh_be_kg}
+                      dir='ltr'
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='تخفیف' value={user.financial_information.off} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='قابل پرداخت' value={user.financial_information.payable} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='نمبر' value={user.financial_information.tambr} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='توزیع' value={user.financial_information.tozie} dir='ltr' disabled />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                    <TextField label='مجموع' value={user.financial_information.total} dir='ltr' disabled />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
           <Card
             sx={{
               p: 5,
@@ -602,17 +794,24 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
             <CardHeader
               title='فرستنده'
               subheader={
-                hasSender ? (
-                  <Button onClick={emptySender} color='error' style={{ display: showUser ? 'none' : undefined }}>
-                    حذف مشتری انتخاب شده
-                  </Button>
-                ) : (
-                  <Button onClick={handleOpen}>جستجوی مشتری</Button>
+                !showUser && (
+                  <>
+                    {hasSender ? (
+                      <Button onClick={emptySender} color='error'>
+                        حذف مشتری انتخاب شده
+                      </Button>
+                    ) : (
+                      <>
+                        <Button onClick={handleOpen}>جستجوی مشتری</Button>
+                        <Button onClick={togglenewSenderOpen}>افزودن مشتری</Button>
+                      </>
+                    )}
+                  </>
                 )
               }
             />
             <Modal
-              open={openModal}
+              open={opensender}
               onClose={handleClose}
               aria-labelledby='modal-modal-title'
               aria-describedby='modal-modal-description'
@@ -621,10 +820,10 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                 <h2 id='modal-modal-title'>انتخاب فرستنده</h2>
                 <Table setCustomer={setSender} customer={sender} />
                 <Box display='flex' justifyContent='center' alignItems='center'>
-                  <Button variant='contained' color='primary' onClick={onsetSenderCustomer} sx={{ mx: 2 }}>
+                  <Button variant='contained' color='primary' onClick={() => setChangeorder(true)} sx={{ mx: 2 }}>
                     انتخاب{' '}
                   </Button>
-                  <Button variant='contained' color='error' onClick={handleCloseMODAL}>
+                  <Button variant='contained' color='error' onClick={handleClose}>
                     بستن
                   </Button>
                 </Box>
@@ -648,7 +847,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           error={Boolean(errors.senderCodeMelli)}
                           inputProps={{ maxLength: 10 }}
                           dir='ltr'
-                          disabled={hasSender}
+                          disabled
                         />
                       )}
                     />
@@ -665,7 +864,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled
                           label='نام و نام خانوادگی'
                           value={value}
                           onBlur={onBlur}
@@ -696,7 +895,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           inputProps={{ maxLength: 11 }}
                           placeholder='09*********'
                           dir='ltr'
-                          disabled={hasSender}
+                          disabled
                         />
                       )}
                     />
@@ -705,7 +904,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={8} sm={8} md={4} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
                       name='senderPhone'
@@ -719,38 +918,12 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           error={Boolean(errors.senderPhone)}
                           dir='ltr'
-                          inputProps={{ maxLength: 9 }}
-                          disabled={hasSender}
+                          disabled
                         />
                       )}
                     />
                     {errors.senderPhone && (
                       <FormHelperText sx={{ color: 'error.main' }}>{errors.senderPhone.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={4} md={2} lg={1} xl={1}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='senderPhonePrefix'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <TextField
-                          label='پیش شماره'
-                          value={value}
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          error={Boolean(errors.senderPhonePrefix)}
-                          dir='ltr'
-                          placeholder='021'
-                          inputProps={{ maxLength: 3 }}
-                          disabled={hasSender}
-                        />
-                      )}
-                    />
-                    {errors.senderPhonePrefix && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.senderPhonePrefix.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -767,7 +940,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderCompany)}
-                          disabled={hasSender}
+                          disabled
                         />
                       )}
                     />
@@ -791,7 +964,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={(event, values, value) => onChangeSenderOstan(event, onChange, values, value)}
                           value={value}
                           disableClearable
-                          disabled={hasSender}
+                          disabled
                           renderInput={params => (
                             <TextField
                               /* eslint-disable-next-line react/jsx-props-no-spreading */
@@ -819,7 +992,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <Autocomplete
                           onBlur={onBlur}
-                          disabled={hasSender}
+                          disabled
                           select
                           options={shahr
                             .filter(element => element.ostan === selectedSenderOstan)
@@ -853,7 +1026,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled
                           label='کدپستی'
                           value={value}
                           onBlur={onBlur}
@@ -876,14 +1049,13 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       control={control}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled
                           label='سایر اطلاعات'
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderOtherInfo)}
                           inputProps={{ maxLength: 10 }}
-                          dir='ltr'
                         />
                       )}
                     />
@@ -893,10 +1065,26 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                  <Typography variant='p' component='p' mb={4}>
+                  <Typography variant='h6' component='p' mb={4}>
                     آدرس
                   </Typography>
                 </Grid>
+                {!showUser && (
+                  <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          value={senderDefaultAddress}
+                          checked={senderDefaultAddress}
+                          onChange={() => setSenderDefaultAddress(!senderDefaultAddress)}
+                        />
+                      }
+                      sx={{ p: 0, m: 0 }}
+                      labelPlacement='start'
+                      label='پیش فرض'
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
@@ -905,7 +1093,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='خیابان اصلی'
                           value={value}
                           onBlur={onBlur}
@@ -927,7 +1115,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='خیابان فرعی'
                           value={value}
                           onBlur={onBlur}
@@ -949,7 +1137,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='کوچه'
                           value={value}
                           onBlur={onBlur}
@@ -971,7 +1159,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='پلاک'
                           value={value}
                           onBlur={onBlur}
@@ -993,7 +1181,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='طبقه'
                           value={value}
                           onBlur={onBlur}
@@ -1015,7 +1203,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasSender}
+                          disabled={senderDefaultAddress}
                           label='واحد'
                           value={value}
                           onBlur={onBlur}
@@ -1029,12 +1217,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       <FormHelperText sx={{ color: 'error.main' }}>{errors.senderUnit.message}</FormHelperText>
                     )}
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                  <FormLabel variant='p' component='p'>
-                    لوکیشن
-                  </FormLabel>
-                  <div />
                 </Grid>
               </Grid>
             </CardContent>
@@ -1054,13 +1236,17 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
             <CardHeader
               title='گیرنده'
               subheader={
-                hasReciever ? (
-                  <Button onClick={emptyReciever} color='error' style={{ display: showUser ? 'none' : undefined }}>
+                !showUser &&
+                (hasReciever ? (
+                  <Button onClick={emptyReciever} color='error'>
                     حذف مشتری انتخاب شده
                   </Button>
                 ) : (
-                  <Button onClick={handleRecieverOpen}>جستجوی مشتری</Button>
-                )
+                  <>
+                    <Button onClick={handleRecieverOpen}>جستجوی مشتری</Button>
+                    <Button onClick={togglenewRecieverOpen}>افزودن مشتری</Button>
+                  </>
+                ))
               }
             />
             <Modal
@@ -1073,7 +1259,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                 <h2 id='modal-modal-title'>انتخاب گیرنده</h2>
                 <Table setCustomer={setReciever} customer={reciever} />
                 <Box display='flex' justifyContent='center' alignItems='center'>
-                  <Button variant='contained' color='primary' onClick={onsetRecieverCustomer} sx={{ mx: 2 }}>
+                  <Button variant='contained' color='primary' onClick={() => setChangeorder(true)} sx={{ mx: 2 }}>
                     انتخاب{' '}
                   </Button>
                   <Button variant='contained' color='error' onClick={handleRecieverClose}>
@@ -1100,7 +1286,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           error={Boolean(errors.recieverCodeMelli)}
                           inputProps={{ maxLength: 10 }}
                           dir='ltr'
-                          disabled={hasReciever}
+                          disabled
                         />
                       )}
                     />
@@ -1123,7 +1309,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           error={Boolean(errors.recieverName)}
                           inputProps={{ maxLength: 50 }}
-                          disabled={hasReciever}
+                          disabled
                         />
                       )}
                     />
@@ -1148,7 +1334,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           inputProps={{ maxLength: 11 }}
                           placeholder='09*********'
                           dir='ltr'
-                          disabled={hasReciever}
+                          disabled
                         />
                       )}
                     />
@@ -1157,7 +1343,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={8} sm={8} md={4} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
                       name='recieverPhone'
@@ -1171,8 +1357,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           error={Boolean(errors.recieverPhone)}
                           dir='ltr'
-                          inputProps={{ maxLength: 9 }}
-                          disabled={hasReciever}
+                          disabled
                         />
                       )}
                     />
@@ -1181,31 +1366,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={4} sm={4} md={2} lg={1} xl={1}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='recieverPhonePrefix'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <TextField
-                          label='پیش شماره'
-                          value={value}
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          error={Boolean(errors.recieverPhonePrefix)}
-                          dir='ltr'
-                          placeholder='021'
-                          inputProps={{ maxLength: 3 }}
-                          disabled={hasReciever}
-                        />
-                      )}
-                    />
-                    {errors.recieverPhonePrefix && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.recieverPhonePrefix.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
+
                 <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
@@ -1219,7 +1380,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.recieverCompany)}
-                          disabled={hasReciever}
+                          disabled
                         />
                       )}
                     />
@@ -1242,7 +1403,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           options={ostan.map(element => element.name)}
                           onChange={(event, values, value) => onChangeRecieverOstan(event, onChange, values, value)}
                           value={value}
-                          disabled={hasReciever}
+                          disabled
                           disableClearable
                           renderInput={params => (
                             <TextField
@@ -1252,7 +1413,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                               variant='outlined'
                               onChange={onChange}
                               error={Boolean(errors.recieverCounty)}
-                              disabled={hasReciever}
+                              disabled
                             />
                           )}
                         />
@@ -1272,7 +1433,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <Autocomplete
                           onBlur={onBlur}
-                          disabled={hasReciever}
+                          disabled
                           select
                           options={shahr
                             .filter(element => element.ostan === selectedRecieverOstan)
@@ -1307,7 +1468,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
                           label='کدپستی'
-                          disabled={hasReciever}
+                          disabled
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -1331,13 +1492,12 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
                           label='سایر اطلاعات'
-                          disabled={hasReciever}
+                          disabled
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.receiverOtherInfo)}
                           inputProps={{ maxLength: 10 }}
-                          dir='ltr'
                         />
                       )}
                     />
@@ -1347,10 +1507,26 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                  <Typography variant='p' component='p'>
+                  <Typography variant='h6' component='p'>
                     آدرس
                   </Typography>
                 </Grid>
+                {!showUser && (
+                  <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          value={recieverDefaultAddress}
+                          checked={recieverDefaultAddress}
+                          onChange={() => setRecieverDefaultAddress(!recieverDefaultAddress)}
+                        />
+                      }
+                      sx={{ p: 0, m: 0 }}
+                      labelPlacement='start'
+                      label='پیش فرض'
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
@@ -1360,7 +1536,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
                           label='خیابان اصلی'
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -1383,7 +1559,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
                           label='خیابان فرعی'
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -1405,7 +1581,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           label='کوچه'
                           value={value}
                           onBlur={onBlur}
@@ -1428,7 +1604,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           label='پلاک'
                           value={value}
                           onBlur={onBlur}
@@ -1451,7 +1627,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           label='طبقه'
                           value={value}
                           onBlur={onBlur}
@@ -1475,7 +1651,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
                           label='واحد'
-                          disabled={hasReciever}
+                          disabled={recieverDefaultAddress}
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
@@ -1489,26 +1665,10 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                  <FormLabel variant='p' component='p'>
-                    لوکیشن
-                  </FormLabel>
-                </Grid>
               </Grid>
             </CardContent>
           </Card>
-          <Card
-            sx={{
-              p: 5,
-              '& .MuiInputBase-input.Mui-disabled': {
-                WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-              },
-              '& 	.MuiInputLabel-root.Mui-disabled': {
-                WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-              },
-              mb: 5
-            }}
-          >
+          <Card sx={{ mb: 5, p: 5 }}>
             <CardHeader title='مرسوله' />
             <CardContent>
               <Grid container spacing={2}>
@@ -1521,11 +1681,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={showUser}
                           label='وزن (گرم)'
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
+                          disabled={showUser}
                           error={Boolean(errors.weight)}
                           dir='ltr'
                         />
@@ -1545,11 +1705,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={showUser}
                           label='طول (سانتی متر)'
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
+                          disabled={showUser}
                           error={Boolean(errors.length)}
                           dir='ltr'
                         />
@@ -1569,10 +1729,10 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={showUser}
                           label='عرض (سانتی متر)'
                           value={value}
                           onBlur={onBlur}
+                          disabled={showUser}
                           onChange={onChange}
                           error={Boolean(errors.width)}
                           dir='ltr'
@@ -1593,11 +1753,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={showUser}
                           label='ارتفاع (سانتی متر)'
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
+                          disabled={showUser}
                           error={Boolean(errors.height)}
                           dir='ltr'
                         />
@@ -1617,11 +1777,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <TextField
-                          disabled={showUser}
                           label='ارزش کالا (ریال)'
                           value={value}
                           onBlur={onBlur}
                           onChange={onChange}
+                          disabled={showUser}
                           error={Boolean(errors.money)}
                           dir='ltr'
                         />
@@ -1629,39 +1789,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     />
                     {errors.money && (
                       <FormHelperText sx={{ color: 'error.main' }}>{errors.money.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='car'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <Autocomplete
-                          disabled={showUser}
-                          onBlur={onBlur}
-                          select
-                          options={cars}
-                          onChange={(event, values) => onChange(values)}
-                          value={value}
-                          disableClearable
-                          renderInput={params => (
-                            <TextField
-                              /* eslint-disable-next-line react/jsx-props-no-spreading */
-                              {...params}
-                              label='وسیله حمل کننده'
-                              variant='outlined'
-                              onChange={onChange}
-                              error={Boolean(errors.car)}
-                            />
-                          )}
-                        />
-                      )}
-                    />
-                    {errors.recieverCity && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.car?.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -1676,11 +1803,11 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                         <>
                           <InputLabel>نیاز به حمل ویژه</InputLabel>
                           <Select
-                            disabled={showUser}
                             label='نیاز به حمل ویژه'
                             value={value}
                             onBlur={onBlur}
                             onChange={onChange}
+                            disabled={showUser}
                             error={Boolean(errors.needsSpecialCarry)}
                           >
                             <MenuItem value>دارد</MenuItem>
@@ -1698,18 +1825,47 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   <FormControl fullWidth>
                     <Controller
                       fullWidth
-                      name='SpecialBox'
+                      name='maliat'
                       control={control}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <>
-                          <InputLabel>بار خاص</InputLabel>
+                          <InputLabel>شامل مالیات و عوارض</InputLabel>
                           <Select
-                            disabled={showUser}
                             label='بار خاص'
                             value={value}
                             onBlur={onBlur}
                             onChange={onChange}
-                            error={Boolean(errors.SpecialBox)}
+                            disabled={showUser}
+                            error={Boolean(errors.maliat)}
+                          >
+                            <MenuItem value>می باشد</MenuItem>
+                            <MenuItem value={false}>نمی باشد</MenuItem>
+                          </Select>
+                        </>
+                      )}
+                    />
+                    {errors.maliat && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.maliat.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                  <FormControl fullWidth>
+                    <Controller
+                      fullWidth
+                      name='needsPackaging'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <>
+                          <InputLabel>نیاز به بسته بندی</InputLabel>
+                          <Select
+                            label='نیاز به بسته بندی'
+                            value={value}
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            disabled={showUser}
+                            error={Boolean(errors.needsPackaging)}
                           >
                             <MenuItem value>دارد</MenuItem>
                             <MenuItem value={false}>ندارد</MenuItem>
@@ -1717,29 +1873,231 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                         </>
                       )}
                     />
-                    {errors.SpecialBox && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.SpecialBox.message}</FormHelperText>
+                    {errors.needsPackaging && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.needsPackaging.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='packaging'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <Autocomplete
+                          onBlur={onBlur}
+                          select
+                          options={packaging}
+                          onChange={(event, values) => onChange(values)}
+                          value={value}
+                          disabled={showUser}
+                          disableClearable
+                          renderInput={params => (
+                            <TextField
+                              /* eslint-disable-next-line react/jsx-props-no-spreading */
+                              {...params}
+                              label='بسته یندی'
+                              variant='outlined'
+                              onChange={onChange}
+                              error={Boolean(errors.packaging)}
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.packaging && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.packaging.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='barType'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <Autocomplete
+                          onBlur={onBlur}
+                          select
+                          options={barType}
+                          onChange={(event, values) => onChange(values)}
+                          value={value}
+                          disabled={showUser}
+                          disableClearable
+                          renderInput={params => (
+                            <TextField
+                              /* eslint-disable-next-line react/jsx-props-no-spreading */
+                              {...params}
+                              label='نوع بار'
+                              variant='outlined'
+                              onChange={onChange}
+                              error={Boolean(errors.barType)}
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                    {errors.barType && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.barType.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='mohtaviat'
+                      control={control}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <TextField
+                          label='محتویات'
+                          value={value}
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          disabled={showUser}
+                          error={Boolean(errors.mohtaviat)}
+                          inputProps={{ maxLength: 10 }}
+                          dir='rtl'
+                        />
+                      )}
+                    />
+                    {errors.mohtaviat && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.mohtaviat.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
-          <Card
-            sx={{
-              p: 5,
-              '& .MuiInputBase-input.Mui-disabled': {
-                WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-              },
-              '& 	.MuiInputLabel-root.Mui-disabled': {
-                WebkitTextFillColor: 'rgba(76,78,100,0.87)'
-              },
-              mb: 5
-            }}
-          >
+          <Card sx={{ mb: 5, p: 5 }}>
             <CardHeader title='پرداخت' />
             <CardContent>
               <Grid container spacing={2}>
+                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                  <FormControl fullWidth sx={{ mb: 4 }}>
+                    <Controller
+                      name='hub_id'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { onChange, onBlur } }) => (
+                        <>
+                          <InputLabel>هاب مقصد</InputLabel>
+                          <Select
+                            type='number'
+                            onBlur={onBlur}
+                            disabled={showUser}
+                            id='demo-multiple-name'
+                            onChange={event => onChangeHub(event, onChange)}
+                            input={<OutlinedInput label='Name' />}
+                            error={Boolean(errors.hub_id)}
+                            defaultValue={user && user.sub_order.hub_destination_id}
+                          >
+                            {/* eslint-disable-next-line camelcase */}
+                            {
+                              // eslint-disable-next-line camelcase
+                              hub_ids.map(
+                                (
+                                  // eslint-disable-next-line camelcase
+                                  hub_id
+                                ) => (
+                                  // eslint-disable-next-line camelcase
+                                  <MenuItem key={hub_id.id} value={parseInt(hub_id.id, 10)} disabled={hub_id.id === 0}>
+                                    {/* eslint-disable-next-line camelcase */}
+                                    {hub_id.name}
+                                  </MenuItem>
+                                )
+                              )
+                            }
+                          </Select>
+                        </>
+                      )}
+                    />
+                    {errors.hub_id && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.hub_id.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                {!user && (
+                  <>
+                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                      <FormControl fullWidth sx={{ mb: 4 }}>
+                        <Controller
+                          name='collect_price'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { onChange, onBlur } }) => (
+                            <>
+                              <InputLabel>قیمت جمع آوری</InputLabel>
+                              <Select
+                                type='number'
+                                onBlur={onBlur}
+                                id='demo-multiple-name'
+                                onChange={onChange}
+                                input={<OutlinedInput label='Name' />}
+                                disabled={showUser}
+                                error={Boolean(errors.collect_price)}
+                              >
+                                {collectPrices.length === 0 ? (
+                                  <MenuItem value={undefined}>هاب موجود نیست</MenuItem>
+                                ) : (
+                                  collectPrices.map(price => (
+                                    <MenuItem key={price.id} value={parseInt(price.id, 10)} disabled={price.id === 0}>
+                                      {price.title}({price.price}ریال)
+                                    </MenuItem>
+                                  ))
+                                )}
+                              </Select>
+                            </>
+                          )}
+                        />
+                        {errors.collect_price && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.collect_price.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                      <FormControl fullWidth sx={{ mb: 4 }}>
+                        <Controller
+                          name='distribution_price'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { onChange, onBlur } }) => (
+                            <>
+                              <InputLabel>قیمت توزیع</InputLabel>
+                              <Select
+                                type='number'
+                                onBlur={onBlur}
+                                id='demo-multiple-name'
+                                onChange={onChange}
+                                input={<OutlinedInput label='Name' />}
+                                disabled={showUser}
+                                error={Boolean(errors.distribution_price)}
+                              >
+                                {distributionPrices.length === 0 ? (
+                                  <MenuItem value={undefined}> موجود نیست</MenuItem>
+                                ) : (
+                                  distributionPrices.map(price => (
+                                    <MenuItem key={price.id} value={parseInt(price.id, 10)} disabled={price.id === 0}>
+                                      {price.title}({price.price}ریال)
+                                    </MenuItem>
+                                  ))
+                                )}
+                              </Select>
+                            </>
+                          )}
+                        />
+                        <FormHelperText>این قیمت از قیمت های هاب مقصد برداشته می شود.</FormHelperText>
+                        {errors.distribution_price && (
+                          <FormHelperText sx={{ color: 'error.main' }}>
+                            {errors.distribution_price.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                  </>
+                )}
+
                 <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
@@ -1748,16 +2106,15 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
                         <Autocomplete
-                          disabled={showUser}
                           onBlur={onBlur}
                           select
                           options={paymentMethod}
                           onChange={(event, values) => onChange(values)}
                           value={value}
                           disableClearable
+                          disabled={showUser}
                           renderInput={params => (
                             <TextField
-                              disabled={showUser}
                               /* eslint-disable-next-line react/jsx-props-no-spreading */
                               {...params}
                               label='نحوه پرداخت'
@@ -1777,178 +2134,131 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                 <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                   <FormControl fullWidth>
                     <Controller
-                      fullWidth
-                      name='needsMovement'
+                      name='paymentType'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange, onBlur } }) => (
-                        <>
-                          <InputLabel>نیازمند جابجابی</InputLabel>
-                          <Select
-                            disabled={showUser}
-                            label='نیازمند جابجایی'
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                            error={Boolean(errors.needsMovement)}
-                          >
-                            <MenuItem value>دارد</MenuItem>
-                            <MenuItem value={false}>ندارد</MenuItem>
-                          </Select>
-                        </>
+                        <Autocomplete
+                          onBlur={onBlur}
+                          select
+                          options={paymentType}
+                          onChange={(event, values) => onChange(values)}
+                          value={value}
+                          disableClearable
+                          disabled={showUser}
+                          renderInput={params => (
+                            <TextField
+                              /* eslint-disable-next-line react/jsx-props-no-spreading */
+                              {...params}
+                              label='نوع پرداخت'
+                              variant='outlined'
+                              onChange={onChange}
+                              error={Boolean(errors.paymentType)}
+                            />
+                          )}
+                        />
                       )}
                     />
-                    {errors.needsMovement && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.needsMovement.message}</FormHelperText>
+                    {errors.paymentType && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.paymentType.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                  <FormControl fullWidth>
-                    <Controller
-                      fullWidth
-                      name='needsLoading'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <>
-                          <InputLabel>نیازمند بارگیری</InputLabel>
-                          <Select
-                            disabled={showUser}
-                            label='نیازمند بارگیری'
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                            error={Boolean(errors.needsLoading)}
-                          >
-                            <MenuItem value>دارد</MenuItem>
-                            <MenuItem value={false}>ندارد</MenuItem>
-                          </Select>
-                        </>
-                      )}
-                    />
-                    {errors.needsLoading && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.needsLoading.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                  <FormControl fullWidth>
-                    <Controller
-                      fullWidth
-                      name='needsEvacuate'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <>
-                          <InputLabel>نیازمند تخلیه</InputLabel>
-                          <Select
-                            disabled={showUser}
-                            label='نیازمند تخلیه'
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                            error={Boolean(errors.needsEvacuate)}
-                          >
-                            <MenuItem value>دارد</MenuItem>
-                            <MenuItem value={false}>ندارد</MenuItem>
-                          </Select>
-                        </>
-                      )}
-                    />
-                    {errors.needsEvacuate && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.needsEvacuate.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                  <FormControl fullWidth>
-                    <Controller
-                      fullWidth
-                      name='isSuburb'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange, onBlur } }) => (
-                        <>
-                          <InputLabel>سفارش برون شهری</InputLabel>
-                          <Select
-                            disabled={showUser}
-                            label='سفارش برون شهری'
-                            value={value}
-                            onBlur={onBlur}
-                            onChange={onChange}
-                            error={Boolean(errors.needsEvacuate)}
-                          >
-                            <MenuItem value>می باشد</MenuItem>
-                            <MenuItem value={false}>نمی باشد</MenuItem>
-                          </Select>
-                        </>
-                      )}
-                    />
-                    {errors.isSuburb && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.isSuburb.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                  <FormControl fullWidth sx={{ mb: 4 }}>
-                    <Controller
-                      name='packaging'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { onChange, onBlur } }) => (
-                        <>
-                          <InputLabel>بسته بندی</InputLabel>
-                          <Select
-                            type='number'
-                            onBlur={onBlur}
-                            id='demo-multiple-name'
-                            onChange={onChange}
-                            input={<OutlinedInput label='Name' />}
-                            error={Boolean(errors.packaging)}
-                            InputLabelProps={{ shrink: true }}
-                            disabled={showUser}
-                          >
-                            {packaging.map(pack => (
-                              <MenuItem key={pack.id} value={pack.id}>
-                                {/* eslint-disable-next-line camelcase */}
-                                {pack.name}({pack.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}ریال)
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </>
-                      )}
-                    />
-                    {errors.packaging && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.packaging.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
+                {!user && (
+                  <>
+                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                      <FormControl fullWidth>
+                        <Controller
+                          fullWidth
+                          name='discount_type'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange, onBlur } }) => (
+                            <>
+                              <InputLabel>نوع تخفیف</InputLabel>
+                              <Select
+                                label='نوع تخفیف'
+                                value={value}
+                                onBlur={onBlur}
+                                onChange={onChange}
+                                error={Boolean(errors.discount_type)}
+                                disabled={showUser}
+                              >
+                                <MenuItem value>درصدی</MenuItem>
+                                <MenuItem value={false}>کسر مقدار از مبلغ سفارش</MenuItem>
+                              </Select>
+                            </>
+                          )}
+                        />
+                        {errors.discount_type && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.discount_type.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                      <FormControl fullWidth>
+                        <Controller
+                          fullWidth
+                          name='discount'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange, onBlur } }) => (
+                            <TextField
+                              label='مقدار تخفیف'
+                              value={value}
+                              onBlur={onBlur}
+                              onChange={onChange}
+                              error={Boolean(errors.discount)}
+                              dir='ltr'
+                              disabled={showUser}
+                            />
+                          )}
+                        />
+                        {errors.discount && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.discount.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </CardContent>
           </Card>
-
-          <Button
-            size='large'
-            type='submit'
-            variant='contained'
-            sx={{ m: 1 }}
-            onClick={() => clickedOnSubmit('submit')}
-            style={{ display: showUser ? 'none' : undefined }}
-          >
-            ثبت سفارش
-          </Button>
-          <Button
-            size='large'
-            type='submit'
-            variant='contained'
-            color='info'
-            sx={{ m: 1 }}
-            onClick={() => clickedOnSubmit('calculate')}
-            style={{ display: showUser ? 'none' : undefined }}
-          >
-            محاسبه قیمت
-          </Button>
+          {!showUser && (
+            <>
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+                sx={{ m: 1 }}
+                onClick={() => clickedOnSubmit('submit')}
+              >
+                ثبت سفارش
+              </Button>
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+                color='info'
+                sx={{ m: 1 }}
+                onClick={() => clickedOnSubmit('calculate')}
+              >
+                محاسبه قیمت
+              </Button>
+            </>
+          )}
+          <NewCustomwr
+            open={newSenderOpen}
+            toggle={togglenewSenderOpen}
+            setCustomer={setSender}
+            setChange={setChangeorder}
+          />
+          <NewCustomwr
+            open={newRecieverOpen}
+            toggle={togglenewRecieverOpen}
+            setCustomer={setReciever}
+            setChange={setChangeorder}
+          />
         </form>
       </Box>
     </Drawer>
