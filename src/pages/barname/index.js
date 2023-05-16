@@ -305,7 +305,7 @@ function ACLPage() {
 
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12} xl={6}>
+      <Grid item xs={12} xl={12}>
         <Card>
           <TableHeader data={downloadData} api={downloadApi} headers={headers} name='گزارش ورود و خروج' noAdd>
             <Button sx={{ mb: 2 }} onClick={toggleAddUserDrawer} variant='contained'>
