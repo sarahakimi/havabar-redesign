@@ -53,7 +53,7 @@ function AssignToLogistic({ open, setOpen, setChange, id }) {
           } else setPeyks([])
         })
         .catch(err => {
-          setError('peyk_id', { type: 'custom', message: err.response.data.message })
+          setError('logistic_id', { type: 'custom', message: err.response.data.message })
           toast.error('خطا در دریافت اطلاعات.لطفا مجدد تلاش کنید')
         })
     }

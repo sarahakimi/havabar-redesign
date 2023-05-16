@@ -15,7 +15,8 @@ export default function RowOptions({
   toggleShowUserDrawer,
   selectedCompany,
   deleteFunction,
-  noShow
+  noShow,
+  noEdit
 }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
@@ -73,10 +74,12 @@ export default function RowOptions({
             نمایش
           </MenuItem>
         )}
-        <MenuItem onClick={() => handleEdit(company)}>
-          <PencilOutline fontSize='small' sx={{ mr: 2 }} />
-          ویرایش
-        </MenuItem>
+        {!noEdit && (
+          <MenuItem onClick={() => handleEdit(company)}>
+            <PencilOutline fontSize='small' sx={{ mr: 2 }} />
+            ویرایش
+          </MenuItem>
+        )}
         <MenuItem onClick={() => handleDelete(company)}>
           <DeleteOutline fontSize='small' sx={{ mr: 2 }} />
           حذف

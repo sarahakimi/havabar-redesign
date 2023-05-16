@@ -92,5 +92,10 @@ export default {
   barnames: (page, sort) => `barnames/${page}/${sort}/`,
   groupedBarname: 'barname/groups/',
   barnameTags: 'barname/tags/',
-  barnameReport: 'report/barname'
+  barnameReport: 'report/barname',
+  manifestPage: (page, sort) => `manifests/${page}/${sort}/`,
+  singleManifest: id => `manifest/${id}/`,
+  addManifest: 'manifest/',
+  noManifest: 'barname/no_manifest/',
+  manifestReport: 'report/manifest/'
 }

@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import React from 'react'
 import { Typography } from '@mui/material'
+import Plus from 'mdi-material-ui/Plus'
 import ExportButton from '../export-button/export-button'
 
 function TableHeader({ toggle, data, headers, api, name, noAdd, children, noExport, withTitle }) {
@@ -14,7 +15,7 @@ function TableHeader({ toggle, data, headers, api, name, noAdd, children, noExpo
       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2 }}>
         {children}
         {!noAdd && (
-          <Button sx={{ mb: 2 }} onClick={toggle} variant='contained'>
+          <Button sx={{ mb: 2 }} onClick={toggle} variant='contained' startIcon={<Plus />}>
             افزودن {name}
           </Button>
         )}

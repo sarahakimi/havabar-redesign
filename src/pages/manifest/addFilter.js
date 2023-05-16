@@ -23,17 +23,8 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const schema = yup.object().shape({
-  sub_order_id: yup.number().typeError('به درستی وارد نمایید'),
-  sender_name: yup.string().typeError('به درستی وارد نمایید'),
-  reciver_name: yup.string().typeError('به درستی وارد نمایید'),
-  sender_company: yup.string().typeError('به درستی وارد نمایید'),
-  reciver_company: yup.string().typeError('به درستی وارد نمایید'),
-  sender_city: yup.string().typeError('به درستی وارد نمایید'),
-  reciver_city: yup.string().typeError('به درستی وارد نمایید'),
-  sender_phone: yup.string().typeError('به درستی وارد نمایید'),
-  reciver_phone: yup.string().typeError('به درستی وارد نمایید'),
-  sender_tel: yup.string().typeError('به درستی وارد نمایید'),
-  reciver_tel: yup.string().typeError('به درستی وارد نمایید'),
+  hub_source_name: yup.string().typeError('به درستی وارد نمایید'),
+  hub_destination_name: yup.string().typeError('به درستی وارد نمایید'),
   date: yup.mixed()
 })
 
@@ -44,31 +35,9 @@ function SidebarAddCourier({ open, toggle, setChange, filter, showUser, setFilte
   })
 
   const emptyForm = {
-    sub_order_id: 0,
-    sender_name: '',
-    reciver_name: '',
-    sender_company: '',
-    reciver_company: '',
-    sender_city: '',
-    reciver_city: '',
-    sender_phone: '',
-    reciver_phone: '',
-    sender_tel: '',
-    reciver_tel: ''
-  }
-
-  const dict = {
-    sub_order_id: 'شماره سفارش',
-    sender_name: 'نام فرستنده',
-    reciver_name: 'نام گیرنده',
-    sender_company: 'شرکت فرستنده',
-    reciver_company: 'شرکت گیرنده',
-    sender_city: 'شهر فرستنده',
-    reciver_city: 'شهر گیرنده',
-    sender_phone: 'موبایل فرستنده',
-    reciver_phone: 'موبایل گیرنده',
-    sender_tel: 'تلفن فرستنده',
-    reciver_tel: 'تلفن گیرنده'
+    hub_source_name: '',
+    hub_destination_name: '',
+    state: ''
   }
   const hasFilter = Object.keys(filter).length !== 0
 
@@ -139,26 +108,46 @@ function SidebarAddCourier({ open, toggle, setChange, filter, showUser, setFilte
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          {Object.entries(dict).map(([objkey, objvalue]) => (
-            <FormControl fullWidth sx={{ mb: 4 }} key={objkey}>
-              <Controller
-                name={objkey}
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <TextField
-                    label={objvalue}
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    error={Boolean(errors[objkey])}
-                    disabled={showUser}
-                  />
-                )}
-              />
-              {errors[objkey] && <FormHelperText sx={{ color: 'error.main' }}>{errors[objkey].message}</FormHelperText>}
-            </FormControl>
-          ))}
+          <FormControl fullWidth sx={{ mb: 4 }}>
+            <Controller
+              name='hub_source_name'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  label='هاب مبدا'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.hub_source_name)}
+                  disabled={showUser}
+                />
+              )}
+            />
+            {errors.hub_source_name && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.hub_source_name.message}</FormHelperText>
+            )}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 4 }}>
+            <Controller
+              name='hub_destination_name'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  label='هاب مقصد'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.hub_destination_name)}
+                  disabled={showUser}
+                />
+              )}
+            />
+            {errors.hub_destination_name && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.hub_destination_name.message}</FormHelperText>
+            )}
+          </FormControl>
 
           <p>انتخاب بازه زمانی:</p>
           <Box display='flex' justifyContent='center' sx={{ mb: 4 }}>

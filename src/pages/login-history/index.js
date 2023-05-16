@@ -13,6 +13,7 @@ import Table from '@core/components/table/table'
 import TableHeader from '@core/components/table-header/TableHeader'
 
 import Button from '@mui/material/Button'
+import Magnify from 'mdi-material-ui/Magnify'
 import { downloadDataFromServer, fetchData } from './requests'
 import AddFilter from './addFilter'
 
@@ -161,7 +162,7 @@ function ACLPage() {
       <Grid item xs={12}>
         <Card>
           <TableHeader data={downloadData} api={downloadApi} headers={headers} name='گزارش ورود و خروج' noAdd>
-            <Button sx={{ mb: 2 }} onClick={toggleAddUserDrawer} variant='contained'>
+            <Button sx={{ mb: 2 }} onClick={toggleAddUserDrawer} variant='contained' startIcon={<Magnify />}>
               فیلتر
             </Button>
             {hasFilter && (

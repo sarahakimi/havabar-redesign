@@ -11,6 +11,7 @@ import Table from '@core/components/table/table'
 import TableHeader from '@core/components/table-header/TableHeader'
 import RowOptions from '@core/components/row-options/row-options'
 import Button from '@mui/material/Button'
+import Magnify from 'mdi-material-ui/Magnify'
 import AddUserDrawer from './AddUserDrawer'
 import { deleteUser, fetchData, downloadDataFromServer } from './requests'
 import AddPeykDiaolg from './addPeykDiaolg'
@@ -454,7 +455,7 @@ function ACLPage() {
             headers={headers}
             name='سفارش'
           >
-            <Button sx={{ mb: 2 }} onClick={toggleFilters} variant='contained' color='info'>
+            <Button sx={{ mb: 2 }} onClick={toggleFilters} variant='contained' color='info' startIcon={<Magnify />}>
               فیلتر
             </Button>
             {hasFilter && (

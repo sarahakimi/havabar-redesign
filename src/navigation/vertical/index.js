@@ -19,7 +19,8 @@ import {
   OfficeBuildingOutline,
   CreditCardFast,
   Plus,
-  ViewList
+  ViewList,
+  AirplaneCheck
 } from 'mdi-material-ui'
 import Airplane from 'mdi-material-ui/Airplane'
 
@@ -156,6 +157,13 @@ const navigation = () => [
     subject: 'admin',
     icon: OfficeBuildingOutline,
     title: ' شرکت ها'
+  },
+  {
+    icon: AirplaneCheck,
+    title: 'مانیفست',
+    path: '/manifest',
+    action: 'read',
+    subject: 'every-page'
   },
   {
     path: '/calculate-price',
