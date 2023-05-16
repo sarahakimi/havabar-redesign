@@ -18,7 +18,8 @@ import {
   MagnifyScan,
   OfficeBuildingOutline,
   CreditCardFast,
-  Plus
+  Plus,
+  ViewList
 } from 'mdi-material-ui'
 import Airplane from 'mdi-material-ui/Airplane'
 
@@ -55,6 +56,13 @@ const navigation = () => [
     icon: ViewListOutline,
     title: 'سفارشات',
     path: '/orders',
+    action: 'read',
+    subject: 'every-page'
+  },
+  {
+    icon: ViewList,
+    title: 'بارنامه ها',
+    path: '/barname',
     action: 'read',
     subject: 'every-page'
   },

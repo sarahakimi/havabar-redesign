@@ -147,7 +147,7 @@ function ACLPage() {
         const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
         toast.error(errorMessage)
       })
-  }, [sortModel, setDownloadData, change])
+  }, [sortModel, setDownloadData, change, filter])
   const toggleAddUserDrawer = () => setAddFilterOpen(!addFilterOpen)
   const hasFilter = Object.keys(filter).length !== 0
 

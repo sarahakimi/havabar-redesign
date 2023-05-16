@@ -88,5 +88,9 @@ export default {
   delivery_fromLogistic: id => `sub_order/${id}/delivery_from_logistic/`,
   distributeOrder: id => `sub_order/${id}/distribute/`,
   suborderReport: 'report/suborder/',
-  editOrder: id => `sub_order/${id}/`
+  editOrder: id => `sub_order/${id}/`,
+  barnames: (page, sort) => `barnames/${page}/${sort}/`,
+  groupedBarname: 'barname/groups/',
+  barnameTags: 'barname/tags/',
+  barnameReport: 'report/barname'
 }
