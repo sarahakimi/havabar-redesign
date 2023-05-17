@@ -1,9 +1,9 @@
-import {createContext, useEffect, useState} from 'react'
-import {useRouter} from 'next/router'
+import { createContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import authConfig from 'configs/auth'
 import http from 'services/http'
-import toast from "react-hot-toast";
-import urls from "configs/requestEndpoints"
+import toast from 'react-hot-toast'
+import urls from 'configs/requestEndpoints'
 
 const defaultProvider = {
   user: null,
@@ -18,7 +18,7 @@ const defaultProvider = {
 }
 const AuthContext = createContext(defaultProvider)
 
-function AuthProvider({children}) {
+function AuthProvider({ children }) {
   const [user, setUser] = useState(defaultProvider.user)
   const [loading, setLoading] = useState(defaultProvider.loading)
   const [isInitialized, setIsInitialized] = useState(defaultProvider.isInitialized)
@@ -28,43 +28,56 @@ function AuthProvider({children}) {
     if (!isInitialized) {
       if (window.localStorage.getItem(authConfig.storageTokenKeyName)) {
         setIsInitialized(true)
-        setUser(JSON.parse(window.localStorage.getItem("userData")))
+        setUser(JSON.parse(window.localStorage.getItem('userData')))
       } else {
         localStorage.removeItem('userData')
         localStorage.removeItem(authConfig.storageTokenKeyName)
         setUser(null)
         setLoading(false)
         setIsInitialized(false)
-        router.replace("/login")
+        const { returnUrl } = router.query
+        const redirectURL = returnUrl && returnUrl !== '/login' ? returnUrl : '/login'
+        const { pathname } = window.location
+        console.log(pathname)
+        if (pathname !== '/track-order/' && pathname !== '/login/' && pathname !== '/forgot-password/')
+          router.replace(redirectURL)
         setLoading(false)
       }
     }
     if (isInitialized && user) {
       http
-        .get('hub/', {}, {
-          Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
-        }).then(() => {
-        const {returnUrl} = router.query
-        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-        router.replace(redirectURL)
-        setLoading(false)
-      }).catch(async err => {
-        if (err?.response?.data?.messageCode === 401) {
-          await localStorage.removeItem('userData')
-          toast.error(err?.response?.data?.message)
-          await localStorage.removeItem(authConfig.storageTokenKeyName)
-          setUser(null)
+        .get(
+          'hub/',
+          {},
+          {
+            Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+          }
+        )
+        .then(() => {
+          const { pathname } = window.location
+          if (pathname === '/track-order/' || pathname === '/login/' || pathname === '/forgot-password/')
+            router.replace('/')
+          else router.replace(pathname)
+
           setLoading(false)
-          setIsInitialized(false)
-          router.replace("/login")
-          setLoading(false)
-        } else {
-          const {returnUrl} = router.query
-          const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-          router.replace(redirectURL)
-          setLoading(false)
-        }
-      })
+        })
+        .catch(async err => {
+          if (err?.response?.data?.messageCode === 401) {
+            await localStorage.removeItem('userData')
+            toast.error(err?.response?.data?.message)
+            await localStorage.removeItem(authConfig.storageTokenKeyName)
+            setUser(null)
+            setLoading(false)
+            setIsInitialized(false)
+            router.replace('/login')
+            setLoading(false)
+          } else {
+            const { returnUrl } = router.query
+            const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+            router.replace(redirectURL)
+            setLoading(false)
+          }
+        })
     }
   }, [user])
 
@@ -76,14 +89,17 @@ function AuthProvider({children}) {
         window.localStorage.removeItem(authConfig.storageTokenKeyName)
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
         toast.dismiss(toastid)
-        const adminId = res.data.role === "super-admin"
+        const adminId = res.data.role === 'super-admin'
 
-        const {returnUrl} = router.query
-        setUser({...res.data, isSuperAdmin: adminId})
-        await window.localStorage.setItem('userData', JSON.stringify({
-          ...res.data,
-          isSuperAdmin: adminId
-        }))
+        const { returnUrl } = router.query
+        setUser({ ...res.data, isSuperAdmin: adminId })
+        await window.localStorage.setItem(
+          'userData',
+          JSON.stringify({
+            ...res.data,
+            isSuperAdmin: adminId
+          })
+        )
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
         router.replace(redirectURL)
       })
@@ -104,18 +120,22 @@ function AuthProvider({children}) {
     }
 
     // eslint-disable-next-line consistent-return
-    return http.post(urls.logout, {}, {
-      Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
-    }).then(() => {
-      setUser(null)
-      setIsInitialized(false)
-      window.localStorage.removeItem('userData')
-      window.localStorage.removeItem(authConfig.storageTokenKeyName)
-      router.push('/login')
-    })
-
+    return http
+      .post(
+        urls.logout,
+        {},
+        {
+          Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+        }
+      )
+      .then(() => {
+        setUser(null)
+        setIsInitialized(false)
+        window.localStorage.removeItem('userData')
+        window.localStorage.removeItem(authConfig.storageTokenKeyName)
+        router.push('/login')
+      })
   }
-
 
   // eslint-disable-next-line react/jsx-no-constructed-context-values
   const values = {
@@ -132,4 +152,4 @@ function AuthProvider({children}) {
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
 }
 
-export {AuthContext, AuthProvider}
+export { AuthContext, AuthProvider }

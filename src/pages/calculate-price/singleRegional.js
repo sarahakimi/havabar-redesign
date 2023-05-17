@@ -237,7 +237,7 @@ function SingleRegional({ setChange, showUser, user, toggle, open }) {
         }
       )
     }
-  }, [priceChange, data])
+  }, [priceChange])
 
   const onSubmit = async formdata => {
     if (data.weight_prices.length === 0) {

@@ -455,14 +455,7 @@ function ACLPage() {
             headers={headers}
             name='سفارش'
           >
-            <Button
-              sx={{ mb: 2 }}
-              onClick={toggleFilters}
-              variant='contained'
-              color='info'
-              startIcon={<Magnify />}
-              color='info'
-            >
+            <Button sx={{ mb: 2 }} onClick={toggleFilters} variant='contained' color='info' startIcon={<Magnify />}>
               فیلتر
             </Button>
             {hasFilter && (
