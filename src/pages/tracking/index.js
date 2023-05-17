@@ -171,10 +171,10 @@ function Index() {
                 <StepLabel StepIconComponent={QontoStepIcon}>ثبت سفارش</StepLabel>
               </Step>
               <Step>
-                <StepLabel StepIconComponent={QontoStepIcon}>انتساب به پیک</StepLabel>
+                <StepLabel StepIconComponent={QontoStepIcon}>جمع آوری</StepLabel>
               </Step>
               <Step>
-                <StepLabel StepIconComponent={QontoStepIcon}>تحویل از مبدا</StepLabel>
+                <StepLabel StepIconComponent={QontoStepIcon}>اتمام جمع أوری</StepLabel>
               </Step>
               <Step>
                 <StepLabel StepIconComponent={QontoStepIcon}>تحویل به مقصد</StepLabel>
