@@ -126,6 +126,7 @@ function RegionalTable({ data, setChange }) {
           setChange={setChange}
           selectedCompany={selectedCompany}
           deleteFunction={deleteFunction}
+          noEdit
         />
       )
     }

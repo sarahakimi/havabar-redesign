@@ -97,6 +97,7 @@ function DistributionAndCollectTable({ data, setChange, deleteFunc, name, addFun
           setChange={setChange}
           selectedCompany={selectedCompany}
           deleteFunction={deleteFunction}
+          noEdit
         />
       )
     }

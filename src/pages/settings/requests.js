@@ -17,6 +17,14 @@ export const fetchLogo = async sortModel => {
   return response
 }
 
+export const applyLogo = async data => {
+  const response = await http.post(urls.getLogo, data, {
+    Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`
+  })
+
+  return response
+}
+
 export const editHub = async (id, data) => {
   const response = await http.put(urls.singleHub(id), data, {
     Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`

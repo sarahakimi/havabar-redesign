@@ -16,11 +16,10 @@ import FormHelperText from '@mui/material/FormHelperText'
 import * as yup from 'yup'
 import { Autocomplete, Typography } from '@mui/material'
 import { ostan, shahr } from 'iran-cities-json'
-import * as tus from 'tus-js-client'
 import toast from 'react-hot-toast'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAuth } from '../../hooks/useAuth'
-import { editHub, fetchData, fetchLogo } from './requests'
+import { applyLogo, editHub, fetchData, fetchLogo } from './requests'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -33,16 +32,6 @@ const ButtonStyled = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     width: '100%',
     textAlign: 'center'
-  }
-}))
-
-const ResetButtonStyled = styled(Button)(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
   }
 }))
 
@@ -65,10 +54,10 @@ const schema = yup.object().shape({
 })
 
 function TabAccount() {
-  const imgSrc = ''
+  const imgSrc = '/images/favicon.png'
   const [hasHub, setHasHub] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
-  const [resetImageUrl, setResetImageUrl] = useState('')
+
   const hub = useAuth().user.hub_id
 
   const [formData, setFormData] = useState({
@@ -101,10 +90,7 @@ function TabAccount() {
   const {
     control,
     reset,
-
-    // setValue,
     handleSubmit,
-    setError,
     formState: { errors }
   } = useForm({
     defaultValues: useMemo(() => formData, [setFormData]),
@@ -113,12 +99,6 @@ function TabAccount() {
   })
 
   useEffect(() => {
-    fetchLogo()
-      .then(response => setImageUrl(response.logo))
-      .catch(err => {
-        const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
-        toast.error(errorMessage)
-      })
     fetchData()
       .then(response => {
         if (response.data.hub === null) {
@@ -127,7 +107,6 @@ function TabAccount() {
         } else {
           reset(response.data.hub)
           setImageUrl(response.data.hub.image)
-          setResetImageUrl(response.data.hub.image)
           setSelectedSenderOstan(response.data.hub.state)
           setHasHub(true)
         }
@@ -137,6 +116,18 @@ function TabAccount() {
         toast.error(errorMessage)
       })
   }, [setFormData, setSelectedSenderOstan])
+  useEffect(() => {
+    if (imageUrl !== '') {
+      fetchLogo()
+        .then(response => {
+          setImageUrl(response.data.logo)
+        })
+        .catch(err => {
+          const errorMessage = err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است'
+          toast.error(errorMessage)
+        })
+    }
+  }, [imageUrl])
 
   const onSubmit = data => {
     toast.promise(editHub(hub, data), {
@@ -146,32 +137,40 @@ function TabAccount() {
     })
   }
 
-  const handleSetUpload = event => {
-    const uploadFile = event.target.files[0]
-    if (!uploadFile) {
-      return
-    }
-    const toastId = toast.loading('در حال بارگذاری لوگو')
+  const getBase64 = file =>
+    new Promise(resolve => {
+      let baseURL = ''
 
-    const upload = new tus.Upload(uploadFile, {
-      endpoint: 'https://api.zaminbar.ir/files/',
-      retryDelays: [0],
-      metadata: {
-        filename: uploadFile.name,
-        filetype: uploadFile.type
-      },
-      onError() {
-        setError('hub_id', { type: 'custom', message: 'مشکل در بارگذای عکس. مجدد تلاش کنید' })
-        toast.dismiss(toastId)
-        toast.error('خطا در بارگذاری لوگو')
-      },
-      onSuccess() {
-        setImageUrl(upload.url)
-        toast.dismiss(toastId)
-        toast.success('با موفقیت بارگذاری شد')
+      const reader = new FileReader()
+
+      reader.readAsDataURL(file)
+
+      // on reader load somthing...
+      reader.onload = () => {
+        // Make a fileInfo Object
+        baseURL = reader.result
+        resolve(baseURL)
       }
     })
-    upload.start()
+
+  const handleFileInputChange = e => {
+    const file = e.target.files[0]
+
+    getBase64(file)
+      .then(result => {
+        file.base64 = result
+        toast.promise(
+          applyLogo({ logo: result }).then(() => window.location.reload(true)),
+          {
+            loading: 'در حال آپلود عکس',
+            success: 'عکس آپلود شد',
+            error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          }
+        )
+      })
+      .catch(() => {
+        toast.error('خطا در آپلود عکس')
+      })
   }
 
   return (
@@ -188,19 +187,12 @@ function TabAccount() {
                     <input
                       hidden
                       type='file'
-                      onChange={handleSetUpload}
+                      onChange={handleFileInputChange}
                       accept='image/png, image/jpeg'
                       id='account-settings-upload-image'
                       name='image'
                     />
                   </ButtonStyled>
-                  <ResetButtonStyled
-                    color='error'
-                    variant='outlined'
-                    onClick={() => setImageUrl(resetImageUrl === '' ? imgSrc : resetImageUrl)}
-                  >
-                    انصراف
-                  </ResetButtonStyled>
                 </Box>
               </Box>
             </Grid>
