@@ -13,13 +13,13 @@ import toast from 'react-hot-toast'
 import { createOrder } from './requests'
 
 const schema = yup.object().shape({
-  senderCodeMelli: yup.string().typeError('به درستی وارد کنید'),
-  senderName: yup.string().typeError('به درستی وارد کنید'),
-  senderMobile: yup.string().typeError('به درستی وارد کنید'),
-  senderPhone: yup.string().typeError('به درستی وارد کنید'),
+  senderCodeMelli: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  senderName: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  senderMobile: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  senderPhone: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
   senderCompany: yup.string().typeError('به درستی وارد کنید'),
-  senderCounty: yup.string().typeError('به درستی وارد کنید'),
-  senderCity: yup.string().typeError('به درستی وارد کنید'),
+  senderCounty: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  senderCity: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
   senderCodePosti: yup.string().typeError('به درستی وارد کنید'),
   senderOtherInfo: yup.string().typeError('به درستی وارد کنید'),
   senderMainRoard: yup.string().typeError('به درستی وارد کنید'),
@@ -28,13 +28,13 @@ const schema = yup.object().shape({
   senderPlaque: yup.string().typeError('به درستی وارد کنید'),
   senderFloor: yup.string().typeError('به درستی وارد کنید'),
   senderUnit: yup.string().typeError('به درستی وارد کنید'),
-  recieverCodeMelli: yup.string().typeError('به درستی وارد کنید'),
-  recieverName: yup.string().typeError('به درستی وارد کنید'),
-  recieverMobile: yup.string().typeError('به درستی وارد کنید'),
-  recieverPhone: yup.string().typeError('به درستی وارد کنید'),
+  recieverCodeMelli: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  recieverName: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  recieverMobile: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  recieverPhone: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
   recieverCompany: yup.string().typeError('به درستی وارد کنید'),
-  recieverCounty: yup.string().typeError('به درستی وارد کنید'),
-  recieverCity: yup.string().typeError('به درستی وارد کنید'),
+  recieverCounty: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
+  recieverCity: yup.string().typeError('به درستی وارد کنید').required('فیلد الزامی').min(1, 'فیلد الزامی'),
   recieverCodePosti: yup.string().typeError('به درستی وارد کنید'),
   recieverMainRoard: yup.string().typeError('به درستی وارد کنید'),
   recieverSubRoad: yup.string().typeError('به درستی وارد کنید'),
@@ -241,15 +241,59 @@ function ACLPage() {
       taxation_price: data.maliat,
       total: data.allprice,
       sender_natural_number: data.senderCodeMelli,
-      receiver_natural_number: data.recieverCodeMelli
+      receiver_natural_number: data.recieverCodeMelli,
+      sender: {
+        natural_number: data.senderCodeMelli,
+        sherkat_name: '',
+        full_name: data.senderName,
+        phone_number: data.senderMobile,
+        tel_number: data.senderPhone,
+        postal_code: data.senderCodePosti,
+        ostan: data.senderCounty,
+        shahr: data.senderCity,
+        khiaban_asli: data.senderMainRoard,
+        khiaban_faree: data.senderSubRoad,
+        kooche: data.senderAlley,
+        plak: data.senderPlaque,
+        tabaghe: data.senderFloor,
+        vahed: data.senderUnit,
+        other_information: data.senderOtherInfo
+      },
+      receiver: {
+        natural_number: data.recieverCodeMelli,
+        sherkat_name: data.recieverCompany,
+        full_name: data.recieverName,
+        phone_number: data.recieverMobile,
+        tel_number: data.recieverPhone,
+        postal_code: data.recieverCodePosti,
+        ostan: data.recieverCounty,
+        shahr: data.recieverCity,
+        khiaban_asli: data.recieverMainRoard,
+        khiaban_faree: data.recieverSubRoad,
+        kooche: data.recieverAlley,
+        plak: data.recieverPlaque,
+        tabaghe: data.recieverFloor,
+        vahed: data.recieverUnit,
+        other_information: data.receiverOtherInfo
+      },
+      bar: {
+        weight: data.weight,
+        size_x: data.width,
+        size_y: data.length,
+        size_z: data.height,
+        bar_type: data.barType,
+        bastebandi_type: data.packaging,
+        arzesh: data.money,
+        mohtaviat: data.mohtaviat
+      }
     }
     toast.promise(
       createOrder(config).then(() => {
         reset(emptyForm)
       }),
       {
-        loading: 'در حال ثبت سفارش',
-        success: 'سفارش ثبت شد',
+        loading: 'در حال ثبت بارنامه',
+        success: 'بارنامه ثبت شد',
         error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
@@ -728,7 +772,6 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverCompany)}
-                      disabled
                     />
                   )}
                 />
@@ -750,7 +793,6 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverCounty)}
-                      disabled
                     />
                   )}
                 />
@@ -772,7 +814,6 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverCity)}
-                      disabled
                     />
                   )}
                 />
@@ -1582,7 +1623,7 @@ function ACLPage() {
         </CardContent>
       </Card>
       <Button size='large' type='submit' variant='contained' sx={{ m: 1 }}>
-        ثبت سفارش
+        ثبت بارنامه
       </Button>
     </form>
   )

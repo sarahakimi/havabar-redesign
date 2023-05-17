@@ -303,7 +303,23 @@ function ACLPage() {
       hideable: false,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {row.sub_order.hub_origin_id === currentHub ? (
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {row.sub_order.type === 'تسویه' ? (
+            <>
+              {row.sub_order.state_id === 0 && (
+                <Button variant='contained' onClick={() => onOpenDialog(row)}>
+                  {row.sub_order.state}
+                </Button>
+              )}
+              {row.sub_order.state_id === 1 && <Typography sx={{ color: 'black' }}>در حال جمع آوری</Typography>}
+              {row.sub_order.state_id === 2 && (
+                <Button variant='contained' onClick={() => onCollectOrder(row)} color='warning'>
+                  تحویل به هاب مبدا
+                </Button>
+              )}
+              {row.sub_order.state_id === 3 && <Typography sx={{ color: 'green' }}>تکمیل سفارش</Typography>}
+            </>
+          ) : row.sub_order.hub_origin_id === currentHub ? (
             <>
               {row.sub_order.state_id === 0 && (
                 <Button variant='contained' onClick={() => onOpenDialog(row)}>

@@ -233,6 +233,24 @@ function ACLPage() {
         </Box>
       )
     },
+    {
+      flex: 0.1,
+      minWidth: 50,
+      field: 'type',
+      headerName: 'نوع',
+      hideable: false,
+      sortable: false,
+      filterOperators,
+      renderCell: ({ row }) => (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+            <Typography noWrap component='a' variant='subtitle2' sx={{ color: 'text.primary', textDecoration: 'none' }}>
+              {row.type}
+            </Typography>
+          </Box>
+        </Box>
+      )
+    },
 
     {
       flex: 0.1,
