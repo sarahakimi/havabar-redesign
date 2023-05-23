@@ -12,7 +12,6 @@ export const fetchData = async sortModel => {
   sortBy = sortBy.filter(element => element !== searchValue)
   sortBy[1] = keys[sortBy[1]]
   const search = sortModel?.search !== '' ? sortModel.search : {}
-  console.log(search)
 
   const response = await http.post(urls.getCustomers(sortModel.page, Number(sortBy.join(''))), search, {
     Authorization: `Bearer ${window.localStorage.getItem('access_Token')}`

@@ -424,26 +424,6 @@ function SingleRegional({ setChange, showUser, user, toggle, open }) {
                 </GridContainer>
               </Card>
             </Grid>
-            {addUserOpen && (
-              <NewRegionalDrawer
-                open={addUserOpen}
-                toggle={toggleAddUserDrawer}
-                setChange={setPriceChange}
-                edit={false}
-                company={null}
-                showUser={false}
-              />
-            )}
-            {openEdit && (
-              <NewRegionalDrawer
-                open={openEdit}
-                toggle={toggleEditUserDrawer}
-                setChange={setPriceChange}
-                user={selectedCompany}
-                edit
-                showUser={false}
-              />
-            )}
           </Grid>
         </DialogContent>
         {!showUser && (
@@ -454,6 +434,26 @@ function SingleRegional({ setChange, showUser, user, toggle, open }) {
           </DialogActions>
         )}
       </form>
+      {addUserOpen && (
+        <NewRegionalDrawer
+          open={addUserOpen}
+          toggle={toggleAddUserDrawer}
+          setChange={setPriceChange}
+          edit={false}
+          company={null}
+          showUser={false}
+        />
+      )}
+      {openEdit && (
+        <NewRegionalDrawer
+          open={openEdit}
+          toggle={toggleEditUserDrawer}
+          setChange={setPriceChange}
+          user={selectedCompany}
+          edit
+          showUser={false}
+        />
+      )}
     </Dialog>
   )
 }

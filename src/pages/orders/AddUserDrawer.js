@@ -286,7 +286,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         discount_type: false,
         discount: 0
       }
-  console.log(user)
 
   const paymentMethod = ['پیش کرایه', 'پس کرایه']
 

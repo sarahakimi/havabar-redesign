@@ -147,8 +147,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser, role
       role: 'admin'
     }
 
-    console.log(data)
-
     if (edit) {
       // eslint-disable-next-line no-param-reassign
       delete data.password
@@ -385,7 +383,6 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser, role
                     input={<OutlinedInput label='Name' />}
                     renderValue={selected => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {console.log(selected)}
                         {selected.map(value => (
                           <Chip key={value} label={value?.persianName} />
                         ))}

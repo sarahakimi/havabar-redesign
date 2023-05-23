@@ -1,12 +1,11 @@
-import {useEffect} from 'react'
-import {useRouter} from 'next/router'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import Spinner from '@core/components/spinner'
-import {useAuth} from 'hooks/useAuth'
-
+import { useAuth } from 'hooks/useAuth'
 
 export const getHomeRoute = (role, hub) => {
   if (role) return '/superadmin'
-  if (hub === 0 && !role) return "/admin/users"
+  if (hub === 0 && !role) return '/admin/users'
 
   return '/dashboards'
 }
@@ -18,15 +17,10 @@ function Home() {
 
   useEffect(() => {
     if (!router.isReady) {
-
       return
-
     }
-    console.log(auth.user)
-
 
     if (auth.user) {
-      console.log(auth.user)
       const homeRoute = getHomeRoute(auth.user.isSuperAdmin, auth.user?.hub_id)
 
       router.replace(homeRoute)
@@ -35,7 +29,7 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <Spinner/>
+  return <Spinner />
 }
 
 export default Home

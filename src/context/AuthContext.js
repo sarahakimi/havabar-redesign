@@ -38,7 +38,7 @@ function AuthProvider({ children }) {
         const { returnUrl } = router.query
         const redirectURL = returnUrl && returnUrl !== '/login' ? returnUrl : '/login'
         const { pathname } = window.location
-        console.log(pathname)
+
         if (pathname !== '/track-order/' && pathname !== '/login/' && pathname !== '/forgot-password/')
           router.replace(redirectURL)
         setLoading(false)

@@ -176,10 +176,8 @@ function ACLPage() {
   }
 
   const onChangeInpuFile = ev => {
-    console.log(ev.target.files[0])
     const formData = new FormData()
     formData.append('file', ev.target.files[0], ev.target.files[0].name)
-    console.log(formData)
 
     // toast.promise(
     //   applyBackup(file)
