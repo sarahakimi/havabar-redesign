@@ -142,7 +142,7 @@ function Index() {
       .catch(err => {
         setLoading(false)
         toast.dismiss(toastid)
-        toast.error(err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
+        toast.error(err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
       })
   }
 

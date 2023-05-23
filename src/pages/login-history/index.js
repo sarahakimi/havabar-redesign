@@ -57,7 +57,7 @@ function ACLPage() {
         loading: 'در حال دانلود',
         success: 'دانلود انجام شد',
         error: err =>
-          err.response?.data?.message
+          err?.response?.data?.message
             ? err.response?.data?.message
             : 'خطایی رخ داده است.از خالی نبودن موارد دانلود مطمئن شوید.'
       }

@@ -187,7 +187,6 @@ function ACLPage() {
           edit={false}
           company={null}
           setChange={setChange}
-          showUser
         />
       )}
 

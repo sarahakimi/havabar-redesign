@@ -562,7 +562,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
           {
             loading: 'در حال ثبت سفارش',
             success: 'سفارش ثبت شد',
-            error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+            error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
           }
         )
       } else {
@@ -604,7 +604,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
           {
             loading: 'در حال ثبت سفارش',
             success: 'سفارش ثبت شد',
-            error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+            error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
           }
         )
       }
@@ -646,7 +646,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
         {
           loading: 'در حال محاسبه قیمت',
           success: 'قیمت محاسبه شد',
-          error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+          error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
         }
       )
     }
@@ -686,24 +686,28 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
               <CardHeader title='اطلاعات سفارش' />
               <CardContent>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <img src={user.sub_order.bar_code_url} width='200px' height='200px' />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField
-                      label='لینک بارنامه'
-                      value={user.sub_order.pdf_url}
-                      dir='ltr'
-                      disabled
-                      multiline
-                      lines={2}
-                    />
-                  </Grid>{' '}
+                  {user.sub_order.type !== 'تسویه' && (
+                    <>
+                      <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                        <img src={user.sub_order.bar_code_url} width='200px' height='200px' />
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+                        <TextField
+                          label='لینک بارنامه'
+                          value={user.sub_order.pdf_url}
+                          dir='ltr'
+                          disabled
+                          multiline
+                          lines={2}
+                        />
+                      </Grid>
+                    </>
+                  )}
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                     <TextField label='مرحله' value={user.sub_order.state} disabled />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='سماره سفارش(جهت پیگیری)' value={user.sub_order.id} dir='ltr' disabled />
+                    <TextField label='شماره سفارش(جهت پیگیری)' value={user.sub_order.id} dir='ltr' disabled />
                   </Grid>
                 </Grid>
               </CardContent>

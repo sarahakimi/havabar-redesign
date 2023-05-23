@@ -317,7 +317,7 @@ function ACLPage() {
                   تحویل به هاب مبدا
                 </Button>
               )}
-              {row.sub_order.state_id === 3 && <Typography sx={{ color: 'green' }}>تکمیل سفارش</Typography>}
+              {row.sub_order.state_id === 7 && <Typography sx={{ color: 'green' }}>تکمیل سفارش</Typography>}
             </>
           ) : row.sub_order.hub_origin_id === currentHub ? (
             <>

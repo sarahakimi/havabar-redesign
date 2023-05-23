@@ -148,10 +148,10 @@ function LoginPage() {
         },
         err => {
           toast.dismiss(toastid)
-          toast.error(err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
+          toast.error(err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
           setError('username', {
             type: 'manual',
-            message: err.response?.data?.message
+            message: err?.response?.data?.message
           })
         },
         toastid
@@ -163,10 +163,10 @@ function LoginPage() {
         { username, password },
         err => {
           toast.dismiss(toastid)
-          toast.error(err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
+          toast.error(err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داد')
           setError('username', {
             type: 'manual',
-            message: err.response?.data?.message
+            message: err?.response?.data?.message
           })
           if (err?.response?.data?.messageCode === 413) {
             const { data } = err.response.data

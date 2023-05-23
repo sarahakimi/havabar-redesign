@@ -90,7 +90,7 @@ function AuthProvider({ children }) {
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
         toast.dismiss(toastid)
         const adminId = res.data.role === 'super-admin'
-
+        setIsInitialized(true)
         const { returnUrl } = router.query
         setUser({ ...res.data, isSuperAdmin: adminId })
         await window.localStorage.setItem(

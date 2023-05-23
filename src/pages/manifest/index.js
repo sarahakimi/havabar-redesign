@@ -76,10 +76,10 @@ function ACLPage() {
     )
 
   const deleteFunction = company => {
-    toast.promise(deleteUser(company.order.id).then(setChange(true)), {
+    toast.promise(deleteUser(company.id).then(setChange(true)), {
       loading: 'در حال حذف سفارش',
       success: 'با موفقیت حذف شد',
-      error: err => (err.response.data.message ? err.response.data.message : 'خطایی رخ داده است')
+      error: err => (err?.response?.data?.message ? err.response.data.message : 'خطایی رخ داده است')
     })
   }
 

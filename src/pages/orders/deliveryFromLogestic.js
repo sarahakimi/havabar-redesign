@@ -16,7 +16,7 @@ function DeliveryFromLogestic({ open, setOpen, setChange, id }) {
       {
         loading: 'در حال ثبت',
         success: 'با موفقیت انجام شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
   }

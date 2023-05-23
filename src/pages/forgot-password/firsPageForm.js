@@ -63,7 +63,7 @@ export default function FirstPageForm({ setPage, setFirstFormData }) {
       {
         loading: 'در حال ثبت فرم',
         success: 'فرم ثبت شد',
-        error: err => (err.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
+        error: err => (err?.response?.data?.message ? err.response?.data?.message : 'خطایی رخ داده است.')
       }
     )
   }
