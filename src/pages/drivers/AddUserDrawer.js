@@ -122,7 +122,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
   }, [])
 
   const onSubmit = data => {
-    if (data.hub_id === 0) {
+    if (data.hub_id === 0 && userHub === 0) {
       setError('hub_id', 'هاب را انتخاب کنید')
 
       return
