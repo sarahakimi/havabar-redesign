@@ -87,9 +87,8 @@ export default function FirstPageForm({ setPage, setFirstFormData }) {
                 onBlur={onBlur}
                 onChange={onChange}
                 error={Boolean(errors.phone)}
-                inputProps={{ maxLength: 11 }}
                 placeholder='09*********'
-                dir='ltr'
+                inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
               />
             )}
           />

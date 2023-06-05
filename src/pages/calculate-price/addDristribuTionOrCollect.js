@@ -137,8 +137,7 @@ function AddPrice({ open, toggle, setChange, user, edit, showUser, addFunc, edit
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.price)}
-                  inputProps={{ maxLength: 11 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}

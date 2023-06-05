@@ -609,8 +609,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.senderCodeMelli)}
-                      inputProps={{ maxLength: 10 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -656,9 +655,8 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.senderMobile)}
-                      inputProps={{ maxLength: 11 }}
                       placeholder='09*********'
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -681,7 +679,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.senderPhone)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -796,8 +794,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.senderCodePosti)}
-                      inputProps={{ maxLength: 10 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1045,8 +1042,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverCodeMelli)}
-                      inputProps={{ maxLength: 10 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -1092,9 +1088,8 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverMobile)}
-                      inputProps={{ maxLength: 11 }}
                       placeholder='09*********'
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -1117,7 +1112,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverPhone)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   )}
@@ -1234,8 +1229,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.recieverCodePosti)}
-                      inputProps={{ maxLength: 10 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1445,7 +1439,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.weight)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1466,7 +1460,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.length)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1487,7 +1481,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.width)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1508,7 +1502,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.height)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1529,7 +1523,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.money)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -1932,7 +1926,7 @@ function ACLPage() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.discount)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />

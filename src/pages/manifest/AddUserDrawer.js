@@ -158,7 +158,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, showUser }) {
                       onChange={onChange}
                       error={Boolean(errors.manifest_number)}
                       disabled={showUser}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />

@@ -79,7 +79,7 @@ function AuthProvider({ children }) {
           }
         })
     }
-  }, [user])
+  }, [user, isInitialized])
 
   const handleLogin = (params, errorCallback, toastid) => {
     http
@@ -129,6 +129,13 @@ function AuthProvider({ children }) {
         }
       )
       .then(() => {
+        setUser(null)
+        setIsInitialized(false)
+        window.localStorage.removeItem('userData')
+        window.localStorage.removeItem(authConfig.storageTokenKeyName)
+        router.push('/login')
+      })
+      .catch(() => {
         setUser(null)
         setIsInitialized(false)
         window.localStorage.removeItem('userData')

@@ -197,8 +197,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.natural_code)}
-                  inputProps={{ maxLength: 10 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -237,9 +236,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.phone)}
-                  inputProps={{ maxLength: 11 }}
                   placeholder='09*********'
-                  dir='ltr'
+                  inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}

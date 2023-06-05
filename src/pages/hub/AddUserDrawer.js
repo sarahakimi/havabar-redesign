@@ -173,9 +173,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.tel_phone)}
-                  inputProps={{ maxLength: 11 }}
                   placeholder='021*******'
-                  dir='ltr'
+                  inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -197,8 +196,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onChange={onChange}
                   error={Boolean(errors.fax)}
                   disabled={showUser}
-                  inputProps={{ maxLength: 12 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 12, min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />

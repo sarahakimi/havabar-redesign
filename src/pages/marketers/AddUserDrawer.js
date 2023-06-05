@@ -191,8 +191,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.natural_number)}
-                  inputProps={{ maxLength: 10 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -233,9 +232,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.phone_number)}
-                  inputProps={{ maxLength: 11 }}
                   placeholder='09*********'
-                  dir='ltr'
+                  inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -256,8 +254,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.tel_number)}
-                  inputProps={{ maxLength: 12 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 12, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -278,8 +275,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.postal_code)}
-                  inputProps={{ maxLength: 10 }}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                   disabled={showUser}
                 />
               )}
@@ -460,7 +456,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onChange={onChange}
                   error={Boolean(errors.tabaghe)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />
@@ -479,7 +475,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                   onChange={onChange}
                   error={Boolean(errors.vahed)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />

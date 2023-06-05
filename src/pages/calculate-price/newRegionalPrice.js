@@ -93,13 +93,13 @@ function NewRegionalDrawer({ open, toggle, setChange, user, showUser }) {
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextField
-                  label='از وزن(ریال)'
+                  label='از وزن(کیلوگرم)'
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.from_weight)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />
@@ -114,13 +114,13 @@ function NewRegionalDrawer({ open, toggle, setChange, user, showUser }) {
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextField
-                  label='تا وزن(ریال)'
+                  label='تا وزن(کیلوگرم)'
                   value={value}
                   onBlur={onBlur}
                   onChange={onChange}
                   error={Boolean(errors.to_weight)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />
@@ -141,7 +141,7 @@ function NewRegionalDrawer({ open, toggle, setChange, user, showUser }) {
                   onChange={onChange}
                   error={Boolean(errors.price)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />

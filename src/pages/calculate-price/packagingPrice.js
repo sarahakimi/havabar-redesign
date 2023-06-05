@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import { CardHeader } from '@mui/material'
@@ -51,33 +51,35 @@ function PackagingForm({ setChange, user, addFunc }) {
 
   const defaultValues = user
     ? {
-        palet_small: user.palet_small,
-        palet_medium: user.palet_medium,
-        palet_big: user.palet_big,
-        Envelope_small: user.Envelope_small,
-        Envelope_medium: user.Envelope_medium,
-        Envelope_big: user.Envelope_big,
-        package_small: user.package_small,
-        package_medium: user.package_medium,
-        package_big: user.package_big,
-        box_small: user.box_small,
-        box_medium: user.box_medium,
-        box_big: user.box_big,
-        bag_small: user.bag_small,
-        bag_medium: user.bag_medium,
-        bag_big: user.bag_big
+        palet_small: user[0].palet_small,
+        palet_medium: user[0].palet_medium,
+        palet_big: user[0].palet_big,
+        Envelope_small: user[0].Envelope_small,
+        Envelope_medium: user[0].Envelope_medium,
+        Envelope_big: user[0].Envelope_big,
+        package_small: user[0].package_small,
+        package_medium: user[0].package_medium,
+        package_big: user[0].package_big,
+        box_small: user[0].box_small,
+        box_medium: user[0].box_medium,
+        box_big: user[0].box_big,
+        bag_small: user[0].bag_small,
+        bag_medium: user[0].bag_medium,
+        bag_big: user[0].bag_big
       }
     : emptyForm
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+  useEffect(() => user && reset(user[0]), [user])
 
   const onSubmit = async data => {
     toast.promise(
@@ -94,7 +96,7 @@ function PackagingForm({ setChange, user, addFunc }) {
 
   return (
     <Card>
-      <CardHeader title='ابعاد' />
+      <CardHeader title='بسته بندی' />
 
       <CardContent
         sx={{

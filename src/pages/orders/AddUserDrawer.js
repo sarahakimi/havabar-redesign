@@ -694,7 +694,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                         <TextField
                           label='لینک بارنامه'
                           value={user.sub_order.pdf_url}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                           disabled
                           multiline
                           lines={2}
@@ -706,7 +706,12 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     <TextField label='مرحله' value={user.sub_order.state} disabled />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='شماره سفارش(جهت پیگیری)' value={user.sub_order.id} dir='ltr' disabled />
+                    <TextField
+                      label='شماره سفارش(جهت پیگیری)'
+                      value={user.sub_order.id}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                 </Grid>
               </CardContent>
@@ -719,61 +724,121 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     <TextField
                       label='ارزش افزوده'
                       value={user.financial_information.arzesh_afzode}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='عوارض' value={user.financial_information.avarez} dir='ltr' disabled />
+                    <TextField
+                      label='عوارض'
+                      value={user.financial_information.avarez}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='بسته بندی' value={user.financial_information.baste_bandy} dir='ltr' disabled />
+                    <TextField
+                      label='بسته بندی'
+                      value={user.financial_information.baste_bandy}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='بیمه' value={user.financial_information.bimeh} dir='ltr' disabled />
+                    <TextField
+                      label='بیمه'
+                      value={user.financial_information.bimeh}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                     <TextField
                       label='قیمت منطقه ای'
                       value={user.financial_information.gheymat_gozary}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='جمع آوری' value={user.financial_information.jam_avary} dir='ltr' disabled />
+                    <TextField
+                      label='جمع آوری'
+                      value={user.financial_information.jam_avary}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='خدمات' value={user.financial_information.khadamat} dir='ltr' disabled />
+                    <TextField
+                      label='خدمات'
+                      value={user.financial_information.khadamat}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='کرایه' value={user.financial_information.kraye} dir='ltr' disabled />
+                    <TextField
+                      label='کرایه'
+                      value={user.financial_information.kraye}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='مالیات' value={user.financial_information.maliat} dir='ltr' disabled />
+                    <TextField
+                      label='مالیات'
+                      value={user.financial_information.maliat}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
                     <TextField
                       label='نرخ هر کیلوگرم'
                       value={user.financial_information.nerkh_be_kg}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       disabled
                     />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='تخفیف' value={user.financial_information.off} dir='ltr' disabled />
+                    <TextField
+                      label='تخفیف'
+                      value={user.financial_information.off}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='قابل پرداخت' value={user.financial_information.payable} dir='ltr' disabled />
+                    <TextField
+                      label='قابل پرداخت'
+                      value={user.financial_information.payable}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='نمبر' value={user.financial_information.tambr} dir='ltr' disabled />
+                    <TextField
+                      label='نمبر'
+                      value={user.financial_information.tambr}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='توزیع' value={user.financial_information.tozie} dir='ltr' disabled />
+                    <TextField
+                      label='توزیع'
+                      value={user.financial_information.tozie}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-                    <TextField label='مجموع' value={user.financial_information.total} dir='ltr' disabled />
+                    <TextField
+                      label='مجموع'
+                      value={user.financial_information.total}
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
+                      disabled
+                    />
                   </Grid>
                 </Grid>
               </CardContent>
@@ -797,7 +862,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
             <CardHeader
               title='فرستنده'
               subheader={
-                !showUser && hasSender ? (
+                !showUser &&
+                (hasSender ? (
                   <Button onClick={emptySender} color='error'>
                     حذف مشتری انتخاب شده
                   </Button>
@@ -806,7 +872,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                     <Button onClick={handleOpen}>جستجوی مشتری</Button>
                     <Button onClick={togglenewSenderOpen}>افزودن مشتری</Button>
                   </>
-                )
+                ))
               }
             />
             <Modal
@@ -844,8 +910,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderCodeMelli)}
-                          inputProps={{ maxLength: 10 }}
-                          dir='ltr'
+                          inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -891,9 +956,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderMobile)}
-                          inputProps={{ maxLength: 11 }}
                           placeholder='09*********'
-                          dir='ltr'
+                          inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -916,7 +980,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderPhone)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -1031,8 +1095,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.senderCodePosti)}
-                          inputProps={{ maxLength: 10 }}
-                          dir='ltr'
+                          inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1283,8 +1346,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.recieverCodeMelli)}
-                          inputProps={{ maxLength: 10 }}
-                          dir='ltr'
+                          inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -1330,9 +1392,8 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.recieverMobile)}
-                          inputProps={{ maxLength: 11 }}
                           placeholder='09*********'
-                          dir='ltr'
+                          inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -1355,7 +1416,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.recieverPhone)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                           disabled
                         />
                       )}
@@ -1472,8 +1533,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onBlur={onBlur}
                           onChange={onChange}
                           error={Boolean(errors.recieverCodePosti)}
-                          inputProps={{ maxLength: 10 }}
-                          dir='ltr'
+                          inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1686,7 +1746,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           disabled={showUser}
                           error={Boolean(errors.weight)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1710,7 +1770,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           disabled={showUser}
                           error={Boolean(errors.length)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1734,7 +1794,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           disabled={showUser}
                           onChange={onChange}
                           error={Boolean(errors.width)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1758,7 +1818,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           disabled={showUser}
                           error={Boolean(errors.height)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -1782,7 +1842,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                           onChange={onChange}
                           disabled={showUser}
                           error={Boolean(errors.money)}
-                          dir='ltr'
+                          inputProps={{ min: 0, style: { textAlign: 'left' } }}
                         />
                       )}
                     />
@@ -2208,7 +2268,7 @@ function SidebarAddCourier({ open, toggle, setChange, user, edit, showUser }) {
                               onBlur={onBlur}
                               onChange={onChange}
                               error={Boolean(errors.discount)}
-                              dir='ltr'
+                              inputProps={{ min: 0, style: { textAlign: 'left' } }}
                               disabled={showUser}
                             />
                           )}

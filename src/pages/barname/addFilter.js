@@ -124,7 +124,7 @@ function SidebarAddCourier({ open, toggle, setChange, filter, showUser, setFilte
                   onChange={onChange}
                   error={Boolean(errors.from_barname_id)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />
@@ -145,7 +145,7 @@ function SidebarAddCourier({ open, toggle, setChange, filter, showUser, setFilte
                   onChange={onChange}
                   error={Boolean(errors.to_barname_id)}
                   disabled={showUser}
-                  dir='ltr'
+                  inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                 />
               )}
             />

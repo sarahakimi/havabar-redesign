@@ -163,7 +163,7 @@ function Index() {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.senderCodeMelli)}
-                      dir='ltr'
+                      inputProps={{ min: 0, style: { textAlign: 'left' } }}
                       fullWidth
                     />
                   )}

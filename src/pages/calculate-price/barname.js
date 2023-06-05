@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import { CardHeader } from '@mui/material'
@@ -37,12 +37,14 @@ function Barname({ setChange, user, addFunc }) {
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+  useEffect(() => reset(user), [user])
 
   const onSubmit = async data => {
     toast.promise(

@@ -84,7 +84,7 @@ export default function SecondPageForm({ setPage, firstFormData }) {
                 onBlur={onBlur}
                 onChange={onChange}
                 error={Boolean(errors.otp)}
-                dir='ltr'
+                inputProps={{ min: 0, style: { textAlign: 'left' } }}
               />
             )}
           />
@@ -101,7 +101,7 @@ export default function SecondPageForm({ setPage, firstFormData }) {
                 onBlur={onBlur}
                 onChange={onChange}
                 error={Boolean(errors.password)}
-                dir='ltr'
+                inputProps={{ min: 0, style: { textAlign: 'left' } }}
               />
             )}
           />
@@ -118,7 +118,7 @@ export default function SecondPageForm({ setPage, firstFormData }) {
                 onBlur={onBlur}
                 onChange={onChange}
                 error={Boolean(errors.passwordConfirmation)}
-                dir='ltr'
+                inputProps={{ min: 0, style: { textAlign: 'left' } }}
               />
             )}
           />
