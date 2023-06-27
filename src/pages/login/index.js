@@ -21,11 +21,12 @@ import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAuth } from 'hooks/useAuth'
 import { useSettings } from '@core/hooks/useSettings'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import themeConfig from 'configs/themeConfig'
 import BlankLayout from '@core/layouts/BlankLayout'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Select } from '@mui/material'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 const LoginIllustrationWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(20),
@@ -93,6 +94,27 @@ function LoginPage() {
   const [companies, setCompanies] = useState([])
   const [isDuplicate, setIsDuplicate] = useState(false)
   const [prevForm, setPrevForm] = useState({})
+
+  useEffect(() => {
+    const milliseconds = new Date().getTime()
+    axios.post(
+      'https://tp.tax.gov.ir/req/api/self-tsp/sync/GET_TOKEN/',
+      { packets: [], signature: '', signatureKeyId: '' },
+      {
+        headers: {
+          'content-type': 'application/json',
+          timestamp: milliseconds,
+          Authorization: '',
+          requestTraceId: ''
+
+          // 'Access-Control-Allow-Origin': '*',
+          // 'Access-Control-Allow-Credentials': true,
+          // 'Access-Control-Allow-Methods': '*',
+          // requestTraceId: '2bb4de6e-0ace-11ee-be56-0242ac120002'
+        }
+      }
+    )
+  }, [])
 
   const emptyForm = {
     password: '',

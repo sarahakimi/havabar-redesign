@@ -124,8 +124,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.Envelope_small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -147,8 +146,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.Envelope_medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -170,8 +168,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.Envelope_big)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -194,8 +191,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.package_small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -217,8 +213,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.package_medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -240,8 +235,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.package_big)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -264,8 +258,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.box_small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -287,8 +280,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.box_medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -310,8 +302,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.box_big)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -334,8 +325,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.bag_small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -357,8 +347,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.bag_medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -380,8 +369,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.bag_big)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -404,8 +392,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.palet_small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -427,8 +414,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.palet_medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -450,8 +436,7 @@ function PackagingForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.palet_big)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />

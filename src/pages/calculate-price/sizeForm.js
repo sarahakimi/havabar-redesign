@@ -89,8 +89,7 @@ function SizeForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -111,8 +110,7 @@ function SizeForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.medium)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -133,8 +131,7 @@ function SizeForm({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.small)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 10, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />

@@ -105,8 +105,7 @@ function OtherPrice({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.insurance)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -128,8 +127,7 @@ function OtherPrice({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.services)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -151,8 +149,7 @@ function OtherPrice({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.stamp)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
@@ -172,8 +169,7 @@ function OtherPrice({ setChange, user, addFunc }) {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.value_added)}
-                      inputProps={{ maxLength: 11 }}
-                      dir='ltr'
+                      inputProps={{ maxLength: 11, min: 0, style: { textAlign: 'left' } }}
                     />
                   )}
                 />
