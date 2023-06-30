@@ -27,6 +27,7 @@ import BlankLayout from '@core/layouts/BlankLayout'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Select } from '@mui/material'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { Car } from 'mdi-material-ui'
 
 const LoginIllustrationWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(20),
@@ -376,10 +377,19 @@ function LoginPage() {
                 ورود
               </Button>
               <Link passHref href='/track-order/'>
-                <Button component={MuiLink} fullWidth variant='outlined' color='info'>
+                <Button component={MuiLink} fullWidth variant='outlined' color='info' sx={{ mb: 7 }}>
                   رهگیری سفارش
                 </Button>
               </Link>
+              <Box display='flex' justifyContent='center'>
+                <Link passHref href='https://havabaar.com/app/#/auth'>
+                  <a target='_blank' href='/' style={{ width: '100%' }}>
+                    <Button startIcon={<Car />} variant='outlined' fullWidth>
+                      اپلیکیشن رانندگان
+                    </Button>
+                  </a>
+                </Link>
+              </Box>
             </form>
           </BoxWrapper>
         </Box>
