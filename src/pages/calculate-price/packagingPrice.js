@@ -51,21 +51,21 @@ function PackagingForm({ setChange, user, addFunc }) {
 
   const defaultValues = user
     ? {
-        palet_small: user[0].palet_small,
-        palet_medium: user[0].palet_medium,
-        palet_big: user[0].palet_big,
-        Envelope_small: user[0].Envelope_small,
-        Envelope_medium: user[0].Envelope_medium,
-        Envelope_big: user[0].Envelope_big,
-        package_small: user[0].package_small,
-        package_medium: user[0].package_medium,
-        package_big: user[0].package_big,
-        box_small: user[0].box_small,
-        box_medium: user[0].box_medium,
-        box_big: user[0].box_big,
-        bag_small: user[0].bag_small,
-        bag_medium: user[0].bag_medium,
-        bag_big: user[0].bag_big
+        palet_small: user[0]?.palet_small,
+        palet_medium: user[0]?.palet_medium,
+        palet_big: user[0]?.palet_big,
+        Envelope_small: user[0]?.Envelope_small,
+        Envelope_medium: user[0]?.Envelope_medium,
+        Envelope_big: user[0]?.Envelope_big,
+        package_small: user[0]?.package_small,
+        package_medium: user[0]?.package_medium,
+        package_big: user[0]?.package_big,
+        box_small: user[0]?.box_small,
+        box_medium: user[0]?.box_medium,
+        box_big: user[0]?.box_big,
+        bag_small: user[0]?.bag_small,
+        bag_medium: user[0]?.bag_medium,
+        bag_big: user[0]?.bag_big
       }
     : emptyForm
 
@@ -79,6 +79,7 @@ function PackagingForm({ setChange, user, addFunc }) {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+
   useEffect(() => user && reset(user[0]), [user])
 
   const onSubmit = async data => {
